@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 :root {
-  --background: #030005;
-  --foreground: #f8fafc;
-  --accent-pink: #f43f5e;
-  --accent-purple: #a855f7;
-  --card-bg: #09040d;
+  --background: #f1f5f9; /* 明るくクリーンなグレー背景 (slate-100) */
+  --foreground: #0f172a; /* 視認性の高いダークインク色 (slate-900) */
+  --accent-pink: #e11d48; /* ローズピンク */
+  --accent-purple: #7c3aed; /* ロイヤルパープル */
+  --card-bg: #ffffff; /* 白色のカードで清潔感を演出 */
 }
 
 body {
@@ -16,10 +16,11 @@ body {
   letter-spacing: -0.01em;
 }
 
-/* ミニマル・プレミアムデザイン用の陰影とグラデーション */
+/* プレミアムで清潔感のあるカードホバーシャドウ効果 */
 .card-hover-effect {
   position: relative;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  background-color: var(--card-bg);
 }
 
 .card-hover-effect::after {
@@ -33,31 +34,24 @@ body {
   -webkit-mask-composite: destination-out;
   mask-composite: exclude;
   opacity: 0;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.35s ease;
   pointer-events: none;
 }
 
 .card-hover-effect:hover::after {
-  opacity: 0.8;
+  opacity: 0.3;
 }
 
 .card-hover-effect:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 40px -15px rgba(244, 63, 94, 0.08), 0 0 50px -10px rgba(168, 85, 247, 0.05);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
 }
 
-/* プレミアムなぼかし効果 */
+/* 親しみやすいクリーンなヘッダー */
 .glass-header {
-  background: rgba(3, 0, 5, 0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-}
-
-.glass-card {
-  background: rgba(9, 4, 13, 0.4);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(139, 92, 246, 0.08);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 /* カスタムスクロールバー */
@@ -65,12 +59,12 @@ body {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #030005;
+  background: #f1f5f9;
 }
 ::-webkit-scrollbar-thumb {
-  background: #251233;
+  background: #cbd5e1;
   border-radius: 99px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-pink);
+  background: #94a3b8;
 }
