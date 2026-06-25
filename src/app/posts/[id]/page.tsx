@@ -129,6 +129,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             <img
               src={post.image}
               alt={post.title}
+              referrerPolicy="no-referrer"
               className="max-h-[500px] w-auto object-contain rounded-lg shadow-md group-hover:opacity-90 transition duration-300"
             />
             {/* ホバーガイダンス */}
@@ -182,6 +183,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
                   <img
                     src={imgUrl}
                     alt={`Sample ${idx}`}
+                    referrerPolicy="no-referrer"
                     className="w-full h-full object-cover opacity-90 hover:opacity-100 transition duration-200"
                     loading="lazy"
                   />

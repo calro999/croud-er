@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: "深夜書斎 - 人妻・ネトラレ専門濃厚アーカイブ",
   description: "日常の裏側に潜むスリリングな関係。カリスマ熱血レビュアーが綴る人妻・ネトラレ・背徳ドラマの超濃厚レビューサイト。プレミアムな審美眼で厳選した作品を紹介します。",
   keywords: ["人妻", "ネトラレ", "背徳", "不倫", "AVレビュー", "DMMアフィリエイト"],
+  referrer: "no-referrer",
 };
 
 export default function RootLayout({
@@ -15,6 +16,7 @@ export default function RootLayout({
   return (
     <html lang="ja" className="h-full">
       <head>
+        <meta name="referrer" content="no-referrer" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
