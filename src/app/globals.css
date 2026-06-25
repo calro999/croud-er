@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0a050d;
+  --foreground: #f3f4f6;
+  --neon-pink: #ff007f;
+  --neon-purple: #8b5cf6;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+/* 妖艶なネオン発光エフェクト */
+.neon-glow-pink {
+  text-shadow: 0 0 10px rgba(255, 0, 127, 0.6), 0 0 20px rgba(255, 0, 127, 0.4);
+}
+
+.neon-border-pink {
+  box-shadow: 0 0 15px rgba(255, 0, 127, 0.3);
+  border-color: rgba(255, 0, 127, 0.6);
+}
+
+.neon-glow-purple {
+  text-shadow: 0 0 10px rgba(139, 92, 246, 0.6);
+}
