@@ -7,20 +7,20 @@ import re
 import urllib.parse
 
 CACHE_FILE = "posted_cache.txt"
-JSON_DB_PATH = "public/data/posts.json"
+POSTS_DIR = "src/data/posts"
 
 def clean_for_safety(text):
     if not text:
         return ""
     safety_map = {
-        "ネトラレ": "禁断の恋",
-        "ねとられ": "禁断の恋",
-        "不倫": "秘密の関係",
+        "ネトラレ": "禁断 of 恋",
+        "ねとられ": "禁断 of 恋",
+        "不倫": "秘密 of 関係",
         "団地妻": "人妻",
         "人妻": "大人の女性",
-        "背徳": "秘密の",
+        "背徳": "秘密 of",
         "痴女": "魅力的な女性",
-        "中出し": "愛の結末",
+        "中出し": "愛 of 結末",
         "AV": "ビデオ作品",
         "アダルト": "大人向け"
     }
@@ -79,6 +79,10 @@ def fetch_fanza_item():
     selected_keyword = random.choice(keywords)
     print(f"Searching FANZA for keyword: {selected_keyword}")
 
+    # 重複アイテムを避けるため、ランダムなページオフセット(1〜20)を指定
+    random_offset = random.randint(1, 20)
+    print(f"Using random offset: {random_offset}")
+
     url = "https://api.dmm.com/affiliate/v3/ItemList"
     params = {
         "api_id": api_id,
@@ -87,9 +91,9 @@ def fetch_fanza_item():
         "service": "digital",
         "floor": "videoa",
         "keyword": selected_keyword,
-        # 「熟女」や「おばさん」といった単語をAPIの検索から強制的に除外する
         "sort": random.choice(["date", "rank"]),
-        "hits": 20, # スキップ処理のために少し多めに取得する
+        "offset": random_offset,
+        "hits": 30, # スキップ処理のために多めに取得する
         "output": "json"
     }
 
@@ -128,7 +132,8 @@ def fetch_fanza_item():
         if content_id not in posted_cache:
             return item
 
-    raise RuntimeError("All fetched FANZA items have already been posted or excluded.")
+    # 1件も新しいものがない場合は、エラーにせずNoneを返す（エラー終了によるGitHub Actions停止を防ぐ）
+    return None
 
 def generate_article_with_llm(item):
     title = item.get("title")
@@ -179,7 +184,7 @@ def generate_article_with_llm(item):
                     if "```html" in result_text:
                         result_text = result_text.split("```html", 1)[1]
                     if "```" in result_text:
-                        result_text = result_text.split("```", 1)[0]
+                        result_text = result_text.split("```")[0]
                     return result_text.strip()
                 elif response.status_code == 429:
                     print(f"Pollinations AI ({model}) returned 429 (Rate Limit). Waiting...")
@@ -197,29 +202,23 @@ def generate_article_with_llm(item):
     """
     return fallback_html.strip()
 
-def append_to_json_db(post_data):
-    posts = []
-    if os.path.exists(JSON_DB_PATH):
-        try:
-            with open(JSON_DB_PATH, "r", encoding="utf-8") as f:
-                posts = json.load(f)
-        except Exception as e:
-            print(f"Error loading posts.json, resetting: {e}")
-            posts = []
-
-    # 先頭に追加（最新記事を上にする）
-    posts.insert(0, post_data)
-
-    # 保存ディレクトリの作成
-    os.makedirs(os.path.dirname(JSON_DB_PATH), exist_ok=True)
-    with open(JSON_DB_PATH, "w", encoding="utf-8") as f:
-        json.dump(posts, f, ensure_ascii=False, indent=2)
-    print(f"Successfully added to JSON database: {post_data['title']}")
+def save_individual_post(post_data):
+    os.makedirs(POSTS_DIR, exist_ok=True)
+    post_id = post_data["id"]
+    file_path = os.path.join(POSTS_DIR, f"{post_id}.json")
+    
+    with open(file_path, "w", encoding="utf-8") as f:
+        json.dump(post_data, f, ensure_ascii=False, indent=2)
+    print(f"Successfully saved individual JSON: {file_path}")
 
 def main():
     try:
         # 1. FANZAから商品取得
         item = fetch_fanza_item()
+        if not item:
+            print("No new items found that haven't been posted yet. Exiting cleanly (exit 0).")
+            return
+
         content_id = item.get("content_id")
         title = item.get("title")
         affiliate_url = item.get("affiliateURL")
@@ -248,7 +247,7 @@ def main():
         # 2. LLMでレビュー文生成
         review_html = generate_article_with_llm(item)
 
-        # 3. JSONデータ構造の組み立て
+        # 3. 個別JSONデータ構造の組み立て
         post_data = {
             "id": content_id,
             "title": f"【超ド級の背徳感】 {title}",
@@ -263,8 +262,8 @@ def main():
             "labels": ["FANZA新作", "人妻", "ネトラレ", "背徳不倫"]
         }
 
-        # JSON DBに保存
-        append_to_json_db(post_data)
+        # 個別のJSONとして保存する
+        save_individual_post(post_data)
 
         # 4. キャッシュに保存
         save_to_cache(content_id)

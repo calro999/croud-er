@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
 
 interface Post {
   id: string;
@@ -20,37 +21,70 @@ interface Post {
 export const dynamicParams = false;
 
 export async function generateStaticParams() {
-  const jsonPath = path.join(process.cwd(), "public", "data", "posts.json");
-  if (!fs.existsSync(jsonPath)) {
+  const postsDir = path.join(process.cwd(), "src", "data", "posts");
+  if (!fs.existsSync(postsDir)) {
     return [];
   }
   try {
-    const fileContent = fs.readFileSync(jsonPath, "utf-8");
-    const posts: Post[] = JSON.parse(fileContent);
-    return posts.map((post) => ({
-      id: post.id,
+    const files = fs.readdirSync(postsDir).filter((f) => f.endsWith(".json"));
+    return files.map((file) => ({
+      id: file.replace(".json", ""),
     }));
   } catch (e) {
-    console.error("Failed to read posts.json for static params:", e);
+    console.error("Failed to read posts directory for static params:", e);
     return [];
+  }
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const postPath = path.join(process.cwd(), "src", "data", "posts", `${id}.json`);
+
+  if (!fs.existsSync(postPath)) {
+    return {
+      title: "作品が見つかりません",
+    };
+  }
+
+  try {
+    const fileContent = fs.readFileSync(postPath, "utf-8");
+    const post: Post = JSON.parse(fileContent);
+    const descriptionText = post.review
+      ? post.review.replace(/<[^>]*>/g, "").slice(0, 120) + "..."
+      : `${post.title}の作品詳細と見どころレビューです。`;
+
+    return {
+      title: `${post.title}`,
+      description: descriptionText,
+      keywords: (post.genres || []).concat(post.actresses || []).concat(post.labels || []).join(","),
+      openGraph: {
+        title: post.title,
+        description: descriptionText,
+        images: post.image ? [{ url: post.image }] : [],
+      },
+    };
+  } catch (e) {
+    console.error(`Failed to generate metadata for post ${id}:`, e);
+    return {
+      title: "クロード・アーカイブ",
+    };
   }
 }
 
 export default async function PostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const jsonPath = path.join(process.cwd(), "public", "data", "posts.json");
+  const postPath = path.join(process.cwd(), "src", "data", "posts", `${id}.json`);
 
-  if (!fs.existsSync(jsonPath)) {
+  if (!fs.existsSync(postPath)) {
     notFound();
   }
 
   let post: Post | undefined;
   try {
-    const fileContent = fs.readFileSync(jsonPath, "utf-8");
-    const posts: Post[] = JSON.parse(fileContent);
-    post = posts.find((p) => p.id === id);
+    const fileContent = fs.readFileSync(postPath, "utf-8");
+    post = JSON.parse(fileContent);
   } catch (e) {
-    console.error("Failed to parse posts.json in page:", e);
+    console.error(`Failed to parse post JSON at ${postPath}:`, e);
   }
 
   if (!post) {
