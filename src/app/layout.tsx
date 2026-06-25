@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "【極上の悦楽】大人の深夜書斎 - 人妻・ネトラレ専門濃厚レビュー",
-  description: "ネットの片隅で、熱狂的マニアが綴る人妻・ネトラレ・背徳系アダルト映像の超濃厚レビューサイト。感情的な心理描写と共におすすめの作品を紹介します。",
+  title: "深夜書斎 - 人妻・ネトラレ専門濃厚アーカイブ",
+  description: "日常の裏側に潜むスリリングな関係。カリスマ熱血レビュアーが綴る人妻・ネトラレ・背徳ドラマの超濃厚レビューサイト。プレミアムな審美眼で厳選した作品を紹介します。",
   keywords: ["人妻", "ネトラレ", "背徳", "不倫", "AVレビュー", "DMMアフィリエイト"],
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
 };
 
 export default function RootLayout({
@@ -14,19 +15,33 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja" className="h-full dark">
-      <body className="min-h-full flex flex-col bg-[#0a050d] text-gray-100 selection:bg-pink-600 selection:text-white">
-        {/* グローバルヘッダー */}
-        <header className="border-b border-[#2d123a] bg-[#120718]/90 backdrop-blur-md sticky top-0 z-50 py-4 px-6 shadow-lg">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
+      </head>
+      <body className="min-h-full flex flex-col bg-[#030005] text-slate-100 selection:bg-rose-500 selection:text-white font-sans antialiased">
+        
+        {/* 極薄トップインフォバー */}
+        <div className="w-full text-center py-2 bg-gradient-to-r from-rose-950/40 via-purple-950/40 to-rose-950/40 border-b border-purple-950/30 text-[10px] font-bold tracking-widest text-rose-400">
+          FOR ADULTS ONLY • 18歳未満の閲覧は固く禁止されています
+        </div>
+
+        {/* プレミアムなガラスモルフィズムヘッダー */}
+        <header className="border-b border-white/[0.04] glass-header sticky top-0 z-50 py-3.5 px-6">
           <div className="max-w-6xl mx-auto flex items-center justify-between">
-            <a href="/" className="flex items-center gap-2">
-              <span className="text-2xl font-black tracking-widest bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent hover:from-pink-400 hover:to-purple-400 transition">
-                深夜の背徳書斎
+            <a href="/" className="flex items-center gap-2 group">
+              <span className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-rose-400 via-pink-400 to-purple-400 bg-clip-text text-transparent group-hover:opacity-90 transition">
+                深夜書斎
+              </span>
+              <span className="text-[9px] font-bold tracking-widest text-slate-500 uppercase border border-slate-700/50 px-2 py-0.5 rounded-md bg-slate-900/30">
+                ARCHIVE
               </span>
             </a>
-            <nav className="flex items-center gap-6 text-sm font-bold text-gray-300">
-              <a href="/" className="hover:text-pink-500 transition">ホーム</a>
-              <span className="text-[#3c1b4e]">|</span>
-              <span className="text-xs bg-red-600 text-white font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse">
+            <nav className="flex items-center gap-5 text-xs font-semibold text-slate-400">
+              <a href="/" className="hover:text-slate-100 transition">Home</a>
+              <span className="text-slate-800">/</span>
+              <span className="text-[10px] bg-rose-500/10 text-rose-400 border border-rose-500/20 font-black px-2 py-0.5 rounded">
                 R-18
               </span>
             </nav>
@@ -34,17 +49,24 @@ export default function RootLayout({
         </header>
 
         {/* メインコンテンツ */}
-        <main className="flex-grow max-w-6xl w-full mx-auto px-4 py-8">
+        <main className="flex-grow max-w-6xl w-full mx-auto px-4 py-8 md:py-12">
           {children}
         </main>
 
-        {/* グローバルフッター */}
-        <footer className="border-t border-[#2d123a] bg-[#07030a] py-8 text-center text-xs text-gray-500">
-          <div className="max-w-6xl mx-auto px-4 flex flex-col gap-3">
-            <p>© 2026 深夜の背徳書斎. All Rights Reserved. (18歳未満の閲覧は禁止されています)</p>
-            <p className="text-gray-600 max-w-xl mx-auto">
-              当サイトに掲載されているアフィリエイトリンクを経由して生じた売上は、今後のサイト運営と更なるニッチ作品の濃厚レビュー執筆に充てられます。
-            </p>
+        {/* ミニマル・モダンなフッター */}
+        <footer className="border-t border-white/[0.04] bg-[#020003] py-10 text-xs text-slate-600">
+          <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="space-y-1.5 text-center md:text-left">
+              <p className="font-bold text-slate-500">© 2026 深夜書斎. All Rights Reserved.</p>
+              <p className="text-[10px] max-w-md leading-relaxed">
+                当サイトに記載されているアフィリエイトリンクは適正に管理されており、紹介する作品はマニアが厳選した大人のドラマ作品のみです。
+              </p>
+            </div>
+            <div className="flex gap-4 text-[10px] font-bold text-slate-500">
+              <a href="/" className="hover:text-slate-400">ホーム</a>
+              <span>•</span>
+              <a href="https://affiliate.dmm.com/" target="_blank" rel="noopener noreferrer" className="hover:text-slate-400">アフィリエイトについて</a>
+            </div>
           </div>
         </footer>
       </body>

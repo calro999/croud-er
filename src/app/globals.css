@@ -1,29 +1,76 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a050d;
-  --foreground: #f3f4f6;
-  --neon-pink: #ff007f;
-  --neon-purple: #8b5cf6;
+  --background: #030005;
+  --foreground: #f8fafc;
+  --accent-pink: #f43f5e;
+  --accent-purple: #a855f7;
+  --card-bg: #09040d;
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   overflow-x: hidden;
+  letter-spacing: -0.01em;
 }
 
-/* 妖艶なネオン発光エフェクト */
-.neon-glow-pink {
-  text-shadow: 0 0 10px rgba(255, 0, 127, 0.6), 0 0 20px rgba(255, 0, 127, 0.4);
+/* ミニマル・プレミアムデザイン用の陰影とグラデーション */
+.card-hover-effect {
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.neon-border-pink {
-  box-shadow: 0 0 15px rgba(255, 0, 127, 0.3);
-  border-color: rgba(255, 0, 127, 0.6);
+.card-hover-effect::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid transparent;
+  background: linear-gradient(to bottom right, var(--accent-pink), var(--accent-purple)) border-box;
+  mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
 }
 
-.neon-glow-purple {
-  text-shadow: 0 0 10px rgba(139, 92, 246, 0.6);
+.card-hover-effect:hover::after {
+  opacity: 0.8;
+}
+
+.card-hover-effect:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -15px rgba(244, 63, 94, 0.08), 0 0 50px -10px rgba(168, 85, 247, 0.05);
+}
+
+/* プレミアムなぼかし効果 */
+.glass-header {
+  background: rgba(3, 0, 5, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.glass-card {
+  background: rgba(9, 4, 13, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(139, 92, 246, 0.08);
+}
+
+/* カスタムスクロールバー */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #030005;
+}
+::-webkit-scrollbar-thumb {
+  background: #251233;
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-pink);
 }
