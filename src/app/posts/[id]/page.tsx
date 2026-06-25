@@ -17,6 +17,9 @@ interface Post {
   labels: string[];
 }
 
+// 静的プリレンダリング外のIDもオンデマンドで動的生成可能にする
+export const dynamicParams = true;
+
 // 静的ルート生成用のパラメータ一覧を取得
 export async function generateStaticParams() {
   const jsonPath = path.join(process.cwd(), "public", "data", "posts.json");
@@ -36,8 +39,8 @@ export async function generateStaticParams() {
 }
 
 // 個別の詳細記事ページコンポーネント
-export default async function PostPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default async function PostPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const jsonPath = path.join(process.cwd(), "public", "data", "posts.json");
 
   if (!fs.existsSync(jsonPath)) {

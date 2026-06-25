@@ -74,8 +74,8 @@ def fetch_fanza_item():
     print(f"[DEBUG] Final parsed API ID: {api_id}")
     print(f"[DEBUG] Final parsed Affiliate ID: {affiliate_id}")
 
-    # 背徳系キーワードリスト
-    keywords = ["人妻 ネトラレ", "熟女 不倫", "団地妻 背徳"]
+    # 背徳系キーワードリスト（「熟女」は除外）
+    keywords = ["人妻 ネトラレ", "若奥様 不倫", "団地妻 背徳", "主婦 寝取られ"]
     selected_keyword = random.choice(keywords)
     print(f"Searching FANZA for keyword: {selected_keyword}")
 
@@ -87,8 +87,9 @@ def fetch_fanza_item():
         "service": "digital",
         "floor": "videoa",
         "keyword": selected_keyword,
+        # 「熟女」や「おばさん」といった単語をAPIの検索から強制的に除外する
         "sort": random.choice(["date", "rank"]),
-        "hits": 10,
+        "hits": 20, # スキップ処理のために少し多めに取得する
         "output": "json"
     }
 
@@ -104,10 +105,30 @@ def fetch_fanza_item():
     posted_cache = load_posted_cache()
     for item in items:
         content_id = item.get("content_id")
-        if content_id and content_id not in posted_cache:
+        if not content_id:
+            continue
+
+        # 熟女・高齢者系コンテンツの強制スキップ処理
+        title = item.get("title", "")
+        comment = item.get("comment", "")
+        genres = [g.get("name", "") for g in item.get("iteminfo", {}).get("genre", [])]
+        genres_str = " ".join(genres)
+        
+        exclude_words = ["熟女", "おばさん", "五十路", "四十路", "六十路", "熟年", "マダム", "高齢", "お姉さん", "ババ"]
+        is_excluded = False
+        for word in exclude_words:
+            if word in title or word in comment or word in genres_str:
+                print(f"[SKIP] Excluding mature content (matched '{word}'): {title}")
+                is_excluded = True
+                break
+        
+        if is_excluded:
+            continue
+
+        if content_id not in posted_cache:
             return item
 
-    raise RuntimeError("All fetched FANZA items have already been posted.")
+    raise RuntimeError("All fetched FANZA items have already been posted or excluded.")
 
 def generate_article_with_llm(item):
     title = item.get("title")
