@@ -235,7 +235,7 @@ def main():
         
         post_data = {
             "id": content_id,
-            "title": f"【2026年最新・超話題作】 {title}",
+            "title": title,
             "review": review_html,
             "image": image_url,
             "sample_images": sample_images,
@@ -244,7 +244,7 @@ def main():
             "actresses": [a.get("name", "") for a in item.get("iteminfo", {}).get("actress", [])],
             "maker": item.get("iteminfo", {}).get("maker", [{}])[0].get("name", ""),
             "date": item.get("date", time.strftime("%Y-%m-%d %H:%M:%S")),
-            "labels": ["超話題作", "2026年最新", "最強コンテンツ", "絶対抜ける", "SNSで話題", "人気"]
+            "labels": ["超話題作", "2026年最新", "SNSで話題", "人気"]
         }
         
         save_individual_post(post_data)
