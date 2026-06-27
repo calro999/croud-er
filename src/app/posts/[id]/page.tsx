@@ -141,33 +141,9 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
           </a>
         </div>
 
-        {/* メタ情報テーブル */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-          <div className="space-y-1">
-            <span className="text-slate-400 font-bold uppercase tracking-wider block text-[9px]">出演女優</span>
-            <span className="text-slate-800 font-bold text-sm">
-              {post.actresses?.join("、 ") || "紹介制・単体女優"}
-            </span>
-          </div>
-          <div className="space-y-1">
-            <span className="text-slate-400 font-bold uppercase tracking-wider block text-[9px]">作品属性</span>
-            <span className="text-slate-700 font-semibold">
-              {post.genres?.join("、 ") || "人妻、不倫、ネトラレ"}
-            </span>
-          </div>
-        </div>
-
-        {/* 濃厚レビューテキスト */}
-        <div className="prose prose-slate max-w-none text-slate-600 space-y-6 leading-relaxed text-sm md:text-base font-medium">
-          <div
-            className="review-content-html"
-            dangerouslySetInnerHTML={{ __html: post.review }}
-          />
-        </div>
-
         {/* サンプル写真スライド */}
         {post.sample_images && post.sample_images.length > 0 && (
-          <div className="space-y-3 pt-6 border-t border-slate-100">
+          <div className="space-y-3">
             <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">
               ▼ 現場の瞬間（サンプル写真）
             </h3>
@@ -192,6 +168,32 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             </div>
           </div>
         )}
+
+        {/* メタ情報テーブル */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+          <div className="space-y-1">
+            <span className="text-slate-400 font-bold uppercase tracking-wider block text-[9px]">出演女優</span>
+            <span className="text-slate-800 font-bold text-sm">
+              {post.actresses?.join("、 ") || "紹介制・単体女優"}
+            </span>
+          </div>
+          <div className="space-y-1">
+            <span className="text-slate-400 font-bold uppercase tracking-wider block text-[9px]">作品属性</span>
+            <span className="text-slate-700 font-semibold">
+              {post.genres?.join("、 ") || "人妻、不倫、ネトラレ"}
+            </span>
+          </div>
+        </div>
+
+        {/* 濃厚レビューテキスト */}
+        <div className="prose prose-slate max-w-none text-slate-600 space-y-6 leading-relaxed text-sm md:text-base font-medium">
+          <div
+            className="review-content-html"
+            dangerouslySetInnerHTML={{ __html: post.review }}
+          />
+        </div>
+
+
 
         {/* 極上のプレミアムCTAボタン */}
         <div className="pt-6 border-t border-slate-100 text-center space-y-3">

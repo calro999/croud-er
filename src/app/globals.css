@@ -68,3 +68,47 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
+
+/* 記事本文内の見出しデザイン */
+.review-content-html h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--foreground);
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--accent-pink);
+}
+
+.review-content-html h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--foreground);
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+  padding-left: 0.75rem;
+  border-left: 4px solid var(--accent-purple);
+}
+
+.review-content-html h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--foreground);
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.review-content-html p {
+  margin-bottom: 1rem;
+  line-height: 1.7;
+}
+
+.review-content-html ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.review-content-html li {
+  margin-bottom: 0.5rem;
+}
