@@ -60,7 +60,7 @@ export default function RootLayout({
             <nav className="flex items-center gap-5 text-xs font-bold text-slate-500">
               <a href="/" className="hover:text-slate-950 transition">Home</a>
               <span className="text-slate-300">/</span>
-              <a href="https://bakuero.pages.dev/" target="_blank" rel="noopener noreferrer" className="hover:text-purple-600 transition text-purple-700 border border-purple-500/30 px-2 py-1 rounded">姉妹サイト: バクロファイル</a>
+              <a href="https://er-2.pages.dev/" target="_blank" rel="noopener noreferrer" className="hover:text-purple-600 transition text-purple-700 border border-purple-500/30 px-2 py-1 rounded">姉妹サイト: バクロファイル</a>
               <span className="text-slate-300">/</span>
               <span className="text-[10px] bg-rose-500 text-white font-black px-2 py-0.5 rounded">
                 R-18
@@ -87,8 +87,6 @@ export default function RootLayout({
               <a href="/" className="hover:text-slate-950">ホーム</a>
               <span>•</span>
               <a href="#" className="hover:text-purple-600 text-purple-700">姉妹サイト: 暴露ファイル</a>
-              <span>•</span>
-              <a href="https://affiliate.dmm.com/" target="_blank" rel="noopener noreferrer" className="hover:text-slate-950">アフィリエイトについて</a>
             </div>
           </div>
         </footer>
