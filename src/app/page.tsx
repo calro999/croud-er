@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import AmateurBanner from "./components/AmateurBanner";
+
 
 interface Post {
   id: string;
@@ -78,7 +80,7 @@ export default function Home() {
             </span>
           </h1>
           <p className="text-slate-300 leading-relaxed text-xs md:text-sm max-w-md">
-            感情のゆらぎや背徳的な心理描写を丁寧に紐解く、大人のための鑑賞支援サイト。厳選された作品の深いレビューをお届けします。
+            決して覗いてはならない、素人たちの裏の顔。裏アカ、流出、ハプニング映像を徹底レビュー。あなたの本能を直撃するリアルな快感記録。マニアが厳選したお宝映像アーカイブ。
           </p>
         </div>
 
@@ -199,69 +201,100 @@ export default function Home() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          {filteredPosts.map((post) => (
-            <article
-              key={post.id}
-              className="flex flex-col rounded-2xl overflow-hidden bg-white border border-slate-200/80 card-hover-effect shadow-sm"
-            >
-              {/* アイキャッチ画像 */}
-              <div className="aspect-[16/10] relative overflow-hidden bg-slate-100 flex items-center justify-center border-b border-slate-200/60">
-                {post.image ? (
-                  <img
-                    src={post.image}
-                    alt={post.title}
-                    referrerPolicy="no-referrer"
-                    className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                    loading="lazy"
-                  />
-                ) : (
-                  <span className="text-slate-400 text-xs font-semibold">No Image</span>
-                )}
-                {/* プレミアムな小サイズ年齢制限タグ */}
-                <span className="absolute top-4 left-4 text-[9px] font-bold bg-rose-500 text-white px-2.5 py-0.5 rounded shadow-sm">
-                  18+
-                </span>
-                <span className="absolute bottom-4 right-4 text-[9px] font-bold bg-slate-900/80 text-white px-2 py-0.5 rounded">
-                  {post.maker}
-                </span>
-              </div>
+          {(() => {
+            const list: React.ReactNode[] = [];
+            const mobileBanners = [
+              { affiliateId: "onchan555-003", bannerId: "1082_300_250" },
+              { affiliateId: "onchan555-003", bannerId: "377_300_250" },
+              { affiliateId: "onchan555-003", bannerId: "75_300_250" },
+              { affiliateId: "onchan555-003", bannerId: "68_300_250" },
+              { affiliateId: "onchan555-003", bannerId: "1980_300_250" },
+              { affiliateId: "onchan555-003", bannerId: "1506_300_250" },
+            ];
 
-              {/* メモリアルな情報レイアウト */}
-              <div className="p-5 flex-grow flex flex-col justify-between space-y-4">
-                <div className="space-y-2.5">
-                  <span className="text-[9px] font-bold text-slate-400 tracking-wider block">
-                    {post.date}
-                  </span>
-                  <h2 className="text-sm md:text-base font-extrabold leading-snug text-slate-800 hover:text-rose-600 transition-colors duration-200 line-clamp-2">
-                    {post.title}
-                  </h2>
-                  <div
-                    className="text-xs text-slate-500 leading-relaxed line-clamp-3 font-medium"
-                    dangerouslySetInnerHTML={{ __html: post.review }}
-                  />
-                </div>
-
-                <div className="pt-3.5 flex flex-col gap-3 border-t border-slate-100">
-                  {/* 主要ジャンルタグ */}
-                  <div className="flex flex-wrap gap-1">
-                    {post.genres?.slice(0, 3).map((genre) => (
-                      <span key={genre} className="text-[9px] font-bold text-slate-500 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded">
-                        {genre}
-                      </span>
-                    ))}
+            filteredPosts.forEach((post, index) => {
+              list.push(
+                <article
+                  key={post.id}
+                  className="flex flex-col rounded-2xl overflow-hidden bg-white border border-slate-200/80 card-hover-effect shadow-sm"
+                >
+                  {/* アイキャッチ画像 */}
+                  <div className="aspect-[16/10] relative overflow-hidden bg-slate-100 flex items-center justify-center border-b border-slate-200/60">
+                    {post.image ? (
+                      <img
+                        src={post.image}
+                        alt={post.title}
+                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <span className="text-slate-400 text-xs font-semibold">No Image</span>
+                    )}
+                    {/* プレミアムな小サイズ年齢制限タグ */}
+                    <span className="absolute top-4 left-4 text-[9px] font-bold bg-rose-500 text-white px-2.5 py-0.5 rounded shadow-sm">
+                      18+
+                    </span>
+                    <span className="absolute bottom-4 right-4 text-[9px] font-bold bg-slate-900/80 text-white px-2 py-0.5 rounded">
+                      {post.maker}
+                    </span>
                   </div>
-                  <a
-                    href={`/posts/${post.id}`}
-                    className="w-full text-center text-xs font-bold text-white bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-400 hover:to-rose-500 py-2.5 rounded-xl shadow transition duration-200 cursor-pointer"
+
+                  {/* メモリアルな情報レイアウト */}
+                  <div className="p-5 flex-grow flex flex-col justify-between space-y-4">
+                    <div className="space-y-2.5">
+                      <span className="text-[9px] font-bold text-slate-400 tracking-wider block">
+                        {post.date}
+                      </span>
+                      <h2 className="text-sm md:text-base font-extrabold leading-snug text-slate-800 hover:text-rose-600 transition-colors duration-200 line-clamp-2">
+                        {post.title}
+                      </h2>
+                      <div
+                        className="text-xs text-slate-500 leading-relaxed line-clamp-3 font-medium"
+                        dangerouslySetInnerHTML={{ __html: post.review }}
+                      />
+                    </div>
+
+                    <div className="pt-3.5 flex flex-col gap-3 border-t border-slate-100">
+                      {/* 主要ジャンルタグ */}
+                      <div className="flex flex-wrap gap-1">
+                        {post.genres?.slice(0, 3).map((genre) => (
+                          <span key={genre} className="text-[9px] font-bold text-slate-500 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded">
+                            {genre}
+                          </span>
+                        ))}
+                      </div>
+                      <a
+                        href={`/posts/${post.id}`}
+                        className="w-full text-center text-xs font-bold text-white bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-400 hover:to-rose-500 py-2.5 rounded-xl shadow transition duration-200 cursor-pointer"
+                      >
+                        考察レビューを読む
+                      </a>
+                    </div>
+                  </div>
+                </article>
+              );
+
+              const count = index + 1;
+              if (count % 3 === 0) {
+                const bannerIndex = (Math.floor(count / 3) - 1) % mobileBanners.length;
+                const banner = mobileBanners[bannerIndex];
+                list.push(
+                  <div
+                    key={`mobile-banner-${count}`}
+                    className="xl:hidden flex items-center justify-center py-4 col-span-1 sm:col-span-2 md:col-span-1"
                   >
-                    考察レビューを読む
-                  </a>
-                </div>
-              </div>
-            </article>
-          ))}
+                    <AmateurBanner affiliateId={banner.affiliateId} bannerId={banner.bannerId} />
+                  </div>
+                );
+              }
+            });
+
+            return list;
+          })()}
         </div>
       )}
     </div>
   );
 }
+
