@@ -4,6 +4,7 @@ import AmateurBanner from "./components/AmateurBanner";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://haitoku.pages.dev"),
   title: "背徳の深夜書斎 - 素人・流出・ハプニング濃厚レビュー",
   description: "決して覗いてはならない、素人たちの裏の顔。裏アカ、流出、ハプニング映像を徹底レビュー。あなたの本能を直撃するリアルな快感記録。マニアが厳選したお宝映像アーカイブ。",
   keywords: [
@@ -11,6 +12,22 @@ export const metadata: Metadata = {
     "暴露", "お宝映像", "官能", "大人向けレビュー"
   ],
   referrer: "no-referrer",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "ja_JP",
+    url: "https://haitoku.pages.dev",
+    siteName: "背徳の深夜書斎",
+    title: "背徳の深夜書斎 - 素人・流出・ハプニング濃厚レビュー",
+    description: "決して覗いてはならない、素人たちの裏の顔。裏アカ、流出、ハプニング映像を徹底レビュー。あなたの本能を直撃するリアルな快感記録。マニアが厳選したお宝映像アーカイブ。",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "背徳の深夜書斎 - 素人・流出・ハプニング濃厚レビュー",
+    description: "決して覗いてはならない、素人たちの裏の顔。裏アカ、流出、ハプニング映像を徹底レビュー。あなたの本能を直撃するリアルな快感記録。マニアが厳選したお宝映像アーカイブ。",
+  },
 };
 
 export default function RootLayout({
