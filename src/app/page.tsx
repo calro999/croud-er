@@ -82,7 +82,7 @@ export default function Home() {
         "name": "背徳の深夜書斎とはどんなサイトですか？",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `FANZA（DMM）の人気AV作品を弾選レビューするサイトです。現在${posts.length}作品のレビューを掲載しており、品番検索・女優別・ジャンル別にもまとめています。`
+          "text": `FANZA（DMM）の人気AV作品を厳選レビューするサイトです。現在${posts.length}作品のレビューを掲載しており、品番検索・女優別・ジャンル別にもまとめています。`
         }
       },
       {
@@ -106,7 +106,7 @@ export default function Home() {
         "name": "AVの品番から作品を検索できますか？",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "はい、当サイトの検索ボックスに品番（例: SSIS-648、ABW-123など）を入力すると該当作品を检索できます。"
+          "text": "はい、当サイトの検索ボックスに品番（例: SSIS-648、ABW-123など）を入力すると該当作品を検索できます。"
         }
       }
     ]
@@ -142,11 +142,11 @@ export default function Home() {
             <h1 className="text-2xl md:text-4xl font-extrabold tracking-tight leading-snug text-white">
               FANZA人気AVレビュー・感想まとめ、<br />
               <span className="bg-gradient-to-r from-slate-100 via-rose-200 to-slate-200 bg-clip-text text-transparent">
-                女優別・ジャンル別彼選レビュー
+                女優別・ジャンル別厳選レビュー
               </span>
             </h1>
             <p className="text-slate-300 leading-relaxed text-xs md:text-sm max-w-md">
-              FANZA（DMM）の人気AV作品を弾選レビュー。女優別・品番検索・ジャンル別からお気に入りの作品を簡単検索。
+              FANZA（DMM）の人気AV作品を厳選レビュー。女優別・品番検索・ジャンル別からお気に入りの作品を簡単検索。
             </p>
             {/* ナビゲーションリンク */}
             <div className="flex flex-wrap gap-2 pt-1">
@@ -185,7 +185,7 @@ export default function Home() {
           <div className="space-y-5 divide-y divide-slate-100">
             <div className="pt-5 first:pt-0 space-y-2">
               <p className="text-sm font-bold text-slate-700">Q. 背徳の深夜書斎とはどんなサイトですか？</p>
-              <p className="text-xs text-slate-500 leading-relaxed">A. FANZA（DMM）の人気AV作品を弾選レビューするサイトです。現在{posts.length}作品のレビューを掲載しており、品番検索・女優別・ジャンル別にもまとめています。</p>
+              <p className="text-xs text-slate-500 leading-relaxed">A. FANZA（DMM）の人気AV作品を厳選レビューするサイトです。現在{posts.length}作品のレビューを掲載しており、品番検索・女優別・ジャンル別にもまとめています。</p>
             </div>
             <div className="pt-5 space-y-2">
               <p className="text-sm font-bold text-slate-700">Q. AVの品番から作品を検索できますか？</p>

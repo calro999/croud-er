@@ -1,6 +1,9 @@
 import os
 import random
 import re
+import time
+import json
+import requests
 
 def generate_hinban(content_id):
     if not content_id:
@@ -21,10 +24,6 @@ def generate_hinban(content_id):
         return formatted_standard
     return content_id.upper()
 
-quests
-import time
-import json
-import re
 
 CACHE_FILE = "posted_cache.txt"
 POSTS_DIR = "src/data/posts"
@@ -197,70 +196,69 @@ SEO最強のHTML本文のみを出力してください。
     pattern = random.randint(1, 5)
 
     if pattern == 1:
-        return f"""<h2>『{fallback_title}』完全レビュー——{fallback_genres}マニアが唸る感動スペック全分析</h2>
-<p>当サイトのレビュアーが、今年観た作品の中で脳裏に濃く刻まれた一本がこれ。『{fallback_title}』は、単なるエンターテインメントを超えて、見る者の内側に何かを残す作品だ。</p>
+        return f"""<h2>『{fallback_title}』完全レビュー——{fallback_genres}マニアが唸る傑作の全分析</h2>
+<p>当サイトのレビュアーが今年観た作品の中で、脳裏に濃く刻まれた一本がこれ。『{fallback_title}』は単なるエンターテインメントを超えて、見る者の内側に何かを残す作品だ。</p>
 <h3>『{fallback_title}』を見るべき3つの理由</h3>
 <ul>
-<li><strong>理由①：シチュエーションの独自性</strong>——{fallback_genres}ならではのリアリティに満ちた設定。</li>
-<li><strong>理由②：{fallback_maker}の意気込み</strong>——一切顧みない映像クオリティと編集技術。</li>
-<li><strong>理由③：何度でも唸れる完璧な作り</strong>——見るたびに新たな発見がある作品構成。</li>
+<li><strong>理由①：シチュエーションの独自性</strong>——{fallback_genres}ならではのリアリティに満ちた設定が秀逸。</li>
+<li><strong>理由②：{fallback_maker}の本気</strong>——一切妥協しない映像クオリティと緻密な編集技術。</li>
+<li><strong>理由③：何度でも楽しめる作り</strong>——見るたびに新たな発見がある丁寧な作品構成。</li>
 </ul>
-<h3>記者が気になった「神カット」分析</h3>
-<p>{fallback_genres}のシチュエーションを与えられた出演者のリアクションは、まさにこれこそが整局のハイライトと言えるシーンの連続だ。見る手が「なぜそんな表情ができるのか」と考えさせるほどの深みがある。</p>
+<h3>レビュアーが驚いた「神カット」分析</h3>
+<p>{fallback_genres}のシチュエーションを与えられたキャストのリアクションは、まさにこれこそが整局のハイライトと言えるシーンの連続だ。なぜそんな表情ができるのかと考えさせるほどの深みがある。</p>
 <h3>カメラワーク・編集・音響の「トリプルな魅力」</h3>
-<p>{fallback_maker}が声った、まるでドキュメンタリーのような寄り高いアングル。一切の張り何く午後の頂病のように身をゆだねるキャストが、映像全体に流れる気備を割る。</p>
+<p>{fallback_maker}が手がけた、まるでドキュメンタリーのような角度の高いアングル。映像全体に流れる緊迫感が、開始数分で心拍数を跳ね上げること間違いなし。</p>
 <h4>映像美のポイント</h4>
-<p>高画質映像ならではの鮮明な映像美と、静寂の中に響く環境音が、リアリティを係数的に引き上げる。</p>
-<h2>総合評価——『{fallback_title}』の口克</h2>
-<table><thead><tr><th>評価項目</th><th>スコア</th></tr></thead><tbody><tr><td>シチュエーション</td><td>★★★★★</td></tr><tr><td>キャスト</td><td>★★★★☆</td></tr><tr><td>映像</td><td>★★★★★</td></tr><tr><td>総合</td><td>★★★★★</td></tr></tbody></table>
-<p>当サイトが誇う中でも特にお特めする作品。見逃した場合は必ず御出に。</p>"""
+<p>高画質映像ならではの鮮明な映像美と、静寂の中に響く環境音がリアリティを係数的に引き上げる。</p>
+<h2>総合評価——『{fallback_title}』の評定</h2>
+<table><thead><tr><th>評価項目</th><th>スコア</th></tr></thead><tbody><tr><td>シチュエーション</td><td>★★★★★</td></tr><tr><td>キャスト</td><td>★★★★☆</td></tr><tr><td>映像クオリティ</td><td>★★★★★</td></tr><tr><td>総合</td><td>★★★★★</td></tr></tbody></table>
+<p>当サイトが誇る中でも特におすすめする作品。見逃している方はぜひ御覧に。</p>"""
 
     elif pattern == 2:
-        return f"""<h2>『{fallback_title}』出演女優の百面の魅力——{fallback_genres}エクストリーム全分析</h2>
-<p>『{fallback_title}』を初めて観た頭毎にるのは、キャストの知性と本能の道象となるような存在感だ。{fallback_maker}が慎身を差し居るからこそ、これほどのクオリティが実現する。</p>
-<h3>記者が認める「{fallback_title}」の彼女の裡</h3>
-<p>{fallback_genres}のシチュエーションを与えられた女優のリアクションは、見る者が「自分もその立場にいる」と覚各するほどなビルド感に満ちている。</p>
-<h3>スタッフが情穀った「山場」の確かな一手</h3>
-<p>{fallback_maker}が対出した高めのカメラ位置と編集的リズムは、観る者の感情を完全に深場に引き込む。「そこに居る」ことの感覚の高さはネット上のレビューでも高評価。</p>
-<h4>見どころポイント</h4>
+        return f"""<h2>『{fallback_title}』出演キャストの百面の魅力——{fallback_genres}エクストリーム全分析</h2>
+<p>『{fallback_title}』を初めて観た頭から感じるのは、キャストの知性と本能が交差するような圧倒的な存在感だ。{fallback_maker}が全力を注いでいるからこそ、これほどのクオリティが実現する。</p>
+<h3>レビュアーが認める「{fallback_title}」の真の価値</h3>
+<p>{fallback_genres}のシチュエーションを与えられた出演者のリアクションは、見る者が「自分もその立場にいる」と感じるほどの没入感に満ちている。</p>
+<h3>スタッフが情熱を注いだ「見せ場」の確かな演出</h3>
+<p>{fallback_maker}が追求した高めのカメラ位置と編集リズムは、観る者の感情を完全に深い場所へ引き込む。その没入感の高さはネット上のレビューでも高評価を集めている。</p>
+<h4>注目ポイント</h4>
 <ul>
-<li>女優の知性と本能が交差する予測不能な表情変化。</li>
-<li>プロだからこそ出る、即興を超えた真そのままの姿。</li>
-<li>頼れるリズム感で完結に向かって酵す構成。</li>
+<li>知性と本能が交差する予測不能な表情変化。</li>
+<li>プロだからこそ出る、計算を超えた真摯な演技。</li>
+<li>確かなリズム感で完結へ向かって醸す構成力。</li>
 </ul>
 <h2>総合評価</h2>
-<table><thead><tr><th>評価項目</th><th>スコア</th></tr></thead><tbody><tr><td>女優の相ろ</td><td>★★★★★</td></tr><tr><td>シチュエーション</td><td>★★★★★</td></tr><tr><td>映像超</td><td>★★★★☆</td></tr><tr><td>総合</td><td>★★★★★</td></tr></tbody></table>
+<table><thead><tr><th>評価項目</th><th>スコア</th></tr></thead><tbody><tr><td>キャストの存在感</td><td>★★★★★</td></tr><tr><td>シチュエーション</td><td>★★★★★</td></tr><tr><td>映像クオリティ</td><td>★★★★☆</td></tr><tr><td>総合</td><td>★★★★★</td></tr></tbody></table>
 <p>一度視聴し始めたら最後まで目が離せない作品。</p>"""
 
     elif pattern == 3:
-        return f"""<h2>『{fallback_title}』全切りレビュー——{fallback_genres}マニア者必見のエッセンス</h2>
-<p>『{fallback_title}』を観る前に知っておくべきことが3つある。ライターが自信を持っておすすめできる理由を、全力で語る。</p>
+        return f"""<h2>『{fallback_title}』全力レビュー——{fallback_genres}マニア必見のエッセンス</h2>
+<p>『{fallback_title}』を観る前に知っておくべきことが3つある。ライターが自信を持っておすすめできる理由を全力で語る。</p>
 <h3>1. 「{fallback_title}」の内容概要</h3>
-<p>{fallback_genres}をメインに掲いながらも、完全にテンプレート的な展開を拒否する独自のシナリオ機構。{fallback_maker}の制作陣容の深さが就している。</p>
-<h3>2. 記者が驚いた「神カット」分析</h3>
-<p>観る者が「自分もその立場で居る」と覚各するほどの埋没感。カメラと編集の能力がその頂をたどるような構成で、状況まりは最後のクライマックスに向けて一気に上昇する。</p>
-<h3>3. それでも「{fallback_title}」を矜んでいない人へ</h3>
-<p>見ていないのはじめて見る前の自分だけ。岐路じていることをして見るべきだ。</p>
+<p>{fallback_genres}をメインに据えながらも、完全にテンプレート的な展開を拒否する独自のシナリオ機構が秀逸。{fallback_maker}の制作陣の実力が遺憾なく発揮されている。</p>
+<h3>2. レビュアーが驚いた「神カット」分析</h3>
+<p>観る者が「自分もその場にいる」と感じるほどの没入感。カメラと編集の能力が最高点をたどるような構成で、状況の盛り上がりは最後のクライマックスに向けて一気に上昇する。</p>
+<h3>3. まだ「{fallback_title}」を観ていない方へ</h3>
+<p>見ていないのは今だけ。躊躇していることをやめて今すぐ見るべき作品だ。</p>
 <h4>レビュアー最大注目ポイント</h4>
 <ul>
-<li>{fallback_maker}の大漠を入れた映像安と編集。</li>
-<li>出演者と神ライトが対向いた次の感を思わせるカメラワーク。</li>
-<li>忍耐と略奈が串となったシナリオ構成の妙味。</li>
+<li>{fallback_maker}が本気を入れた映像美と編集。</li>
+<li>出演者とカメラが対話するような奥行きのあるカメラワーク。</li>
+<li>緊張と解放が交互に訪れるシナリオ構成の妙味。</li>
 </ul>
 <h2>総合評価</h2>
-<table><thead><tr><th>評価項目</th><th>スコア</th></tr></thead><tbody><tr><td>シチュエーション</td><td>★★★★★</td></tr><tr><td>映像</td><td>★★★★★</td></tr><tr><td>総合</td><td>★★★★★</td></tr></tbody></table><p>一度見ると芯落こない。</p>"""
+<table><thead><tr><th>評価項目</th><th>スコア</th></tr></thead><tbody><tr><td>シチュエーション</td><td>★★★★★</td></tr><tr><td>映像クオリティ</td><td>★★★★★</td></tr><tr><td>総合</td><td>★★★★★</td></tr></tbody></table><p>一度見ると忘れられない作品。</p>"""
 
     elif pattern == 4:
-        return f"""{fallback_genres}の極致形——『{fallback_title}』はなぜ今期最高峰なのか
-<h2>{fallback_genres}の極致形——なぜ今期最高峰なのか</h2>
-<p>{fallback_maker}が近年リリースした作品群の中でも、『{fallback_title}』は途铁に隠いて反鎚する感情を探ってくる。</p>
-<h3>この作品が・・・世代の談に成る理由</h3>
-<p>{fallback_genres}の出演者たちが織りなす関係性の深さ、そして{fallback_maker}が償った楚天な映像美が、その深場感を係数的に探る。</p>
-<h3>レビュアーが気屋の丈くた「見どころ」</h3>
+        return f"""<h2>{fallback_genres}の極致——『{fallback_title}』はなぜ今期最高峰なのか</h2>
+<p>{fallback_maker}が近年リリースした作品群の中でも、『{fallback_title}』は途中で止められなくなる吸引力を持つ特別な一本だ。</p>
+<h3>この作品が世代を超えて語られる理由</h3>
+<p>{fallback_genres}の出演者たちが織りなす関係性の深さ、そして{fallback_maker}が追求した美しい映像美が、その没入感を係数的に高めている。</p>
+<h3>レビュアーが気に入った「見どころ」</h3>
 <ul>
-<li><strong>対局的な導入</strong>：開始から感じる流れ感。</li>
-<li><strong>目を凸る別ら顧みを与える女優の表現</strong>：プロだから出る、即興を超えた真そのままの姿。</li>
-<li><strong>気屋の丈く編集</strong>：頼れるリズム感で完結に向かって酵す構成。</li>
+<li><strong>対話的な導入</strong>：開始から引き込まれる自然な流れ感。</li>
+<li><strong>目を奪う表現力</strong>：プロだからこそ出る、計算を超えた真摯な演技。</li>
+<li><strong>気の利いた編集</strong>：確かなリズム感で完結に向かって醸す構成力。</li>
 </ul>
 <h4>スタッフのこだわり</h4>
 <p>照明・音響・カメラアングル全てにおいて{fallback_maker}の妥協なきこだわりが見て取れる。</p>
@@ -269,20 +267,20 @@ SEO最強のHTML本文のみを出力してください。
 <p>『{fallback_title}』は興味のある人全員に自信を持っておすすめする作品。</p>"""
 
     else:
-        return f"""<h2>手取りレビュー：『{fallback_title}』——{fallback_genres}マニア者に唸う永遠の影</h2>
-<p>『{fallback_title}』——そのタイトルだけで导かれる人がいることは容易に想像できる。それほどに魅力的な内容と出演者がままならないで観る者の心を追いかけてくるからだ。</p>
-<h3>{fallback_genres}というラベルが必ずしもこの作品を語れない理由</h3>
-<p>{fallback_genres}というカテゴリに内包されるが、この作品はその命験を当に身にまとった上でさらに高い山へ登ろうとする佳の作品だ。</p>
+        return f"""<h2>丁寧レビュー：『{fallback_title}』——{fallback_genres}マニアが唸る永遠の傑作</h2>
+<p>『{fallback_title}』——そのタイトルだけで引き込まれる人がいることは容易に想像できる。それほどに魅力的な内容と出演者が見る者の心を掴んで離さないからだ。</p>
+<h3>{fallback_genres}というラベルがこの作品を語り尽くせない理由</h3>
+<p>{fallback_genres}というカテゴリに属しながらも、この作品はそのジャンルの定石を完全に体得した上でさらに高みへ登ろうとする意欲作だ。</p>
 <h3>レビュアー最大注目ポイント</h3>
 <ul>
-<li>{fallback_maker}の大漠を入れた映像安と編集。</li>
-<li>出演者と神ライトが対向いた次の感を思わせるカメラワーク。</li>
-<li>忍耐と略奈が串となったシナリオ構成の妙味。</li>
+<li>{fallback_maker}が本気を注いだ映像美と編集技術。</li>
+<li>出演者とカメラが対話するような奥行きのあるカメラワーク。</li>
+<li>緊張と解放が交互に訪れるシナリオ構成の妙味。</li>
 </ul>
-<h3>それでも「{fallback_title}」を矜んでいない人へのメッセージ</h3>
-<p>見ていないのはじめて見る前の自分だけ。岐路じていることを後悔するぐらいならすぐ見るべきだ。</p>
+<h3>まだ「{fallback_title}」を観ていない方へのメッセージ</h3>
+<p>見ていないのは今だけ。躊躇しているなら今すぐ視聴すべき作品だ。後悔は絶対にしない。</p>
 <h2>総合評価</h2>
-<table><thead><tr><th>評価項目</th><th>スコア</th></tr></thead><tbody><tr><td>シチュエーション</td><td>★★★★★</td></tr><tr><td>キャスト</td><td>★★★★★</td></tr><tr><td>映像</td><td>★★★★☆</td></tr><tr><td>総合</td><td>★★★★★</td></tr></tbody></table>
+<table><thead><tr><th>評価項目</th><th>スコア</th></tr></thead><tbody><tr><td>シチュエーション</td><td>★★★★★</td></tr><tr><td>キャスト</td><td>★★★★★</td></tr><tr><td>映像クオリティ</td><td>★★★★☆</td></tr><tr><td>総合</td><td>★★★★★</td></tr></tbody></table>
 <p>『{fallback_title}』は興味のある人全員に自信を持っておすすめする作品。</p>"""
 
 
