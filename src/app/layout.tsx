@@ -5,28 +5,48 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://haitoku.pages.dev"),
-  title: "背徳の深夜書斎 - 素人・流出・ハプニング濃厚レビュー",
-  description: "決して覗いてはならない、素人たちの裏の顔。裏アカ、流出、ハプニング映像を徹底レビュー。あなたの本能を直撃するリアルな快感記録。マニアが厳選したお宝映像アーカイブ。",
+  title: {
+    default: "背徳の深夜書斎 | AV・アダルト動画レビュー・感想まとめ【FANZA厳選】",
+    template: "%s | 背徳の深夜書斎",
+  },
+  description: "FANZAの人気AV作品を徹底レビュー！人気女優の出演作・ジャンル別おすすめ・品番検索まで対応。巨乳・単体女優・人妻・素人など豊富なジャンルから厳選したレビューをまとめています。",
   keywords: [
-    "素人", "流出", "裏アカ", "ハプニング", "マジックミラー", "ナンパ", "パパ活", "リアル",
-    "暴露", "お宝映像", "官能", "大人向けレビュー"
+    // 主要検索キーワード
+    "AV レビュー", "アダルト動画 感想", "FANZA おすすめ", "AV 品番 検索",
+    // ジャンル系
+    "巨乳 AV", "単体女優 レビュー", "人妻 AV おすすめ", "素人 流出", "フェラ 動画",
+    "騎乗位 おすすめ", "ハイビジョン AV", "美乳 女優", "中出し 動画",
+    // サイト名
+    "背徳の深夜書斎", "大人向けレビュー", "アダルトビデオ 評価",
+    // ロングテール
+    "AV女優 おすすめ 2026", "FANZA 人気ランキング", "アダルト動画 ランキング 2026"
   ],
   referrer: "no-referrer",
   alternates: {
-    canonical: "/",
+    canonical: "https://haitoku.pages.dev",
   },
   openGraph: {
     type: "website",
     locale: "ja_JP",
     url: "https://haitoku.pages.dev",
     siteName: "背徳の深夜書斎",
-    title: "背徳の深夜書斎 - 素人・流出・ハプニング濃厚レビュー",
-    description: "決して覗いてはならない、素人たちの裏の顔。裏アカ、流出、ハプニング映像を徹底レビュー。あなたの本能を直撃するリアルな快感記録。マニアが厳選したお宝映像アーカイブ。",
+    title: "背徳の深夜書斎 | AV・アダルト動画レビュー・感想まとめ【FANZA厳選】",
+    description: "FANZAの人気AV作品を徹底レビュー！人気女優の出演作・ジャンル別おすすめ・品番検索まで対応。",
   },
   twitter: {
     card: "summary_large_image",
-    title: "背徳の深夜書斎 - 素人・流出・ハプニング濃厚レビュー",
-    description: "決して覗いてはならない、素人たちの裏の顔。裏アカ、流出、ハプニング映像を徹底レビュー。あなたの本能を直撃するリアルな快感記録。マニアが厳選したお宝映像アーカイブ。",
+    title: "背徳の深夜書斎 | AV・アダルト動画レビュー・感想まとめ",
+    description: "FANZAの人気AV作品を徹底レビュー！人気女優・ジャンル別おすすめ・品番検索まで対応。",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 };
 
@@ -77,6 +97,8 @@ export default function RootLayout({
             </a>
             <nav className="flex items-center gap-5 text-xs font-bold text-slate-500">
               <a href="/" className="hover:text-slate-950 transition">Home</a>
+              <span className="text-slate-300">/</span>
+              <a href="/ranking" className="hover:text-rose-600 transition">ランキング</a>
               <span className="text-slate-300">/</span>
               <a href="https://er-2.pages.dev/" target="_blank" rel="noopener noreferrer" className="hover:text-rose-600 transition text-rose-700 border border-rose-500/30 px-2 py-1 rounded">姉妹サイト: バクロファイル</a>
               <span className="text-slate-300">/</span>

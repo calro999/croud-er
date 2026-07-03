@@ -51,28 +51,43 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const fileContent = fs.readFileSync(postPath, "utf-8");
     const post: Post = JSON.parse(fileContent);
     const hinbanText = post.hinban || post.id;
-    const descriptionText = post.review
-      ? post.review.replace(/<[^>]*>/g, "").slice(0, 120) + "..."
-      : `${post.title}の作品詳細と見どころレビューです。`;
+    const actressText = (post.actresses || []).join("・");
+    const genreText = (post.genres || []).slice(0, 3).join("・");
+    // 検索意図を含む充実したdescription
+    const cleanReview = post.review ? post.review.replace(/<[^>]*>/g, "") : "";
+    const descriptionText = actressText
+      ? `【${hinbanText}】${actressText}出演！${genreText ? genreText + 'ジャンルの' : ''}「${post.title}」の詳細レビュー・感想・評価。見どころ・サンプル画像・FANZA購入方法を徹底解説。${cleanReview.slice(0, 60)}...`
+      : `【${hinbanText}】「${post.title}」の詳細レビュー・感想・評価。${genreText ? genreText + 'ジャンルの' : ''}作品の見どころ・サンプル画像・FANZA購入方法を徹底解説。${cleanReview.slice(0, 60)}...`;
+
+    const keywords = [
+      ...(post.actresses || []).map(a => `${a} レビュー`),
+      ...(post.actresses || []).map(a => `${a} 出演作品`),
+      ...(post.genres || []),
+      hinbanText,
+      post.title,
+      "FANZA", "AV レビュー", "アダルト動画 感想"
+    ];
 
     return {
-      title: `${post.title} 【品番：${hinbanText}】 - 背徳の深夜書斎`,
-      description: descriptionText,
-      keywords: (post.genres || []).concat(post.actresses || []).concat(post.labels || []).concat([hinbanText]).join(","),
+      title: `${post.title}【${hinbanText}】${actressText ? actressText + 'の' : ''}レビュー・感想・評価`,
+      description: descriptionText.slice(0, 155),
+      keywords: keywords.join(","),
       alternates: {
         canonical: `https://haitoku.pages.dev/posts/${id}`,
       },
       openGraph: {
-        title: `${post.title} 【品番：${hinbanText}】`,
-        description: descriptionText,
+        title: `${post.title}【${hinbanText}】レビュー・感想`,
+        description: descriptionText.slice(0, 155),
         url: `https://haitoku.pages.dev/posts/${id}`,
         type: "article",
-        images: post.image ? [{ url: post.image, alt: post.title }] : [],
+        publishedTime: post.date || undefined,
+        authors: ["背徳の深夜書斎"],
+        images: post.image ? [{ url: post.image, alt: post.title, width: 800, height: 538 }] : [],
       },
       twitter: {
         card: "summary_large_image",
-        title: `${post.title} 【品番：${hinbanText}】`,
-        description: descriptionText,
+        title: `${post.title}【${hinbanText}】レビュー・感想`,
+        description: descriptionText.slice(0, 155),
         images: post.image ? [post.image] : [],
       }
     };
@@ -133,18 +148,49 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
 
   // AI-SEO / GEO 向け JSON-LD 構造化データ
   const cleanReviewText = post.review ? post.review.replace(/<[^>]*>/g, "") : "";
-  
-  // 1. レビュー構造化データ
+  const actressNames = (post.actresses || []).join("・");
+  const genreNames = (post.genres || []).join("・");
+
+  // 1. Articleスキーマ（レビュー記事として正しく認識させる）
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": `${post.title}【${hinbanText}】${actressNames ? actressNames + 'の' : ''}レビュー・感想・評価`,
+    "description": cleanReviewText.slice(0, 150) + "...",
+    "image": post.image ? [post.image] : [],
+    "author": {
+      "@type": "Organization",
+      "name": "背徳の深夜書斎",
+      "url": "https://haitoku.pages.dev"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "背徳の深夜書斎",
+      "url": "https://haitoku.pages.dev"
+    },
+    "datePublished": post.date ? post.date.split(' ')[0] : new Date().toISOString().split('T')[0],
+    "dateModified": post.date ? post.date.split(' ')[0] : new Date().toISOString().split('T')[0],
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `https://haitoku.pages.dev/posts/${post.id}`
+    },
+    "keywords": [
+      hinbanText,
+      post.title,
+      ...(post.actresses || []),
+      ...(post.genres || [])
+    ].join(",")
+  };
+
+  // 2. Review構造化データ（評価スター表示狙い）
   const reviewSchema = {
     "@context": "https://schema.org",
     "@type": "Review",
     "itemReviewed": {
-      "@type": "VideoObject",
+      "@type": "Movie",
       "name": post.title,
       "image": post.image,
       "description": cleanReviewText.slice(0, 150) + "...",
-      "productID": hinbanText,
-      "sku": hinbanText,
       "director": {
         "@type": "Organization",
         "name": post.maker || "メーカー不明"
@@ -155,24 +201,58 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
       }))
     },
     "author": {
-      "@type": "Person",
-      "name": "背徳の深夜書斎 レビュアー"
+      "@type": "Organization",
+      "name": "背徳の深夜書斎",
+      "url": "https://haitoku.pages.dev"
     },
     "reviewRating": {
       "@type": "Rating",
       "ratingValue": "4.8",
-      "bestRating": "5"
+      "bestRating": "5",
+      "worstRating": "1"
     },
     "publisher": {
       "@type": "Organization",
       "name": "背徳の深夜書斎",
       "url": "https://haitoku.pages.dev"
     },
-    "datePublished": post.date || new Date().toISOString().split('T')[0],
+    "datePublished": post.date ? post.date.split(' ')[0] : new Date().toISOString().split('T')[0],
     "reviewBody": cleanReviewText
   };
 
-  // 2. パンくずリスト構造化データ
+  // 3. FAQPageスキーマ（リッチリザルト狙い）
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": `${post.title}（${hinbanText}）はどこで見られますか？`,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": `「${post.title}」はFANZA（DMM）で配信されています。${post.maker ? post.maker + 'が制作した作品です。' : ''}品番は${hinbanText}です。高画質・低価格でいつでも視聴できます。`
+        }
+      },
+      ...(post.actresses && post.actresses.length > 0 ? [{
+        "@type": "Question",
+        "name": `${post.actresses[0]}の出演作品は他にもありますか？`,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": `${post.actresses[0]}は当サイトでもレビューしています。関連作品のリンクからチェックしてみてください。またFANZAでの女優検索からすべての出演作品を確認できます。`
+        }
+      }] : []),
+      {
+        "@type": "Question",
+        "name": `${post.title}のジャンルや内容を教えてください。`,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": `本作品のジャンルは「${genreNames || '詳細はFANZAでご確認ください'}」です。${post.maker ? post.maker + 'が制作し、' : ''}${actressNames ? actressNames + 'が出演しています。' : ''}詳しいレビュー・感想は当ページの本文をご覧ください。`
+        }
+      }
+    ]
+  };
+
+  // 4. パンくずリスト構造化データ
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -197,7 +277,15 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
       {/* 構造化データ埋め込み */}
       <script
         type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
+      <script
+        type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
       <script
         type="application/ld+json"
@@ -205,14 +293,17 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
       />
 
       <article className="space-y-6 max-w-4xl mx-auto" lang="ja">
-        {/* 戻るナビゲーション */}
-        <nav aria-label="パンくずリスト">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-rose-600 transition-colors duration-200"
-          >
-            <span>←</span> <span>書庫一覧に戻る</span>
-          </Link>
+        {/* パンくずナビゲーション（視覚的表示 + 構造化データと対応） */}
+        <nav aria-label="パンくずリスト" className="flex items-center gap-1.5 text-xs font-medium text-slate-500">
+          <Link href="/" className="hover:text-rose-600 transition-colors duration-200">ホーム</Link>
+          <span className="text-slate-300">›</span>
+          {(post.actresses || []).length > 0 && (
+            <>
+              <Link href={`/actress/${encodeURIComponent(post.actresses[0])}`} className="hover:text-rose-600 transition-colors duration-200">{post.actresses[0]}</Link>
+              <span className="text-slate-300">›</span>
+            </>
+          )}
+          <span className="text-slate-700 line-clamp-1 max-w-[200px]">{post.title}</span>
         </nav>
 
         {/* メイン詳細パネル - クリーンなホワイト基調デザイン */}
