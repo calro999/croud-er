@@ -308,7 +308,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
 
         {/* メイン詳細パネル - クリーンなホワイト基調デザイン */}
         <div className="border border-slate-200 bg-white rounded-2xl p-6 md:p-10 shadow-sm space-y-8">
-          
+
           {/* ヘッダー情報 */}
           <header className="space-y-3">
             <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
@@ -442,7 +442,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
                     </div>
                   </div>
                 ))}
-                
+
                 {/* 女優ごとのFANZA検索リンク */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2">
                   {post.actresses.map((actress) => {
