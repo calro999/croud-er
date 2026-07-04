@@ -32,7 +32,7 @@ POSTS_DIR = "src/data/posts"
 API_ID = "4Lx0ftRf17Uuad6Ud7Gb"
 API_AFFILIATE_ID = "onchan555-999"
 LINK_AFFILIATE_ID = "onchan555-003"
-TARGET_POST_COUNT = 10
+TARGET_POST_COUNT = 20
 
 def clean_for_safety(text):
     if not text:
