@@ -32,7 +32,7 @@ POSTS_DIR = "src/data/posts"
 API_ID = "4Lx0ftRf17Uuad6Ud7Gb"
 API_AFFILIATE_ID = "onchan555-999"
 LINK_AFFILIATE_ID = "onchan555-003"
-TARGET_POST_COUNT = 20
+TARGET_POST_COUNT = 10
 
 def clean_for_safety(text):
     if not text:
@@ -65,7 +65,7 @@ def save_to_cache(content_id):
 
 def fetch_fanza_items():
     # SEOを極限まで意識し、今すぐアクセスが増える強烈なバズワードやトレンドワードを狙う
-    keywords = ["巨乳", "美少女", "単体", "新人", "女子校生", "黒髪", "お姉さん", "清楚", "着衣", "ハメ撮り", "中出し", "美乳"]
+    keywords = ["2026年最新", "独占配信", "話題沸騰", "絶対抜ける", "SNSで話題", "超人気", "ベストセラー", "殿堂入り"]
     
     url = "https://api.dmm.com/affiliate/v3/ItemList"
     
