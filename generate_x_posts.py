@@ -8,84 +8,55 @@ from pathlib import Path
 OUTPUT_DIR = Path("/Users/calro/Downloads/post")
 POSTS_DIR = Path("src/data/posts")
 
-# マイルド化置換マップ（Xの規約・センシティブ制限対策を大幅強化）
+# 伏せ字置換マップ（Xの規約・センシティブ制限対策・検索性維持）
 MILD_REPLACEMENTS = {
-    # 性的・過激な行為や設定の言い換え
-    "騎乗位": "息の合ったパフォーマンス",
-    "キス・接吻": "甘いキス",
-    "接吻": "キス",
-    "巨乳": "スタイル抜群",
-    "爆乳": "スタイル抜群",
-    "豊満": "スタイル抜群",
-    "美乳": "スタイル抜群",
-    "美少女": "可憐なヒロイン",
-    "中出し": "情熱的な愛",
-    "フェラ": "甘いひととき",
-    "手コキ": "手と手の触れ合い",
-    "クンニ": "優しい愛撫",
-    "愛撫": "スキンシップ",
-    "潮吹き": "最高潮の盛り上がり",
-    "本番": "大人の時間",
-    "淫乱": "情熱的",
-    "素人": "親しみやすい",
-    "痴漢": "スリリングなハプニング",
-    "密室": "プライベート空間",
-    "監禁": "クローズドな関係",
-    "制服": "お揃いのスタイル",
-    "コスプレ": "特別な衣装",
-    "緊縛": "緊迫した展開",
-    "SM": "刺激的な関係",
-    "エロ": "セクシー",
-    "セクシー": "魅惑的",
-    "官能": "ロマンチック",
-    "快楽": "心地よさ",
-    "背徳": "秘密の",
-    "背徳感": "ドキドキ感",
-    "興奮": "高揚感",
-    "妄想": "想像",
-    "狂気": "情熱",
-    "脳裏に深く刻み込まれる": "印象に残る",
-    "最高傑作": "話題の作品",
-    "バズり中": "人気の",
-    "AV": "作品",
-    "アダルト": "大人向け",
-    "おっぱい": "胸元",
-    "セックス": "愛の営み",
-    "ローター": "マッサージ器",
-    "バイブ": "大人のおもちゃ",
-    "オナニー": "セルフケア",
-    "射精": "絶頂",
-    
-    # 追加のセンシティブワード対策
-    "ネトラレ": "秘密の関係",
-    "寝取り": "秘密の関係",
-    "寝取られ": "秘密の関係",
-    "NTR": "秘密の関係",
-    "不倫": "秘密の関係",
-    "裸": "美しい姿",
-    "全裸": "美しい姿",
-    "半裸": "美しい姿",
-    "露出": "披露",
-    "ぐっちょり": "しっとり",
-    "野球拳": "ゲーム",
-    "痴女": "大胆な女性",
-    "売春": "特別な出会い",
-    "援交": "特別な出会い",
-    "jk": "学生風",
-    "jc": "学生風",
-    "女子校生": "学生風",
-    "女子高生": "学生風",
-    "巨尻": "スタイル抜群",
-    "美尻": "スタイル抜群",
-    "お尻": "ヒップ",
-    "尻": "ヒップ",
-    "フェチ": "こだわり",
-    "マゾ": "刺激的",
-    "サド": "刺激的",
-    "拷問": "刺激的",
-    "調教": "特別なレッスン",
-    "輪姦": "大勢での関係",
-    "乱交": "大勢での関係",
+    "生中出し": "生中*し",
+    "中出し": "中*し",
+    "ネトラレ": "ネト*レ",
+    "寝取り": "寝*り",
+    "寝取られ": "寝取*れ",
+    "おっぱい": "おっ*い",
+    "セックス": "セッ*ス",
+    "オナニー": "オナ*ー",
+    "クンニ": "クン*",
+    "フェラ": "フェ*",
+    "騎乗位": "騎*位",
+    "潮吹き": "潮*き",
+    "巨乳": "巨*",
+    "爆乳": "爆*",
+    "射精": "射*",
+    "放尿": "放*",
+    "黄金": "黄*",
+    "本番": "本*",
+    "痴漢": "痴*",
+    "強姦": "強*",
+    "監禁": "監*",
+    "奴隷": "奴*",
+    "輪姦": "輪*",
+    "乱交": "乱*",
+    "SM": "S*",
+    "ザーメン": "ザー*",
+    "マンコ": "マ*コ",
+    "おまんこ": "おま*こ",
+    "ちんこ": "ち*こ",
+    "チンポ": "チ*ポ",
+    "デカチン": "デカ*",
+    "不倫": "不*",
+    "露出": "露*",
+    "全裸": "全*",
+    "半裸": "半*",
+    "ハメ撮り": "ハメ*",
+    "バイブ": "バイ*",
+    "ローター": "ロー*",
+    "オナホ": "オナ*",
+    "痴女": "痴*",
+    "性交": "性*",
+    "SEX": "S*X",
+    "野球拳": "野*拳",
+    "素人": "素*",
+    "興奮": "興*",
+    "背徳": "背*",
+    "裸": "裸*",
 }
 
 def clean_html(html_content):
@@ -100,7 +71,8 @@ def mildify(text):
     # 置換をループ（長さに依存しないようにキーの長さ順にソートして置換）
     sorted_keys = sorted(MILD_REPLACEMENTS.keys(), key=len, reverse=True)
     for orig in sorted_keys:
-        text = text.replace(orig, MILD_REPLACEMENTS[orig])
+        # 大文字小文字を考慮して置換
+        text = re.sub(re.escape(orig), MILD_REPLACEMENTS[orig], text, flags=re.IGNORECASE)
     return text
 
 def extract_summary(review_html):
@@ -134,6 +106,40 @@ def extract_summary(review_html):
         
     return summary
 
+def generate_unique_hook(data):
+    actresses = data.get("actresses", [])
+    genres = data.get("genres", [])
+    title = data.get("title", "")
+    
+    actress = actresses[0] if actresses else ""
+    
+    # 伏せ字化した女優名
+    if actress:
+        actress_masked = mildify(actress)
+        # 女優名優先のフック（独自の煽り文句）
+        if "ハイクオリティVR" in genres or "VR専用" in genres or "VR" in title:
+            return f"【{actress_masked}さんの超リアルVR】"
+        elif "若妻・幼妻" in genres or "人妻" in genres or "奥様" in title or "妻" in title:
+            return f"【{actress_masked}さんが魅せる秘密の関係】"
+        elif "素人" in genres or "素人" in title:
+            return f"【{actress_masked}さんの素顔に迫る】"
+        elif "巨乳" in genres or "爆乳" in genres or "巨乳" in title:
+            return f"【{actress_masked}さんの抜群スタイル】"
+        else:
+            return f"【{actress_masked}さん出演の話題作】"
+            
+    # 女優名がない場合
+    if "ハイクオリティVR" in genres or "VR専用" in genres or "VR" in title:
+        return "【圧倒的臨場感のVR】"
+    elif "若妻・幼妻" in genres or "人妻" in genres or "奥様" in title or "妻" in title:
+        return "【秘密の関係にドキドキ】"
+    elif "素人" in genres or "素人" in title:
+        return "【親しみやすさが魅力】"
+    elif "巨乳" in genres or "爆乳" in genres or "巨乳" in title:
+        return "【スタイル抜群のヒロイン】"
+        
+    return "【今夜おすすめの注目作】"
+
 def process_post(json_path):
     with open(json_path, 'r', encoding='utf-8') as f:
         data = json.load(f)
@@ -144,94 +150,92 @@ def process_post(json_path):
     review = data.get("review", "")
     actresses = data.get("actresses", [])
     
-    # 品番の整形
-    if "(" in hinban:
-        hinban = hinban.split("(")[0].strip()
+    # 品番のチェック（存在しないか、無効な値ならスキップ）
+    if not hinban:
+        print(f"[{post_id}] 品番情報がないためポスト作成をスキップします。")
+        return
         
-    # タイトルのクレンジングと分割（【フック】とメインタイトル）
-    hook = ""
-    main_title = title.replace("【VR】", "").strip()
+    hinban_clean = hinban.strip()
+    if not hinban_clean or hinban_clean.lower() in ["n/a", "none", "null", "なし", "-", "n/a (n/a)"]:
+        print(f"[{post_id}] 無効な品番 ({hinban}) のためポスト作成をスキップします。")
+        return
+        
+    # 品番の整形
+    if "(" in hinban_clean:
+        hinban_clean = hinban_clean.split("(")[0].strip()
+        
+    # タイトルのクレンジング（重複フックの排除）
+    title_clean = title
+    title_clean = re.sub(r'【超ド級の背徳感】', '', title_clean)
+    title_clean = re.sub(r'【VR】', '', title_clean)
+    title_clean = re.sub(r'【[^】]+】', '', title_clean) # 既存のブラケットフックを全て削る
+    title_clean = title_clean.strip()
     
-    hook_match = re.match(r'^【([^】]+)】\s*(.*)', main_title)
-    if hook_match:
-        hook = hook_match.group(1)
-        main_title = hook_match.group(2).strip()
+    # 動的に独自のフック（煽り文句）を生成
+    hook = generate_unique_hook(data)
     
-    # マイルド化
-    if hook:
-        hook = f"【{mildify(hook)}】"
-    main_title = mildify(main_title)
+    # タイトルの伏せ字化（マイルド化）
+    main_title = mildify(title_clean)
     
-    # タイトルが長すぎる場合は切り詰める（最大50文字程度）
-    if len(main_title) > 50:
-        main_title = main_title[:47] + "…"
+    # ベースのパーツ（フック、メインタイトル）
+    base_parts = [hook, "", f"「{main_title}」"]
     
-    main_title_formatted = f"「{main_title}」"
+    # フッターのパーツ（CTA、品番導線）
+    cta = "詳しくはプロフから👏"
+    footer_parts = [
+        "",
+        cta,
+        "",
+        "⬇️品番⬇️",
+        "",
+        f"品番：{hinban_clean}"
+    ]
     
-    # 要約の作成とマイルド化
-    summary_text = extract_summary(review)
-    summary_text = mildify(summary_text)
-    
-    # 句点で分割して個々の文にする
-    raw_sentences = re.split(r'(?<=[。！?])', summary_text)
-    sentences = []
-    for s in raw_sentences:
-        s = s.strip()
-        if s and len(s) > 2:
-            sentences.append(s)
-            
-    # 固定フッター部分の組み立て
-    footer = f"\n\n⬇️品番⬇️\n\n品番：{hinban}\n詳しくはプロフから👏"
-    
-    # 140字以内のシミュレーションと組み立て
-    post_parts = []
-    if hook:
-        post_parts.append(hook)
-        post_parts.append("")
-    post_parts.append(main_title_formatted)
-    
-    current_text = "\n".join(post_parts) + footer
-    available_len = 140 - len(current_text)
+    # ベース + フッターの合計文字数を計算
+    base_text = "\n".join(base_parts + footer_parts)
+    available_len = 140 - len(base_text)
     
     added_sentences = []
-    for s in sentences:
-        # 空行区切りにするため、2文字(改行2つ分)のオーバーヘッドを計算
-        needed_len = len(s) + 2
-        if available_len >= needed_len:
-            added_sentences.append(s)
-            available_len -= needed_len
-        else:
-            # 1つも入らない場合は切り詰めてでも1つ入れる
-            if not added_sentences:
-                slice_len = available_len - 4
-                if slice_len > 5:
-                    added_sentences.append(s[:slice_len] + "…")
-            break
-            
-    # 最終的なリストの組み立て
-    final_parts = []
-    if hook:
-        final_parts.append(hook)
-        final_parts.append("")
-    final_parts.append(main_title_formatted)
+    # 余白が15文字以上ある場合のみ、紹介文（要約）の挿入を試みる
+    if available_len >= 15:
+        summary_text = extract_summary(review)
+        summary_text = mildify(summary_text)
+        
+        # 句点で分割して個々の文にする
+        raw_sentences = re.split(r'(?<=[。！?])', summary_text)
+        sentences = []
+        for s in raw_sentences:
+            s = s.strip()
+            if s and len(s) > 2:
+                sentences.append(s)
+                
+        for s in sentences:
+            # 空行区切りにするため、各文の文字数＋2（改行2つ分）をオーバーヘッドとして計算
+            needed_len = len(s) + 2
+            if available_len >= needed_len:
+                added_sentences.append(s)
+                available_len -= needed_len
+            else:
+                break
+                
+    # 最終的なポストの組み立て
+    final_parts = [hook, "", f"「{main_title}」"]
     
+    # 紹介文があれば空行を挟んで追加
     for s in added_sentences:
         final_parts.append("")
         final_parts.append(s)
         
-    final_parts.append("")
-    final_parts.append("⬇️品番⬇️")
-    final_parts.append("")
-    final_parts.append(f"品番：{hinban}")
-    final_parts.append("詳しくはプロフから👏")
+    # フッターの追加
+    final_parts.extend(footer_parts)
     
     post_text = "\n".join(final_parts)
     
-    # 念のための最終文字数制限
+    # 最終文字数制限のチェック
     if len(post_text) > 140:
         post_text = post_text[:137] + "…"
-    
-    # 出力先ディレクトリの作成
+        
+    # 出力先ディレクトリの特定
     post_dir = OUTPUT_DIR / post_id
     post_dir.mkdir(parents=True, exist_ok=True)
     
@@ -245,7 +249,7 @@ def process_post(json_path):
         image_urls.append(("cover.jpg", data.get("image")))
     
     samples = data.get("sample_images", [])
-    for idx, sample_url in enumerate(samples[:3]):  # 最大3枚
+    for idx, sample_url in enumerate(samples[:3]):
         image_urls.append((f"sample_{idx+1}.jpg", sample_url))
         
     for name, url in image_urls:
@@ -255,21 +259,44 @@ def process_post(json_path):
                 with open(post_dir / name, 'wb') as img_f:
                     img_f.write(r.content)
         except Exception:
-            pass # エラーは握りつぶして継続
+            pass
+            
+    return post_id
 
 def main():
+    import shutil
     print("Xポスト用データの生成を開始します...")
     json_files = list(POSTS_DIR.glob("*.json"))
     print(f"合計 {len(json_files)} 件の記事が見つかりました。")
     
+    processed_ids = set()
+    
     for idx, json_file in enumerate(json_files):
         try:
-            process_post(json_file)
+            # 正常に処理された場合はIDをセットに追加
+            post_id = json_file.stem
+            res = process_post(json_file)
+            # process_postがスキップされずに完了した場合のみIDを記録
+            # 実際には process_post 内でスキップ時は return しているので、最後まで到達した場合にIDを追加するように process_post の末尾に return post_id を追加します
+            if res:
+                processed_ids.add(res)
+                
             if (idx + 1) % 20 == 0 or (idx + 1) == len(json_files):
                 print(f"進捗: {idx + 1}/{len(json_files)} 件処理完了。")
         except Exception as e:
             print(f"エラー発生 ({json_file.name}): {e}")
             
+    # クリーンアップ処理
+    print("不要な古いフォルダのクリーンアップを開始します...")
+    for item in OUTPUT_DIR.iterdir():
+        if item.is_dir():
+            if item.name not in processed_ids:
+                try:
+                    shutil.rmtree(item)
+                    print(f"削除しました (品番なし等の対象外): {item.name}")
+                except Exception as e:
+                    print(f"削除エラー ({item.name}): {e}")
+                    
     print("すべての処理が完了しました。")
 
 if __name__ == "__main__":

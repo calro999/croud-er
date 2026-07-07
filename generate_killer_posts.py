@@ -32,7 +32,7 @@ POSTS_DIR = "src/data/posts"
 API_ID = "4Lx0ftRf17Uuad6Ud7Gb"
 API_AFFILIATE_ID = "onchan555-999"
 LINK_AFFILIATE_ID = "onchan555-003"
-TARGET_POST_COUNT = 20
+TARGET_POST_COUNT = 6
 
 def clean_for_safety(text):
     if not text:
@@ -62,6 +62,28 @@ def load_posted_cache():
 def save_to_cache(content_id):
     with open(CACHE_FILE, "a", encoding="utf-8") as f:
         f.write(f"{content_id}\n")
+
+def get_random_internal_links(num_links=3):
+    if not os.path.exists(POSTS_DIR):
+        return ""
+    post_files = [f for f in os.listdir(POSTS_DIR) if f.endswith('.json')]
+    if not post_files:
+        return ""
+    
+    selected = random.sample(post_files, min(num_links, len(post_files)))
+    links_html = "<h3>あわせて読みたいおすすめ記事</h3>\\n<ul>\\n"
+    for filename in selected:
+        try:
+            with open(os.path.join(POSTS_DIR, filename), "r", encoding="utf-8") as f:
+                data = json.load(f)
+                post_id = data.get("id", "")
+                post_title = data.get("title", "")
+                if post_id and post_title:
+                    links_html += f'<li><a href="/post/{post_id}">{post_title}</a></li>\\n'
+        except:
+            pass
+    links_html += "</ul>"
+    return links_html
 
 def fetch_fanza_items():
     # SEOを極限まで意識し、今すぐアクセスが増える強烈なバズワードやトレンドワードを狙う
@@ -329,6 +351,10 @@ def main():
             
         print(f"[{generated_count+1}/{TARGET_POST_COUNT}] Processing: {title}")
         review_html = generate_killer_article(item)
+        
+        internal_links = get_random_internal_links(3)
+        if internal_links:
+            review_html += "\\n" + internal_links
         
         post_data = {
             "id": content_id,
