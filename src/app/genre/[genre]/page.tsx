@@ -57,11 +57,12 @@ function getAllPosts(): Post[] {
 export async function generateMetadata({ params }: { params: Promise<{ genre: string }> }): Promise<Metadata> {
   const { genre } = await params;
   const genreName = decodeURIComponent(genre);
-  const description = `${genreName}ジャンルのAV作品レビュー・おすすめまとめ。FANZAで人気の${genreName}動画を厳選紹介。${genreName}の見どころ・感想・評価を徹底解説します。`;
+  const titleText = `【2026年最新】FANZA ${genreName}動画おすすめランキング！ガチで病むレベルの隠れた名作を厳選`;
+  const descriptionText = `FANZA（DMM）で買える${genreName}ビデオの中から、本当に興奮できる名作・神作だけを厳選！「シチュエーションのリアルさ」「女優の表情」を基準にピックアップ。無料動画では絶対に味わえない、脳が溶ける背徳感を今夜あなたに。`;
 
   return {
-    title: `${genreName} おすすめAV・動画レビューまとめ【FANZA厳選】`,
-    description,
+    title: titleText,
+    description: descriptionText,
     keywords: [
       `${genreName} AV`,
       `${genreName} おすすめ`,
@@ -73,15 +74,15 @@ export async function generateMetadata({ params }: { params: Promise<{ genre: st
     ].join(","),
     alternates: { canonical: `https://haitoku.pages.dev/genre/${genre}` },
     openGraph: {
-      title: `${genreName} おすすめAV・動画レビューまとめ`,
-      description,
+      title: titleText,
+      description: descriptionText,
       url: `https://haitoku.pages.dev/genre/${genre}`,
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
-      title: `${genreName} おすすめAV・動画レビューまとめ`,
-      description,
+      title: titleText,
+      description: descriptionText,
     },
   };
 }

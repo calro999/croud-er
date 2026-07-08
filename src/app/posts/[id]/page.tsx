@@ -53,11 +53,17 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const hinbanText = post.hinban || post.id;
     const actressText = (post.actresses || []).join("・");
     const genreText = (post.genres || []).slice(0, 3).join("・");
-    // 検索意図を含む充実したdescription
-    const cleanReview = post.review ? post.review.replace(/<[^>]*>/g, "") : "";
+    const shortTitle = post.title.length > 15 ? post.title.slice(0, 15) + '…' : post.title;
+    const titleText = actressText 
+      ? `【ガチ評価】${hinbanText}（${shortTitle}）は本当に抜ける？${actressText}の出演シーンを徹底レビュー！`
+      : `【ガチ評価】${hinbanText}（${shortTitle}）は本当に抜ける？出演シーンを徹底レビュー！`;
+
+    const cleanReview = post.review ? post.review.replace(/<[^>]*>/g, "").replace(/\\s+/g, " ") : "";
+    const reviewExcerpt = cleanReview.slice(0, 50) + "...";
+
     const descriptionText = actressText
-      ? `【${hinbanText}】${actressText}出演！${genreText ? genreText + 'ジャンルの' : ''}「${post.title}」の詳細レビュー・感想・評価。見どころ・サンプル画像・FANZA購入方法を徹底解説。${cleanReview.slice(0, 60)}...`
-      : `【${hinbanText}】「${post.title}」の詳細レビュー・感想・評価。${genreText ? genreText + 'ジャンルの' : ''}作品の見どころ・サンプル画像・FANZA購入方法を徹底解説。${cleanReview.slice(0, 60)}...`;
+      ? `${actressText}の最新作『${hinbanText}』を最速レビュー！SNSで話題の「${genreText || '注目ジャンル'}」はサンプル詐欺じゃない？【${reviewExcerpt}】ハズレを引きたくない方は購入前の参考にどうぞ！`
+      : `最新作『${hinbanText}』を最速レビュー！SNSで話題の「${genreText || '注目ジャンル'}」はサンプル詐欺じゃない？【${reviewExcerpt}】ハズレを引きたくない方は購入前の参考にどうぞ！`;
 
     const keywords = [
       ...(post.actresses || []).map(a => `${a} レビュー`),
@@ -69,14 +75,14 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     ];
 
     return {
-      title: `${post.title}【${hinbanText}】${actressText ? actressText + 'の' : ''}レビュー・感想・評価`,
+      title: titleText,
       description: descriptionText.slice(0, 155),
       keywords: keywords.join(","),
       alternates: {
         canonical: `https://haitoku.pages.dev/posts/${id}`,
       },
       openGraph: {
-        title: `${post.title}【${hinbanText}】レビュー・感想`,
+        title: titleText,
         description: descriptionText.slice(0, 155),
         url: `https://haitoku.pages.dev/posts/${id}`,
         type: "article",
@@ -86,7 +92,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       },
       twitter: {
         card: "summary_large_image",
-        title: `${post.title}【${hinbanText}】レビュー・感想`,
+        title: titleText,
         description: descriptionText.slice(0, 155),
         images: post.image ? [post.image] : [],
       }

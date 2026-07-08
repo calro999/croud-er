@@ -57,11 +57,12 @@ function getAllPosts(): Post[] {
 export async function generateMetadata({ params }: { params: Promise<{ name: string }> }): Promise<Metadata> {
   const { name } = await params;
   const actressName = decodeURIComponent(name);
-  const description = `${actressName}の全出演作品レビュー・感想まとめ。FANZAで配信中の${actressName}の動画をジャンル別に紹介。${actressName}のおすすめ作品・評価・見どころを徹底解説します。`;
+  const titleText = `【品番特定】「${actressName}」あのSNSで話題のシチュエーション動画の正体はこれ！出演作まとめ`;
+  const descriptionText = `Xや5chで「可愛すぎる」「エロすぎる」と話題の、${actressName}のアダルト動画・品番を特定！あの抜ける神作の概要、見どころ、お得にFANZAで視聴する方法をどこよりも分かりやすく解説します。`;
 
   return {
-    title: `${actressName} レビュー・全出演作品まとめ【FANZA】`,
-    description,
+    title: titleText,
+    description: descriptionText,
     keywords: [
       `${actressName} レビュー`,
       `${actressName} 出演作品`,
@@ -74,15 +75,15 @@ export async function generateMetadata({ params }: { params: Promise<{ name: str
     ].join(","),
     alternates: { canonical: `https://haitoku.pages.dev/actress/${name}` },
     openGraph: {
-      title: `${actressName} レビュー・全出演作品まとめ`,
-      description,
+      title: titleText,
+      description: descriptionText,
       url: `https://haitoku.pages.dev/actress/${name}`,
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
-      title: `${actressName} レビュー・全出演作品まとめ`,
-      description,
+      title: titleText,
+      description: descriptionText,
     },
   };
 }
