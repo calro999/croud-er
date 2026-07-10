@@ -3,6 +3,7 @@ import path from "path";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+import { censorText } from "@/lib/censor";
 
 interface Post {
   id: string;
@@ -60,6 +61,12 @@ export async function generateMetadata({ params }: { params: Promise<{ genre: st
   const titleText = `【2026年最新】FANZA ${genreName}動画おすすめランキング！ガチで病むレベルの隠れた名作を厳選`;
   const descriptionText = `FANZA（DMM）で買える${genreName}ビデオの中から、本当に興奮できる名作・神作だけを厳選！「シチュエーションのリアルさ」「女優の表情」を基準にピックアップ。無料動画では絶対に味わえない、脳が溶ける背徳感を今夜あなたに。`;
 
+  const allPosts = getAllPosts();
+  const genrePosts = allPosts
+    .filter(p => (p.genres || []).includes(genreName))
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const ogImage = genrePosts.length > 0 && genrePosts[0].image ? genrePosts[0].image : undefined;
+
   return {
     title: titleText,
     description: descriptionText,
@@ -74,15 +81,17 @@ export async function generateMetadata({ params }: { params: Promise<{ genre: st
     ].join(","),
     alternates: { canonical: `https://haitoku.pages.dev/genre/${genre}` },
     openGraph: {
-      title: titleText,
-      description: descriptionText,
+      title: censorText(titleText),
+      description: censorText(descriptionText),
       url: `https://haitoku.pages.dev/genre/${genre}`,
       type: "website",
+      images: ogImage ? [{ url: ogImage, width: 800, height: 538 }] : [],
     },
     twitter: {
       card: "summary_large_image",
-      title: titleText,
-      description: descriptionText,
+      title: censorText(titleText),
+      description: censorText(descriptionText),
+      images: ogImage ? [ogImage] : [],
     },
   };
 }

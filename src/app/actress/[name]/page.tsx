@@ -3,6 +3,7 @@ import path from "path";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+import { censorText } from "@/lib/censor";
 
 interface Post {
   id: string;
@@ -60,6 +61,12 @@ export async function generateMetadata({ params }: { params: Promise<{ name: str
   const titleText = `【品番特定】「${actressName}」あのSNSで話題のシチュエーション動画の正体はこれ！出演作まとめ`;
   const descriptionText = `Xや5chで「可愛すぎる」「エロすぎる」と話題の、${actressName}のアダルト動画・品番を特定！あの抜ける神作の概要、見どころ、お得にFANZAで視聴する方法をどこよりも分かりやすく解説します。`;
 
+  const allPosts = getAllPosts();
+  const actressPosts = allPosts
+    .filter(p => (p.actresses || []).includes(actressName))
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const ogImage = actressPosts.length > 0 && actressPosts[0].image ? actressPosts[0].image : undefined;
+
   return {
     title: titleText,
     description: descriptionText,
@@ -75,15 +82,17 @@ export async function generateMetadata({ params }: { params: Promise<{ name: str
     ].join(","),
     alternates: { canonical: `https://haitoku.pages.dev/actress/${name}` },
     openGraph: {
-      title: titleText,
-      description: descriptionText,
+      title: censorText(titleText),
+      description: censorText(descriptionText),
       url: `https://haitoku.pages.dev/actress/${name}`,
       type: "website",
+      images: ogImage ? [{ url: ogImage, width: 800, height: 538 }] : [],
     },
     twitter: {
       card: "summary_large_image",
-      title: titleText,
-      description: descriptionText,
+      title: censorText(titleText),
+      description: censorText(descriptionText),
+      images: ogImage ? [ogImage] : [],
     },
   };
 }

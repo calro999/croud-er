@@ -3,6 +3,7 @@ import path from "path";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+import { censorText } from "@/lib/censor";
 
 interface Post {
   id: string;
@@ -58,7 +59,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       ? `【ガチ評価】${hinbanText}（${shortTitle}）は本当に抜ける？${actressText}の出演シーンを徹底レビュー！`
       : `【ガチ評価】${hinbanText}（${shortTitle}）は本当に抜ける？出演シーンを徹底レビュー！`;
 
-    const cleanReview = post.review ? post.review.replace(/<[^>]*>/g, "").replace(/\\s+/g, " ") : "";
+    const cleanReview = post.review ? post.review.replace(/<[^>]*>/g, "").replace(/\s+/g, " ") : "";
     const reviewExcerpt = cleanReview.slice(0, 50) + "...";
 
     const descriptionText = actressText
@@ -82,18 +83,18 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
         canonical: `https://haitoku.pages.dev/posts/${id}`,
       },
       openGraph: {
-        title: titleText,
-        description: descriptionText.slice(0, 155),
+        title: censorText(titleText),
+        description: censorText(descriptionText.slice(0, 155)),
         url: `https://haitoku.pages.dev/posts/${id}`,
         type: "article",
         publishedTime: post.date || undefined,
         authors: ["背徳の深夜書斎"],
-        images: post.image ? [{ url: post.image, alt: post.title, width: 800, height: 538 }] : [],
+        images: post.image ? [{ url: post.image, alt: censorText(post.title), width: 800, height: 538 }] : [],
       },
       twitter: {
         card: "summary_large_image",
-        title: titleText,
-        description: descriptionText.slice(0, 155),
+        title: censorText(titleText),
+        description: censorText(descriptionText.slice(0, 155)),
         images: post.image ? [post.image] : [],
       }
     };
