@@ -162,8 +162,13 @@ export default function RootLayout({
           </div>
         </footer>
 
-        {/* 忍者AdMax (ユーザー指定により /body の直前に配置) */}
-        <script async src="https://adm.shinobi.jp/st/auto.js" data-admax-id="6940cf426d8b05585fbd28930455285d" suppressHydrationWarning />
+        {/* 忍者AdMax (自動広告) */}
+        <Script
+          id="ninja-admax"
+          src="https://adm.shinobi.jp/st/auto.js"
+          data-admax-id="6940cf426d8b05585fbd28930455285d"
+          strategy="lazyOnload"
+        />
       </body>
     </html>
   );
