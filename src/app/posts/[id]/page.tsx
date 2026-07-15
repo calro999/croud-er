@@ -495,8 +495,14 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
               ※クリックするとFANZA（18禁公式サイト）へ直接遷移します
             </p>
           </section>
-
-          {/* Admax Advertisement removed from here and placed in layout.tsx */}
+          <div className="w-full flex justify-center items-center mt-12 block clear-both overflow-hidden">
+            <Script
+              id="ninja-admax"
+              src="https://adm.shinobi.jp/st/auto.js"
+              data-admax-id="6940cf426d8b05585fbd28930455285d"
+              strategy="lazyOnload"
+            />
+          </div>
         </div>
       </article>
     </>
