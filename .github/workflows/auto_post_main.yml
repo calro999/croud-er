@@ -1,8 +1,8 @@
-name: Fetch FANZA and Build Next.js Site
+name: Fetch FANZA and Build Next.js Site (Main)
 
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    - cron: '0 0,6,12,18 * * *'
   workflow_dispatch:
 
 permissions:
@@ -31,11 +31,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests
 
-      - name: Run Crawler
+      - name: Run Crawler (Main)
         env:
           FANZA_API_ID: ${{ secrets.FANZA_API_ID }}
           FANZA_AFFILIATE_ID: ${{ secrets.FANZA_AFFILIATE_ID }}
-        run: python fanza_crawler.py
+        run: python generate_killer_posts.py
 
       - name: Bundle Posts
         run: node bundle_posts.js
@@ -46,6 +46,6 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add src/data/posts/ posted_cache.txt public/data/posts.json
           if ! git diff --cached --quiet; then
-            git commit -m "chore: update posts database and cache"
+            git commit -m "chore: update posts database and cache (main)"
             git push
           fi
