@@ -101,7 +101,7 @@ export default function RootLayout({
               <span className="text-slate-300">/</span>
               <a href="/ranking" className="hover:text-rose-600 transition">ランキング</a>
               <span className="text-slate-300">/</span>
-              <a href="/genre/%E3%83%AC%E3%82%BA" className="hover:text-rose-600 transition font-black text-rose-600">👩‍❤️‍💋‍👩レズ専門</a>
+              <a href="/genre/lesbian" className="hover:text-rose-600 transition font-black text-rose-600">👩‍❤️‍💋‍👩レズ専門</a>
               <span className="text-slate-300">/</span>
               <a href="https://er-2.pages.dev/" target="_blank" rel="noopener noreferrer" className="hover:text-rose-600 transition text-rose-700 border border-rose-500/30 px-2 py-1 rounded">姉妹サイト: バクロファイル</a>
               <span className="text-slate-300">/</span>
@@ -154,7 +154,7 @@ export default function RootLayout({
             <div className="flex flex-wrap gap-4 text-[10px] font-bold text-slate-500 justify-center md:justify-end">
               <a href="/" className="hover:text-slate-950">ホーム</a>
               <span>•</span>
-              <a href="/genre/%E3%83%AC%E3%82%BA" className="hover:text-rose-600 text-rose-600 font-bold">👩‍❤️‍💋‍👩レズ専門</a>
+              <a href="/genre/lesbian" className="hover:text-rose-600 text-rose-600 font-bold">👩‍❤️‍💋‍👩レズ専門</a>
               <span>•</span>
               <a href="/archives" className="hover:text-rose-600 text-slate-600 font-bold">全記事一覧（サイトマップ）</a>
               <span>•</span>

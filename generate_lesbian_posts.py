@@ -423,7 +423,7 @@ def main():
             "image": image_url,
             "sample_images": sample_images,
             "affiliate_url": affiliate_url,
-            "genres": [g.get("name", "") for g in item.get("iteminfo", {}).get("genre", [])],
+            "genres": list(set([g.get("name", "") for g in item.get("iteminfo", {}).get("genre", [])] + ["レズ"])),
             "actresses": [a.get("name", "") for a in item.get("iteminfo", {}).get("actress", [])],
             "maker": item.get("iteminfo", {}).get("maker", [{}])[0].get("name", ""),
             "date": item.get("date", time.strftime("%Y-%m-%d %H:%M:%S")),

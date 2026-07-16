@@ -55,9 +55,15 @@ function getAllPosts(): Post[] {
   } catch { return []; }
 }
 
+const getMappedGenreName = (rawGenre: string) => {
+  const decoded = decodeURIComponent(rawGenre);
+  if (decoded === "lesbian") return "レズ";
+  return decoded;
+};
+
 export async function generateMetadata({ params }: { params: Promise<{ genre: string }> }): Promise<Metadata> {
   const { genre } = await params;
-  const genreName = decodeURIComponent(genre);
+  const genreName = getMappedGenreName(genre);
   const titleText = `【2026年最新】FANZA ${genreName}動画おすすめランキング！ガチで病むレベルの隠れた名作を厳選`;
   const descriptionText = `FANZA（DMM）で買える${genreName}ビデオの中から、本当に興奮できる名作・神作だけを厳選！「シチュエーションのリアルさ」「女優の表情」を基準にピックアップ。無料動画では絶対に味わえない、脳が溶ける背徳感を今夜あなたに。`;
 
@@ -98,7 +104,7 @@ export async function generateMetadata({ params }: { params: Promise<{ genre: st
 
 export default async function GenrePage({ params }: { params: Promise<{ genre: string }> }) {
   const { genre } = await params;
-  const genreName = decodeURIComponent(genre);
+  const genreName = getMappedGenreName(genre);
   const allPosts = getAllPosts();
   const genrePosts = allPosts
     .filter(p => (p.genres || []).includes(genreName))
