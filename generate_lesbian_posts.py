@@ -142,24 +142,25 @@ def get_random_internal_links(num_links=3):
     return links_html
 
 def fetch_fanza_items():
-    # レズ・百合に特化したキーワード
-    keywords = ["レズ", "百合", "女性同士", "レズビアン", "シスターフッド"]
+    # レズ・百合に特化したキーワード（確実にヒットしやすいものに絞る）
+    keywords = ["レズ", "百合", "女性同士"]
     
     url = "https://api.dmm.com/affiliate/v3/ItemList"
     
     all_items = []
     
-    for sort_type in ["rank", "date"]:
-        selected_keyword = random.choice(keywords)
-        print(f"Fetching FANZA items for keyword: '{selected_keyword}', sort: '{sort_type}'")
-        
-        params = {
-            "api_id": API_ID,
-            "affiliate_id": API_AFFILIATE_ID,
-            "site": "FANZA",
-            "service": "digital",
-            "floor": "videoa",
-            "keyword": selected_keyword,
+    # すべてのキーワードを試す
+    for keyword in keywords:
+        for sort_type in ["rank", "date"]:
+            print(f"Fetching FANZA items for keyword: '{keyword}', sort: '{sort_type}'")
+            
+            params = {
+                "api_id": API_ID,
+                "affiliate_id": API_AFFILIATE_ID,
+                "site": "FANZA",
+                "service": "digital",
+                "floor": "videoa",
+                "keyword": keyword,
             "sort": sort_type,
             "offset": random.randint(1, 5),
             "hits": 30,

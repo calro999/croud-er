@@ -113,7 +113,8 @@ export default async function GenrePage({ params }: { params: Promise<{ genre: s
     .filter(p => (p.genres || []).includes(genreName))
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-  if (genrePosts.length === 0) notFound();
+  // まだ記事がない新しいジャンル（レズなど）の場合は404にせず、空のページを表示させる
+  if (genrePosts.length === 0 && genreName !== "レズ") notFound();
 
   // このジャンルに出演している女優を集計
   const relatedActresses = Array.from(new Set(genrePosts.flatMap(p => p.actresses || []))).slice(0, 8);
