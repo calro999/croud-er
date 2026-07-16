@@ -34,9 +34,12 @@ export async function generateStaticParams() {
         (post.genres || []).forEach(g => genreSet.add(g));
       } catch { /* skip */ }
     }
-    return Array.from(genreSet).map(genre => ({ genre: encodeURIComponent(genre) }));
+    const params = Array.from(genreSet).map(genre => ({ genre: encodeURIComponent(genre) }));
+    // lesbianのパスを強制的に追加（記事が0件の時でもビルドで404にならないようにする）
+    params.push({ genre: "lesbian" });
+    return params;
   } catch {
-    return [];
+    return [{ genre: "lesbian" }];
   }
 }
 
