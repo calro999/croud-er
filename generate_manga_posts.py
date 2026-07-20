@@ -109,8 +109,8 @@ def generate_manga_article(item):
 【SEO超特化ルール】
 1. h2を3つ以上、h3を4つ以上含める
 2. 2000文字以上
-3. 「{cid}」「レビュー」「感想」「ネタバレなし」「あらすじ」「おすすめ漫画」を自然に含める
-4. 必須セクション: 概要・設定紹介（ネタバレなし）/見どころ（箇条書き）/作者・画風の分析/こんな人におすすめ/評価表(table: ストーリー・エロ度・画力)/FANZAで読む方法
+3. 「レビュー」「感想」「ネタバレなし」「あらすじ」「おすすめ漫画」を自然に含める
+4. 必須セクション: 概要・設定紹介（ネタバレなし）/見どころ（箇条書き）/作者・画風の分析/こんな人におすすめ/評価表(table: ストーリー・エロ度・画力)
 5. ネタバレは最小限にし「続きはFANZAで確認」へ誘導
 6. HTMLのみ出力。マークダウン禁止。"""
 
@@ -161,6 +161,7 @@ def main():
 
         imgs = item.get("imageURL", {})
         image_url = imgs.get("large") or imgs.get("list") or ""
+        tachiyomi_url = item.get("tachiyomi", {}).get("affiliateURL", "")
         sample_images = item.get("sampleImageURL", {}).get("sample_l", {}).get("image", []) or []
 
         print(f"[{count+1}/{TARGET_POST_COUNT}] {title[:60]}")
@@ -175,6 +176,7 @@ def main():
             "image": image_url,
             "sample_images": sample_images,
             "affiliate_url": affiliate_url,
+            "tachiyomi_url": tachiyomi_url,
             "genres": [g.get("name", "") for g in item.get("iteminfo", {}).get("genre", [])],
             "author": [a.get("name", "") for a in item.get("iteminfo", {}).get("author", [])],
             "publisher": (item.get("iteminfo", {}).get("label", [{}]) or [{}])[0].get("name", ""),
