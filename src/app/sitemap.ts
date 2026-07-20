@@ -39,6 +39,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'daily',
       priority: 0.9,
     },
+    {
+      url: `${baseUrl}/manga`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.9,
+    },
   ];
 
   let posts: Post[] = [];
@@ -100,6 +106,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.85,
     });
   });
+
+  // 漫画ページ
+  const mangaDir = path.join(process.cwd(), 'src', 'data', 'manga');
+  if (fs.existsSync(mangaDir)) {
+    const mangaFiles = fs.readdirSync(mangaDir).filter(f => f.endsWith('.json'));
+    mangaFiles.forEach(file => {
+      try {
+        const manga = JSON.parse(fs.readFileSync(path.join(mangaDir, file), 'utf-8'));
+        if (!manga?.id) return;
+        routes.push({
+          url: `${baseUrl}/manga/${manga.id}`,
+          lastModified: manga.date ? new Date(manga.date) : new Date(),
+          changeFrequency: 'monthly',
+          priority: 0.85,
+        });
+      } catch {}
+    });
+  }
 
   return routes;
 }
