@@ -32,5 +32,6 @@
     "必見",
     "ランキング上位"
   ],
-  "hinban": "BCDD-1 (BCDD-00001)"
+  "hinban": "BCDD-1 (BCDD-00001)",
+  "sample_movie_url": "https://www.dmm.co.jp/litevideo/-/part/=/cid=bcdd001/size=720_480/affi_id=onchan555-003/"
 }

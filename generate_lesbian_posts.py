@@ -400,6 +400,12 @@ def main():
         images = item.get("imageURL", {})
         if images:
             image_url = images.get("large") or images.get("list") or ""
+        
+        movie = item.get("sampleMovieURL", {})
+        sample_movie_url = movie.get("size_720_480") or movie.get("size_644_414") or movie.get("size_560_360") or movie.get("size_476_306") or ""
+        if sample_movie_url and "onchan555-999" in sample_movie_url:
+            sample_movie_url = sample_movie_url.replace("onchan555-999", LINK_AFFILIATE_ID)
+
 
         sample_images = []
         sample_img_obj = item.get("sampleImageURL", {}).get("sample_l", {})
@@ -422,6 +428,7 @@ def main():
             "title": title,
             "review": review_html,
             "image": image_url,
+            "sample_movie_url": sample_movie_url,
             "sample_images": sample_images,
             "affiliate_url": affiliate_url,
             "genres": list(set([g.get("name", "") for g in item.get("iteminfo", {}).get("genre", [])] + ["レズ"])),

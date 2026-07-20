@@ -15,6 +15,7 @@ interface Post {
   image: string;
   sample_images: string[];
   affiliate_url: string;
+  sample_movie_url?: string;
   genres: string[];
   actresses: string[];
   maker: string;
@@ -343,6 +344,52 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
               ))}
             </div>
           </header>
+
+          {/* サンプル画像と動画 */}
+          {(post.sample_movie_url || (post.sample_images && post.sample_images.length > 0)) && (
+            <section className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-6">
+              
+              {post.sample_movie_url && (
+                <div className="space-y-3">
+                  <h2 className="text-sm font-extrabold text-slate-800">🎥 サンプル動画</h2>
+                  <div className="w-full aspect-video rounded-xl overflow-hidden bg-slate-900">
+                    <iframe 
+                      src={post.sample_movie_url} 
+                      className="w-full h-full border-none" 
+                      allowFullScreen 
+                      scrolling="no"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {post.sample_images && post.sample_images.length > 0 && (
+                <div className="space-y-3">
+                  <h2 className="text-sm font-extrabold text-slate-800">📷 サンプル画像（{post.sample_images.length}枚）</h2>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                    {post.sample_images.slice(0, 12).map((img, i) => (
+                      <a key={i} href={post.affiliate_url} target="_blank" rel="noopener noreferrer">
+                        <img
+                          src={img}
+                          alt={`${post.title} サンプル画像${i + 1}`}
+                          className="w-full rounded-lg border border-slate-200 hover:opacity-90 transition cursor-pointer"
+                          loading="lazy"
+                        />
+                      </a>
+                    ))}
+                  </div>
+                  {post.sample_images.length > 12 && (
+                    <p className="text-xs text-slate-400 text-center">
+                      残り{post.sample_images.length - 12}枚は
+                      <a href={post.affiliate_url} target="_blank" rel="noopener noreferrer" className="text-purple-600 font-bold hover:underline">
+                        FANZAで確認
+                      </a>
+                    </p>
+                  )}
+                </div>
+              )}
+            </section>
+          )}
 
           {/* アートジャケット画像 */}
           <section className="flex justify-center bg-slate-50 rounded-xl p-4 border border-slate-200/60 overflow-hidden" aria-label="作品ジャケット">
