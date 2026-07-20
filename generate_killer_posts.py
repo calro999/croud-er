@@ -127,7 +127,7 @@ def get_random_internal_links(num_links=3):
         return ""
     
     selected = random.sample(post_files, min(num_links, len(post_files)))
-    links_html = "<h3>あわせて読みたいおすすめ記事</h3>\\n<ul>\\n"
+    links_html = "<h3>あわせて読みたいおすすめ記事</h3>\n<ul>\n"
     for filename in selected:
         try:
             with open(os.path.join(POSTS_DIR, filename), "r", encoding="utf-8") as f:
@@ -135,7 +135,7 @@ def get_random_internal_links(num_links=3):
                 post_id = data.get("id", "")
                 post_title = data.get("title", "")
                 if post_id and post_title:
-                    links_html += f'<li><a href="/post/{post_id}">{post_title}</a></li>\\n'
+                    links_html += f'<li><a href="/post/{post_id}">{post_title}</a></li>\n'
         except:
             pass
     links_html += "</ul>"
@@ -409,11 +409,11 @@ def main():
         review_html = generate_killer_article(item)
         
         fake_reviews = generate_fake_reviews()
-        review_html += "\\n" + fake_reviews
+        review_html += "\n" + fake_reviews
 
         internal_links = get_random_internal_links(3)
         if internal_links:
-            review_html += "\\n" + internal_links
+            review_html += "\n" + internal_links
         
         post_data = {
             "id": content_id,
