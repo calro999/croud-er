@@ -261,10 +261,73 @@ SEO最強のHTML本文のみを出力してください。
                         result_text = result_text.split("```html", 1)[1]
                     if "```" in result_text:
                         result_text = result_text.split("```")[0]
-                    return result_text.strip()
+                    res = result_text.strip()
+                    # 校正・ブラッシュアップと途中切れ防止補正
+                    res = proofread_and_optimize_er_article(safe_title, res)
+                    res = ensure_complete_er_article(res)
+                    return res
             except Exception as e:
                 pass
             time.sleep(1)
+
+def proofread_and_optimize_er_article(title, html_content):
+    """誤字脱字最終チェックとSEO, AI-SEO, GEO的な修正ブラッシュアップ工程"""
+    if not html_content or len(html_content.strip()) < 50:
+        return html_content
+
+    prompt = f"""以下のブログ記事HTMLに対して、誤字脱字チェックとSEO・AI-SEO・GEO（Generative Engine Optimization）最適化を行い、最高品質の原稿にブラッシュアップしてください。
+
+【タイトル】: {title}
+【HTML本文】:
+{html_content}
+
+【ブラッシュアップ要件】:
+1. 誤字脱字・不自然な日本語表現を完全に校正してください。
+2. AI検索（Perplexity, ChatGPT, Gemini等）が回答の根拠として引用しやすくするため、作品の魅力・特徴をわかりやすく構造化してください。
+3. 文章が途中で力尽きず、HTML構造と文脈が完全に完結していることを確認してください。
+4. 前置き・解説なしで修正後のHTML本文のみを出力してください。
+"""
+
+    github_token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
+    if github_token:
+        try:
+            headers = {"Authorization": f"Bearer {github_token}", "Content-Type": "application/json"}
+            payload = {
+                "model": "gpt-4o-mini",
+                "messages": [
+                    {"role": "system", "content": "あなたはプロのWeb校正者兼SEO/GEOアナリストです。誤字脱字を無くし最高品質のHTML本文のみを出力します。"},
+                    {"role": "user", "content": prompt}
+                ],
+                "temperature": 0.5
+            }
+            resp = requests.post("https://models.inference.ai.azure.com/chat/completions", headers=headers, json=payload, timeout=30)
+            if resp.status_code == 200:
+                res_text = resp.json()["choices"][0]["message"]["content"].strip()
+                if "```html" in res_text: res_text = res_text.split("```html", 1)[1].split("```")[0]
+                elif "```" in res_text: res_text = res_text.split("```", 1)[1].split("```")[0]
+                if len(res_text.strip()) > 100:
+                    return res_text.strip()
+        except Exception as e:
+            print(f"Proofread failed: {e}")
+    return html_content
+
+def ensure_complete_er_article(html_content):
+    """途中切れ（力尽きる現象）を検知し、安全に文末とHTML閉じタグを補正する"""
+    if not html_content:
+        return html_content
+    html_content = html_content.strip()
+    valid_endings = ("。", "！", "？", "!", "?", "</div>", "</p>", "</ul>", "</li>", "</table>", "</tbody>", "</tfoot>")
+    if not html_content.endswith(valid_endings):
+        print("WARNING: Incomplete article detected. Repairing endings and tags...")
+        last_p = max(html_content.rfind("。"), html_content.rfind("！"), html_content.rfind("</div>"), html_content.rfind("</p>"))
+        if last_p > len(html_content) * 0.5:
+            html_content = html_content[:last_p + 1]
+
+    open_divs = html_content.count("<div")
+    close_divs = html_content.count("</div>")
+    if open_divs > close_divs:
+        html_content += "</div>" * (open_divs - close_divs)
+    return html_content
             
     fallback_title = title or "この作品"
     fallback_genres = "、".join(genres.split(", ")) if genres else "大人の背徳ドラマ"
