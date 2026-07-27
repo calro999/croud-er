@@ -1,0 +1,1 @@
+User-agent: *\nAllow: /\nSitemap: https://haitoku.pages.dev/sitemap.xml

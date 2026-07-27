@@ -167,7 +167,7 @@ export default function RootLayout({
               <span>•</span>
               <a href="/manga" className="hover:text-purple-600 text-purple-600 font-bold">📚漫画コーナー</a>
               <span>•</span>
-              <a href="/archives" className="hover:text-rose-600 text-slate-600 font-bold">全記事一覧（サイトマップ）</a>
+              <a href="/archives" className="hover:text-rose-600 text-slate-600 font-bold">HTMLサイトマップ</a>
               <span>•</span>
               <span className="text-slate-400">姉妹サイト:</span>
               <a href="https://er-2.pages.dev/" target="_blank" rel="noopener noreferrer" className="hover:text-rose-600 text-rose-700">禁断のバクロファイル</a>
