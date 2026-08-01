@@ -1,1 +1,40 @@
-User-agent: *\nAllow: /\nSitemap: https://haitoku.pages.dev/sitemap.xml
+User-agent: *
+Allow: /
+Sitemap: https://haitoku.pages.dev/sitemap.xml
+
+# AI Agent & Search Engine Direct Knowledge Base Targets
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: Anthropic-AI
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Yandex
+Allow: /
