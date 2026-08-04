@@ -194,35 +194,7 @@ def generate_article_with_llm(item):
 
     system_message = "あなたはネットで絶大な支持を集める「秘密の恋愛・大人の背徳ドラマ専門」のカリスマ熱血レビュアーです。規約に配慮しつつ極めて熱量の高いレビュー文をHTML形式で作成します。"
 
-    pollinations_models = ["openai", "openai-fast", "llama", "mistral", "qwen"]
-    for attempt in range(2):
-        for model in pollinations_models:
-            try:
-                print(f"Attempting to generate article with Pollinations AI (model: {model}, attempt: {attempt+1})...")
-                response = requests.post(
-                    "https://text.pollinations.ai/",
-                    json={
-                        "messages": [
-                            {"role": "system", "content": system_message},
-                            {"role": "user", "content": prompt}
-                        ],
-                        "model": model
-                    },
-                    timeout=35
-                )
-                if response.status_code == 200 and len(response.text.strip()) > 100:
-                    result_text = response.text.strip()
-                    if "```html" in result_text:
-                        result_text = result_text.split("```html", 1)[1]
-                    if "```" in result_text:
-                        result_text = result_text.split("```")[0]
-                    return result_text.strip()
-                elif response.status_code == 429:
-                    print(f"Pollinations AI ({model}) returned 429 (Rate Limit). Waiting...")
-                    time.sleep(3)
-            except Exception as e:
-                print(f"Pollinations AI ({model}) failed with exception: {e}")
-                time.sleep(2)
+
 
     print("Warning: All LLM models failed. Using high-quality fallback template.")
     fallback_html = f"""

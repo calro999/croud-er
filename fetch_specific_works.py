@@ -115,34 +115,6 @@ def generate_article_with_llm(item):
 
     system_message = "あなたはSEOとAI-SEOを極めたカリスマ熱血レビュアーです。マークダウン記法を一切使用せず、純粋なHTMLのみを出力します。"
 
-    pollinations_models = ["openai", "mistral", "llama"]
-    for attempt in range(2):
-        for model in pollinations_models:
-            try:
-                print(f"Generating article with LLM (model: {model})...")
-                response = requests.post(
-                    "https://text.pollinations.ai/",
-                    json={
-                        "messages": [
-                            {"role": "system", "content": system_message},
-                            {"role": "user", "content": prompt}
-                        ],
-                        "model": model
-                    },
-                    timeout=35
-                )
-                if response.status_code == 200 and len(response.text.strip()) > 100:
-                    result_text = response.text.strip()
-                    # 徹底的なクリーニング
-                    result_text = re.sub(r'^```html\s*', '', result_text, flags=re.IGNORECASE)
-                    result_text = re.sub(r'^```\s*', '', result_text)
-                    result_text = re.sub(r'\s*```$', '', result_text)
-                    result_text = result_text.replace("```html", "").replace("```", "").strip()
-                    return result_text
-            except Exception as e:
-                print(f"LLM error ({model}): {e}")
-                time.sleep(1)
-
     print("Warning: LLM generation failed.")
     return "<p>レビューの生成に失敗しました。</p>"
 

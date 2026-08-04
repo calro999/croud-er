@@ -91,34 +91,7 @@ def generate_seo_article(item, content_id):
 
 SEO最強のHTML本文のみを出力してください。"""
 
-    system_message = "あなたはネットで絶大な支持を集めるカリスマレビュアーです。品番検索でこの記事に辿り着いた読者の検索意図に完全に応えるSEO特化記事をHTML形式で作成します。"
-    models = ["openai", "openai-fast", "mistral"]
 
-    for attempt in range(3):
-        for model in models:
-            try:
-                print(f"  Generating with {model}...")
-                response = requests.post(
-                    "https://text.pollinations.ai/",
-                    json={
-                        "messages": [
-                            {"role": "system", "content": system_message},
-                            {"role": "user", "content": prompt}
-                        ],
-                        "model": model
-                    },
-                    timeout=60
-                )
-                if response.status_code == 200 and len(response.text.strip()) > 500:
-                    result = response.text.strip()
-                    if "```html" in result:
-                        result = result.split("```html", 1)[1]
-                    if "```" in result:
-                        result = result.split("```")[0]
-                    return result.strip()
-            except Exception as e:
-                print(f"  Error with {model}: {e}")
-            time.sleep(2)
     return f"<h2>{title}</h2><p>{comment}</p>"
 
 def main():

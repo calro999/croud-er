@@ -238,37 +238,7 @@ SEO最強のHTML本文のみを出力してください。
 """
 
     system_message = "あなたはネットで絶大な支持を集めるカリスマレビュアーです。規約に配慮しつつ極めて熱量の高いレビュー文をHTML形式で作成します。"
-    pollinations_models = ["openai", "openai-fast", "mistral"]
-    
-    for attempt in range(2):
-        for model in pollinations_models:
-            try:
-                print(f"Generating article with {model}...")
-                response = requests.post(
-                    "https://text.pollinations.ai/",
-                    json={
-                        "messages": [
-                            {"role": "system", "content": system_message},
-                            {"role": "user", "content": prompt}
-                        ],
-                        "model": model
-                    },
-                    timeout=30
-                )
-                if response.status_code == 200 and len(response.text.strip()) > 100:
-                    result_text = response.text.strip()
-                    if "```html" in result_text:
-                        result_text = result_text.split("```html", 1)[1]
-                    if "```" in result_text:
-                        result_text = result_text.split("```")[0]
-                    res = result_text.strip()
-                    # 校正・ブラッシュアップと途中切れ防止補正
-                    res = proofread_and_optimize_er_article(safe_title, res)
-                    res = ensure_complete_er_article(res)
-                    return res
-            except Exception as e:
-                pass
-            time.sleep(1)
+
 
 def proofread_and_optimize_er_article(title, html_content):
     """誤字脱字最終チェックとSEO, AI-SEO, GEO的な修正ブラッシュアップ工程"""

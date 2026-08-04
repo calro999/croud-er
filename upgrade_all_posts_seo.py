@@ -50,32 +50,7 @@ def generate_seo_review_with_llm(title, genres_str, maker):
 
     system_message = "あなたはSEOとAI-SEOを極めたカリスマ熱血レビュアーです。マークダウン記法を一切使用せず、純粋なHTMLのみを出力します。絶対に同じテンプレートを使い回さず、独立した内容を書きます。"
 
-    pollinations_models = ["openai", "mistral", "llama"]
-    for attempt in range(3):
-        for model in pollinations_models:
-            try:
-                response = requests.post(
-                    "https://text.pollinations.ai/",
-                    json={
-                        "messages": [
-                            {"role": "system", "content": system_message},
-                            {"role": "user", "content": prompt}
-                        ],
-                        "model": model,
-                        "temperature": 0.8
-                    },
-                    timeout=35
-                )
-                if response.status_code == 200 and len(response.text.strip()) > 100:
-                    result_text = response.text.strip()
-                    result_text = re.sub(r'^```html\s*', '', result_text, flags=re.IGNORECASE)
-                    result_text = re.sub(r'^```\s*', '', result_text)
-                    result_text = re.sub(r'\s*```$', '', result_text)
-                    result_text = result_text.replace("```html", "").replace("```", "").strip()
-                    if "<p" in result_text or "<h" in result_text:
-                        return result_text
-            except Exception as e:
-                time.sleep(1)
+
 
     return None
 

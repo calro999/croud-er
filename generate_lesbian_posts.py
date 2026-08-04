@@ -239,33 +239,7 @@ SEO最強のHTML本文のみを出力してください。
 """
 
     system_message = "あなたはネットで絶大な支持を集める「百合・女性同士の恋愛・背徳ドラマ専門」のカリスマ熱血レビュアーです。規約に配慮しつつ極めて熱量の高いレビュー文をHTML形式で作成します。"
-    pollinations_models = ["openai", "openai-fast", "mistral"]
-    
-    for attempt in range(2):
-        for model in pollinations_models:
-            try:
-                print(f"Generating article with {model}...")
-                response = requests.post(
-                    "https://text.pollinations.ai/",
-                    json={
-                        "messages": [
-                            {"role": "system", "content": system_message},
-                            {"role": "user", "content": prompt}
-                        ],
-                        "model": model
-                    },
-                    timeout=30
-                )
-                if response.status_code == 200 and len(response.text.strip()) > 100:
-                    result_text = response.text.strip()
-                    if "```html" in result_text:
-                        result_text = result_text.split("```html", 1)[1]
-                    if "```" in result_text:
-                        result_text = result_text.split("```")[0]
-                    return result_text.strip()
-            except Exception as e:
-                pass
-            time.sleep(1)
+
             
     fallback_title = title or "この作品"
     fallback_genres = "、".join(genres.split(", ")) if genres else "女性同士の禁断ドラマ"
