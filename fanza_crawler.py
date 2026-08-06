@@ -1,173 +1,5 @@
-import os
-import random
-import re
-
-def generate_hinban(content_id):
-    if not content_id:
-        return ""
-    s = content_id.lower()
-    s = re.sub(r'^(h_\d+|h_|\d+)', '', s)
-    match = re.match(r'^([a-z]+)(\d+)', s)
-    if match:
-        alphabetic = match.group(1).upper()
-        numeric = match.group(2)
-        clean_num = numeric.lstrip('0')
-        if not clean_num:
-            clean_num = '0'
-        formatted_standard = f"{alphabetic}-{numeric}"
-        if clean_num != numeric:
-            formatted_clean = f"{alphabetic}-{clean_num}"
-            return f"{formatted_clean} ({formatted_standard})"
-        return formatted_standard
-    return content_id.upper()
-
-import requests
-import time
-import json
-import re
-import urllib.parse
-
-CACHE_FILE = "posted_cache.txt"
-POSTS_DIR = "src/data/posts"
-
-def clean_for_safety(text):
-    if not text:
-        return ""
-    safety_map = {
-        "ネトラレ": "禁断 of 恋",
-        "ねとられ": "禁断 of 恋",
-        "不倫": "秘密 of 関係",
-        "団地妻": "人妻",
-        "人妻": "大人の女性",
-        "背徳": "秘密 of",
-        "痴女": "魅力的な女性",
-        "中出し": "愛 of 結末",
-        "AV": "ビデオ作品",
-        "アダルト": "大人向け"
-    }
-    for old, new in safety_map.items():
-        text = text.replace(old, new)
-    return text
-
-def load_posted_cache():
-    if os.path.exists(CACHE_FILE):
-        with open(CACHE_FILE, "r", encoding="utf-8") as f:
-            return set(line.strip() for line in f if line.strip())
-    return set()
-
-def save_to_cache(content_id):
-    with open(CACHE_FILE, "a", encoding="utf-8") as f:
-        f.write(f"{content_id}\n")
-
-def fetch_fanza_item():
-    api_id = os.environ.get("FANZA_API_ID")
-    affiliate_id = os.environ.get("FANZA_AFFILIATE_ID")
-    if not api_id or not affiliate_id:
-        raise ValueError("FANZA_API_ID and FANZA_AFFILIATE_ID must be set in environment variables.")
-
-    raw_api_id = api_id
-    raw_affiliate_id = affiliate_id
-
-    # api_idのパース
-    if "api_id=" in raw_api_id:
-        match = re.search(r"[?&]api_id=([^&]+)", raw_api_id)
-        if match:
-            api_id = match.group(1)
-
-    # affiliate_idのパース
-    if "affiliate_id=" in raw_affiliate_id:
-        match = re.search(r"[?&]affiliate_id=([^&]+)", raw_affiliate_id)
-        if match:
-            affiliate_id = match.group(1)
-    elif "affiliate_id=" in raw_api_id:
-        match = re.search(r"[?&]affiliate_id=([^&]+)", raw_api_id)
-        if match:
-            affiliate_id = match.group(1)
-
-    # URLデコードしてアンパサンドなどのエスケープを解除
-    api_id = urllib.parse.unquote(api_id).strip()
-    affiliate_id = urllib.parse.unquote(affiliate_id).strip()
-
-    # 余計な末尾のブラケットや特殊記号を完全に排除
-    api_id = re.sub(r"[^a-zA-Z0-9_-]", "", api_id).strip()
-    affiliate_id = re.sub(r"[^a-zA-Z0-9-]", "", affiliate_id).strip()
-
-    print(f"[DEBUG] Final parsed API ID: {api_id}")
-    print(f"[DEBUG] Final parsed Affiliate ID: {affiliate_id}")
-
-    # 背徳系キーワードリスト（「熟女」は除外）
-    keywords = ["人妻 ネトラレ", "若奥様 不倫", "団地妻 背徳", "主婦 寝取られ", "人妻 浮気", "ネトラレ 主婦"]
-    posted_cache = load_posted_cache()
-
-    url = "https://api.dmm.com/affiliate/v3/ItemList"
-    
-    # 確実に新しい作品を見つけるために、最大10回キーワードやオフセットを変えて検索を試行する
-    for attempt in range(10):
-        selected_keyword = random.choice(keywords)
-        # 新着を優先するために、ソート順でdateの確率を高める
-        selected_sort = random.choice(["date", "rank", "date"])
-        # 新着を見つけるために、最初はオフセットを小さめにし、試行回数に応じて広げる
-        random_offset = random.randint(1, 10 + attempt * 5)
-        
-        print(f"[Attempt {attempt+1}/10] Searching FANZA. Keyword: '{selected_keyword}', Sort: '{selected_sort}', Offset: {random_offset}")
-
-        params = {
-            "api_id": api_id,
-            "affiliate_id": affiliate_id,
-            "site": "FANZA",
-            "service": "digital",
-            "floor": "videoa",
-            "keyword": selected_keyword,
-            "sort": selected_sort,
-            "offset": random_offset,
-            "hits": 30,
-            "output": "json"
-        }
-
-        try:
-            response = requests.get(url, params=params, timeout=15)
-            if response.status_code != 200:
-                print(f"API Warning: {response.status_code}")
-                continue
-
-            data = response.json()
-            items = data.get("result", {}).get("items", [])
-            if not items:
-                continue
-
-            for item in items:
-                content_id = item.get("content_id")
-                if not content_id:
-                    continue
-
-                # 熟女・高齢者系コンテンツの強制スキップ処理
-                title = item.get("title", "")
-                comment = item.get("comment", "")
-                genres = [g.get("name", "") for g in item.get("iteminfo", {}).get("genre", [])]
-                genres_str = " ".join(genres)
-                
-                exclude_words = ["熟女", "おばさん", "五十路", "四十路", "六十路", "熟年", "マダム", "高齢", "お姉さん", "ババ"]
-                is_excluded = False
-                for word in exclude_words:
-                    if word in title or word in comment or word in genres_str:
-                        is_excluded = True
-                        break
-                
-                if is_excluded:
-                    continue
-
-                if content_id not in posted_cache:
-                    print(f"-> Found new unposted item: {title} ({content_id})")
-                    return item
-        except Exception as e:
-            print(f"Request error on attempt {attempt+1}: {e}")
-        
-        time.sleep(1)
-
-    return None
-
 def generate_article_with_llm(item):
-    title = item.get("title")
+    title = item.get("title", "")
     comment = item.get("comment", "")
     genres = ", ".join([g.get("name", "") for g in item.get("iteminfo", {}).get("genre", [])])
     
@@ -175,26 +7,25 @@ def generate_article_with_llm(item):
     safe_comment = clean_for_safety(comment)
     safe_genres = clean_for_safety(genres)
 
-    prompt = f"""以下の大人向け映像作品の情報を基にして、指定の執筆ルールに従ってブログ記事のHTML本文（レビュー文）を生成してください。
+    prompt = f"""以下の作品情報を基にして、指定の執筆ルールに従ってブログ記事のHTML本文（レビュー文）を生成してください。
 
 【作品名】: {safe_title}
 【あらすじ】: {safe_comment}
 【ジャンル】: {safe_genres}
 
 【執筆ルール】
-1. ペルソナ: ネットで絶大な支持を集める「秘密の恋愛・大人の背徳ドラマ専門」のカリスマ熱血レビュアー。圧倒的な文章の熱量で語ってください。
-2. 感情的なキャッチコピー: 冒頭に作品の「禁断のシチュエーションのヤバさ」を突いた見出し（<h3>）を配置してください。
-3. マニア目線の心理描写: 公式のあらすじをなぞるのではない、ストーリー・心理・情景の推しポイントを熱量MAXで書いてください（例：「登場人物の葛藤する表情」「日常が崩壊していく感覚」など）。
-4. ロングテールSEOの埋め込み: 記事内に自然な形で「主婦」「不倫」「旦那の留守中」「寝取られ」などの関連サジェストワードを散りばめてください。
-5. 表現の防壁: 直接的な性描写（ポルノワード）を完全に避け、官能的で妄想を刺激する文学的表現（例：「禁断の領域」「蜜月」「背徳の泥沼」）に必ず変換してください。
-6. 出力フォーマット: Bloggerにそのまま流し込めるように、本文のみをHTML（<p>, <h3>, <strong>）で出力し、マークダウンのコードブロック（```html や ```）は一切出力しないでください。
-
-それでは、HTML本文のみを出力してください。
+1. ペルソナ: ネットで絶大な支持を集めるカリスマ熱血レビュアー。圧倒的な文章の熱量で語ってください。
+2. 感情的なキャッチコピー: 冒頭に見出し（<h3>）を配置してください。
+3. 心理描写: ストーリー・心理・情景の推しポイントを熱量MAXで書いてください。
+4. 出力フォーマット: 本文のみをHTML（<p>, <h3>, <strong>）で出力し、マークダウンのコードブロックは一切出力しないでください。
 """
 
-    system_message = "あなたはネットで絶大な支持を集める「秘密の恋愛・大人の背徳ドラマ専門」のカリスマ熱血レビュアーです。規約に配慮しつつ極めて熱量の高いレビュー文をHTML形式で作成します。"
+    system_message = "あなたはネットで絶大な支持を集めるカリスマ熱血レビュアーです。規約に配慮しつつ極めて熱量の高いレビュー文をHTML形式で作成します。"
 
-
+    generated = generate_article_with_llm_text(prompt, system_message)
+    if generated:
+        print("Successfully generated review via Multi-LLM Engine.")
+        return generated
 
     print("Warning: All LLM models failed. Using high-quality fallback template.")
     fallback_html = f"""

@@ -1,3 +1,100 @@
+def generate_article_with_llm_text(prompt, system_message):
+    import requests, os
+    
+    # 1. Gemini API (最優先)
+    gemini_key = os.environ.get("GEMINI_API_KEY")
+    if gemini_key:
+        for model_name in ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-1.5-flash"]:
+            try:
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={gemini_key}"
+                payload = {
+                    "contents": [{"parts": [{"text": f"{system_message}\n\n{prompt}"}]}],
+                    "generationConfig": {"temperature": 0.8, "maxOutputTokens": 2048}
+                }
+                if "2.5" in model_name:
+                    payload["generationConfig"]["thinkingConfig"] = {"thinkingBudget": 0}
+                res = requests.post(url, json=payload, timeout=30)
+                if res.status_code == 200:
+                    candidate = res.json().get("candidates", [{}])[0]
+                    parts = candidate.get("content", {}).get("parts", [])
+                    text = "".join(p.get("text", "") for p in parts if p.get("text")).strip()
+                    if len(text) > 50:
+                        text = text.replace("```html", "").replace("```", "").strip()
+                        return text
+            except Exception as e:
+                print(f"Gemini error ({model_name}): {e}")
+
+    # 2. Groq API
+    groq_key = os.environ.get("GROQ_API_KEY")
+    if groq_key:
+        for model_name in ["llama-3.3-70b-versatile", "llama3-70b-8192"]:
+            try:
+                headers = {"Authorization": f"Bearer {groq_key}", "Content-Type": "application/json"}
+                payload = {
+                    "model": model_name,
+                    "messages": [{"role": "system", "content": system_message}, {"role": "user", "content": prompt}],
+                    "temperature": 0.8,
+                    "max_tokens": 2048
+                }
+                res = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload, timeout=30)
+                if res.status_code == 200:
+                    text = res.json()["choices"][0]["message"]["content"].strip()
+                    if len(text) > 50:
+                        text = text.replace("```html", "").replace("```", "").strip()
+                        return text
+            except Exception as e:
+                print(f"Groq error ({model_name}): {e}")
+
+    # 3. OpenRouter API
+    openrouter_key = os.environ.get("OPENROUTER_API_KEY")
+    if openrouter_key:
+        for model_name in ["google/gemma-3-27b-it:free", "mistralai/mistral-nemo:free"]:
+            try:
+                headers = {
+                    "Authorization": f"Bearer {openrouter_key}",
+                    "Content-Type": "application/json",
+                    "HTTP-Referer": "https://github.com",
+                    "X-Title": "AutoPoster"
+                }
+                payload = {
+                    "model": model_name,
+                    "messages": [{"role": "system", "content": system_message}, {"role": "user", "content": prompt}],
+                    "temperature": 0.8,
+                    "max_tokens": 2048
+                }
+                res = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload, timeout=30)
+                if res.status_code == 200:
+                    text = res.json()["choices"][0]["message"]["content"].strip()
+                    if len(text) > 50:
+                        text = text.replace("```html", "").replace("```", "").strip()
+                        return text
+            except Exception as e:
+                print(f"OpenRouter error ({model_name}): {e}")
+
+    # 4. GitHub Models API (PAT)
+    gh_token = os.environ.get("GH_TOKEN")
+    if gh_token and not gh_token.startswith("ghs_"):
+        for model_name in ["gpt-4o-mini", "gpt-4o"]:
+            try:
+                headers = {"Authorization": f"Bearer {gh_token}", "Content-Type": "application/json"}
+                payload = {
+                    "model": model_name,
+                    "messages": [{"role": "system", "content": system_message}, {"role": "user", "content": prompt}],
+                    "temperature": 0.8,
+                    "max_tokens": 2048
+                }
+                res = requests.post("https://models.inference.ai.azure.com/chat/completions", headers=headers, json=payload, timeout=30)
+                if res.status_code == 200:
+                    text = res.json()["choices"][0]["message"]["content"].strip()
+                    if len(text) > 50:
+                        text = text.replace("```html", "").replace("```", "").strip()
+                        return text
+            except Exception as e:
+                print(f"GitHub Models error ({model_name}): {e}")
+
+    return None
+
+
 import os
 import time
 import json
