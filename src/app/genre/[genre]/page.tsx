@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { censorText } from "@/lib/censor";
+import { getGenreSlug, getGenreNameBySlug, getActressSlug } from "@/lib/slugs";
 
 interface Post {
   id: string;
@@ -34,7 +35,7 @@ export async function generateStaticParams() {
         (post.genres || []).forEach(g => genreSet.add(g));
       } catch { /* skip */ }
     }
-    const params = Array.from(genreSet).map(genre => ({ genre: encodeURIComponent(genre) }));
+    const params = Array.from(genreSet).map(genre => ({ genre: getGenreSlug(genre) }));
     // lesbianのパスを強制的に追加（記事が0件の時でもビルドで404にならないようにする）
     params.push({ genre: "lesbian" });
     return params;
@@ -59,9 +60,8 @@ function getAllPosts(): Post[] {
 }
 
 const getMappedGenreName = (rawGenre: string) => {
-  const decoded = decodeURIComponent(rawGenre);
-  if (decoded === "lesbian") return "レズ";
-  return decoded;
+  if (rawGenre === "lesbian") return "レズ";
+  return getGenreNameBySlug(rawGenre);
 };
 
 export async function generateMetadata({ params }: { params: Promise<{ genre: string }> }): Promise<Metadata> {
@@ -205,7 +205,7 @@ export default async function GenrePage({ params }: { params: Promise<{ genre: s
             <h2 className="text-xs font-bold text-slate-500 uppercase tracking-widest">{genreName} に出演している女優</h2>
             <div className="flex flex-wrap gap-2">
               {relatedActresses.map(actress => (
-                <Link key={actress} href={`/actress/${encodeURIComponent(actress)}`}
+                <Link key={actress} href={`/actress/${getActressSlug(actress)}`}
                   className="text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 px-3 py-1.5 rounded-full transition-colors">
                   {actress}
                 </Link>
@@ -251,7 +251,7 @@ export default async function GenrePage({ params }: { params: Promise<{ genre: s
             <h2 className="text-xs font-bold text-slate-500 uppercase tracking-widest">関連ジャンル</h2>
             <div className="flex flex-wrap gap-2">
               {relatedGenres.map(g => (
-                <Link key={g} href={`/genre/${encodeURIComponent(g)}`}
+                <Link key={g} href={`/genre/${getGenreSlug(g)}`}
                   className="text-xs font-bold text-slate-600 bg-slate-100 hover:bg-rose-50 hover:text-rose-600 border border-slate-200 hover:border-rose-200 px-3 py-1.5 rounded-full transition-colors duration-200">
                   {g}
                 </Link>

@@ -28,6 +28,14 @@ function main() {
       }
     }).filter(Boolean);
 
+    // 未来の発売日・公開日（予約作品）を除外
+    const now = new Date();
+    posts = posts.filter(post => {
+      if (!post.date) return true;
+      const postDate = new Date(post.date);
+      return postDate.getTime() <= now.getTime();
+    });
+
     // 最新記事順（date降順）にソート
     posts.sort((a, b) => {
       const dateA = new Date(a.date || 0);

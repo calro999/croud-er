@@ -3,6 +3,7 @@ import path from "path";
 import Link from "next/link";
 import { Metadata } from "next";
 import PostListContainer from "./components/PostListContainer";
+import { getActressSlug, getGenreSlug } from "@/lib/slugs";
 
 interface Post {
   id: string;
@@ -155,7 +156,7 @@ export default function Home() {
               </Link>
               <span className="text-[10px] text-slate-400 self-center">ジャンル別:</span>
               {allGenres.slice(0, 3).map(g => (
-                <Link key={g} href={`/genre/${encodeURIComponent(g)}`}
+                <Link key={g} href={`/genre/${getGenreSlug(g)}`}
                   className="text-[10px] font-bold text-slate-400 hover:text-rose-300 hover:bg-white/10 px-2 py-1 rounded transition">
                   {g}
                 </Link>
@@ -192,7 +193,7 @@ export default function Home() {
                 .map(actress => (
                   <Link
                     key={actress}
-                    href={`/actress/${encodeURIComponent(actress)}`}
+                    href={`/actress/${getActressSlug(actress)}`}
                     className="text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 hover:text-rose-700 border border-rose-100 px-3.5 py-2 rounded-xl transition duration-150"
                   >
                     {actress}
@@ -213,7 +214,7 @@ export default function Home() {
                 .map(genre => (
                   <Link
                     key={genre}
-                    href={`/genre/${encodeURIComponent(genre)}`}
+                    href={`/genre/${getGenreSlug(genre)}`}
                     className="text-xs font-bold text-slate-600 bg-slate-50 hover:bg-slate-100 hover:text-slate-800 border border-slate-200/80 px-3.5 py-2 rounded-xl transition duration-150"
                   >
                     {genre}

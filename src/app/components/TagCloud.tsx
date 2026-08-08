@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import Link from "next/link";
+import { getActressSlug, getGenreSlug } from "@/lib/slugs";
 
 interface Post {
   id: string;
@@ -66,7 +67,7 @@ export default function TagCloud() {
               {topActresses.map(([actress]) => (
                 <Link
                   key={actress}
-                  href={`/actress/${encodeURIComponent(actress)}`}
+                  href={`/actress/${getActressSlug(actress)}`}
                   className="text-[10px] font-bold text-slate-600 bg-slate-50 hover:bg-rose-50 border border-slate-200 hover:border-rose-300 hover:text-rose-600 px-2.5 py-1 rounded-md transition-colors"
                 >
                   {actress}
@@ -84,7 +85,7 @@ export default function TagCloud() {
               {topGenres.map(([genre]) => (
                 <Link
                   key={genre}
-                  href={`/genre/${encodeURIComponent(genre)}`}
+                  href={`/genre/${getGenreSlug(genre)}`}
                   className="text-[10px] font-bold text-slate-600 bg-slate-50 hover:bg-rose-50 border border-slate-200 hover:border-rose-300 hover:text-rose-600 px-2.5 py-1 rounded-md transition-colors"
                 >
                   {genre}

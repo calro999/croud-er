@@ -16,6 +16,17 @@ URL_SET = {
 POSTS_DIR = "src/data/posts"
 MANGA_DIR = "src/data/manga"
 
+import datetime
+
+NOW_DT = datetime.datetime.now()
+
+SLUGS_DATA = {}
+if os.path.exists("src/lib/slugs.json"):
+    with open("src/lib/slugs.json", "r", encoding="utf-8") as file:
+        SLUGS_DATA = json.load(file)
+ACTRESS_SLUGS = SLUGS_DATA.get("actresses", {})
+GENRE_SLUGS = SLUGS_DATA.get("genres", {})
+
 # Collect Post URLs and Taxonomy tags
 if os.path.exists(POSTS_DIR):
     for f in os.listdir(POSTS_DIR):
@@ -23,14 +34,22 @@ if os.path.exists(POSTS_DIR):
             try:
                 with open(os.path.join(POSTS_DIR, f), 'r', encoding='utf-8') as file:
                     data = json.load(file)
+                    d_str = data.get('date', '')
+                    if d_str:
+                        d_clean = d_str.split('.')[0]
+                        d_obj = datetime.datetime.strptime(d_clean, '%Y-%m-%d %H:%M:%S')
+                        if d_obj > NOW_DT:
+                            continue # 未発売の未来記事は除外
                     if data.get('id'):
                         URL_SET.add(f"{BASE_URL}/posts/{data['id']}")
                     for act in data.get('actresses', []):
                         if act:
-                            URL_SET.add(f"{BASE_URL}/actress/{requests.utils.quote(act)}")
+                            act_slug = ACTRESS_SLUGS.get(act, requests.utils.quote(act))
+                            URL_SET.add(f"{BASE_URL}/actress/{act_slug}")
                     for g in data.get('genres', []):
                         if g:
-                            URL_SET.add(f"{BASE_URL}/genre/{requests.utils.quote(g)}")
+                            g_slug = GENRE_SLUGS.get(g, requests.utils.quote(g))
+                            URL_SET.add(f"{BASE_URL}/genre/{g_slug}")
                     if data.get('maker'):
                         URL_SET.add(f"{BASE_URL}/maker/{requests.utils.quote(data['maker'])}")
             except Exception as e:

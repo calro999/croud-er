@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { censorText } from "@/lib/censor";
+import { getActressSlug, getActressNameBySlug, getGenreSlug } from "@/lib/slugs";
 
 interface Post {
   id: string;
@@ -34,7 +35,7 @@ export async function generateStaticParams() {
         (post.actresses || []).forEach(a => actressSet.add(a));
       } catch { /* skip */ }
     }
-    return Array.from(actressSet).map(name => ({ name: encodeURIComponent(name) }));
+    return Array.from(actressSet).map(name => ({ name: getActressSlug(name) }));
   } catch {
     return [];
   }
@@ -57,7 +58,7 @@ function getAllPosts(): Post[] {
 
 export async function generateMetadata({ params }: { params: Promise<{ name: string }> }): Promise<Metadata> {
   const { name } = await params;
-  const actressName = decodeURIComponent(name);
+  const actressName = getActressNameBySlug(name);
   const titleText = `【品番特定】「${actressName}」あのSNSで話題のシチュエーション動画の正体はこれ！出演作まとめ`;
   const descriptionText = `Xや5chで「可愛すぎる」「エロすぎる」と話題の、${actressName}のアダルト動画・品番を特定！あの抜ける神作の概要、見どころ、お得にFANZAで視聴する方法をどこよりも分かりやすく解説します。`;
 
@@ -99,7 +100,7 @@ export async function generateMetadata({ params }: { params: Promise<{ name: str
 
 export default async function ActressPage({ params }: { params: Promise<{ name: string }> }) {
   const { name } = await params;
-  const actressName = decodeURIComponent(name);
+  const actressName = getActressNameBySlug(name);
   const allPosts = getAllPosts();
   const actressPosts = allPosts
     .filter(p => (p.actresses || []).includes(actressName))
@@ -190,7 +191,7 @@ export default async function ActressPage({ params }: { params: Promise<{ name: 
             <h2 className="text-xs font-bold text-slate-500 uppercase tracking-widest">{actressName} の主な出演ジャンル</h2>
             <div className="flex flex-wrap gap-2">
               {relatedGenres.map(genre => (
-                <Link key={genre} href={`/genre/${encodeURIComponent(genre)}`}
+                <Link key={genre} href={`/genre/${getGenreSlug(genre)}`}
                   className="text-xs font-bold text-slate-600 bg-slate-100 hover:bg-rose-50 hover:text-rose-600 border border-slate-200 hover:border-rose-200 px-3 py-1.5 rounded-full transition-colors duration-200">
                   {genre}
                 </Link>
@@ -198,6 +199,126 @@ export default async function ActressPage({ params }: { params: Promise<{ name: 
             </div>
           </section>
         )}
+
+        {/* 👑 キラーコンテンツ：【厳選10選】絶対に見るべき神作ランキング＆詳細シチュエーション解説 */}
+        <section className="bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border border-slate-800 rounded-3xl p-6 md:p-10 shadow-2xl space-y-8 text-white">
+          <div className="space-y-3 text-center md:text-left border-b border-slate-800 pb-6">
+            <span className="inline-flex text-[10px] font-black tracking-widest text-amber-400 bg-amber-400/10 border border-amber-400/20 px-3.5 py-1 rounded-full uppercase">
+              SPECIAL FEATURE • 神作厳選
+            </span>
+            <h2 className="text-2xl md:text-3xl font-black tracking-tight text-white">
+              【2026年最新】{actressName} の絶対に抜ける「神作」おすすめ10選！
+            </h2>
+            <p className="text-xs md:text-sm text-slate-400 leading-relaxed max-w-3xl">
+              ファン必見！{actressName}の圧倒的なシチュエーション没入感、表情変化、プレイ内容（フェラ・体位・アングル・絶頂シーン）を徹底考察。ハズレなしの最高傑作10選をご紹介します。
+            </p>
+          </div>
+
+          <div className="space-y-8">
+            {actressPosts.slice(0, 10).map((post, idx) => {
+              const cleanReviewText = post.review ? post.review.replace(/<[^>]*>/g, "").replace(/\s+/g, " ") : "";
+              const excerpt = cleanReviewText.slice(0, 140) + "...";
+              const rankNum = idx + 1;
+              const isTop3 = rankNum <= 3;
+              
+              return (
+                <div key={post.id} className="relative bg-slate-950/80 border border-slate-800/80 rounded-2xl p-5 md:p-7 shadow-md transition duration-200 hover:border-slate-700 flex flex-col md:flex-row gap-6 items-stretch">
+                  {/* 順位バッジ */}
+                  <div className={`absolute top-4 left-4 z-10 w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center font-black text-sm md:text-base shadow-lg ${
+                    rankNum === 1 ? 'bg-amber-400 text-slate-950' : rankNum === 2 ? 'bg-slate-300 text-slate-950' : rankNum === 3 ? 'bg-amber-700 text-white' : 'bg-slate-800 text-slate-300'
+                  }`}>
+                    #{rankNum}
+                  </div>
+
+                  {/* ジャケット写真 */}
+                  <div className="w-full md:w-64 flex-shrink-0 aspect-[16/10] md:aspect-[4/3] relative rounded-xl overflow-hidden bg-slate-900 border border-slate-800">
+                    {post.image ? (
+                      <img src={post.image} alt={`${post.title} ジャケット`} referrerPolicy="no-referrer" className="w-full h-full object-cover" loading="lazy" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-slate-500 text-xs">No Image</div>
+                    )}
+                  </div>
+
+                  {/* 内容＆見どころ・プレイ解説 */}
+                  <div className="flex-grow flex flex-col justify-between space-y-4">
+                    <div className="space-y-3">
+                      <div className="flex flex-wrap items-center gap-2 text-[10px] font-extrabold text-slate-400">
+                        {post.hinban && (
+                          <span className="text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2 py-0.5 rounded font-black uppercase">
+                            {post.hinban}
+                          </span>
+                        )}
+                        <span>•</span>
+                        <span>{post.maker}</span>
+                      </div>
+                      <h3 className="text-base md:text-lg font-black text-white leading-snug">
+                        {post.title}
+                      </h3>
+                      <p className="text-xs md:text-sm text-slate-300 leading-relaxed font-medium bg-slate-900/60 p-3.5 rounded-xl border border-slate-800/60">
+                        <strong className="text-amber-400 block mb-1 font-bold">🔥 プレイの見どころ・推しポイント：</strong>
+                        {excerpt}
+                      </p>
+
+                      {/* 🎥 サンプル動画（表示可能時） */}
+                      {post.sample_movie_url && (
+                        <div className="space-y-1.5 pt-1">
+                          <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest block">🎥 サンプル動画プレビュー</span>
+                          <div className="w-full aspect-video rounded-xl overflow-hidden bg-black border border-slate-800">
+                            <iframe
+                              src={post.sample_movie_url}
+                              className="w-full h-full border-none"
+                              allowFullScreen
+                              scrolling="no"
+                              title={`${post.title} サンプル動画`}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 📷 サンプル画像プレビュー（alt属性完全対応） */}
+                      {post.sample_images && post.sample_images.length > 0 && (
+                        <div className="space-y-1.5 pt-1">
+                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">📷 現場カット（サンプル写真）</span>
+                          <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                            {post.sample_images.slice(0, 6).map((img, i) => (
+                              <a key={i} href={post.affiliate_url} target="_blank" rel="noopener noreferrer" className="block aspect-video relative overflow-hidden rounded-lg border border-slate-800 bg-slate-900 hover:border-amber-400 transition">
+                                <img
+                                  src={img}
+                                  alt={`${actressName} ${post.title} サンプル名場面ショット ${i + 1}`}
+                                  className="w-full h-full object-cover opacity-80 hover:opacity-100 transition"
+                                  loading="lazy"
+                                />
+                              </a>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* タグ＆CTAボタン */}
+                    <div className="space-y-3 pt-2">
+                      <div className="flex flex-wrap gap-1.5">
+                        {(post.genres || []).slice(0, 5).map(g => (
+                          <span key={g} className="text-[10px] font-bold text-slate-400 bg-slate-900 border border-slate-800 px-2.5 py-1 rounded-lg">
+                            #{g}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="flex flex-col sm:flex-row gap-2.5 pt-1">
+                        <Link href={`/posts/${post.id}`} className="flex-1 text-center text-xs font-bold text-slate-200 bg-slate-900 border border-slate-700 hover:bg-slate-800 py-3 rounded-xl transition">
+                          詳細レビューを読む
+                        </Link>
+                        <a href={post.affiliate_url} target="_blank" rel="noopener noreferrer" className="flex-1 text-center text-xs font-bold text-white bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-400 hover:to-rose-500 py-3 rounded-xl shadow-lg transition">
+                          🔥 FANZAで今すぐ視聴する
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
 
         <section className="space-y-4">
           <h2 className="text-lg font-extrabold text-slate-800">{actressName} の全出演作品レビュー（{actressPosts.length}件）</h2>
@@ -240,7 +361,7 @@ export default async function ActressPage({ params }: { params: Promise<{ name: 
             <h2 className="text-xs font-bold text-slate-500 uppercase tracking-widest">{actressName} の共演女優</h2>
             <div className="flex flex-wrap gap-2">
               {coActresses.map(actress => (
-                <Link key={actress} href={`/actress/${encodeURIComponent(actress)}`}
+                <Link key={actress} href={`/actress/${getActressSlug(actress)}`}
                   className="text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 px-3 py-1.5 rounded-full transition-colors">
                   {actress}
                 </Link>

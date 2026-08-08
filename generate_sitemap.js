@@ -45,6 +45,7 @@ if (fs.existsSync(postsDir)) {
       const post = JSON.parse(fs.readFileSync(path.join(postsDir, file), 'utf8'));
       if (!post || !post.id) continue;
       const postDate = post.date ? new Date(post.date).getTime() : 0;
+      if (postDate > now) continue; // 発売日未到来の予約作品は除外
       const ageDays = (now - postDate) / (1000 * 60 * 60 * 24);
       const priority = ageDays < 30 ? 0.95 : ageDays < 90 ? 0.85 : ageDays < 180 ? 0.75 : 0.65;
       const lastmod = post.date ? new Date(post.date).toISOString() : new Date().toISOString();
@@ -61,9 +62,14 @@ if (fs.existsSync(postsDir)) {
   }
 }
 
+const slugsData = JSON.parse(fs.readFileSync(path.join(__dirname, 'src', 'lib', 'slugs.json'), 'utf8'));
+const actressSlugMap = slugsData.actresses || {};
+const genreSlugMap = slugsData.genres || {};
+
 actressSet.forEach(a => {
+  const slug = actressSlugMap[a] || encodeURIComponent(a);
   xml += `  <url>
-    <loc>${baseUrl}/actress/${encodeURIComponent(a)}</loc>
+    <loc>${baseUrl}/actress/${slug}</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
@@ -71,8 +77,9 @@ actressSet.forEach(a => {
 });
 
 genreSet.forEach(g => {
+  const slug = genreSlugMap[g] || encodeURIComponent(g);
   xml += `  <url>
-    <loc>${baseUrl}/genre/${encodeURIComponent(g)}</loc>
+    <loc>${baseUrl}/genre/${slug}</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>

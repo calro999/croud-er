@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { Metadata } from "next";
 import { censorText } from "@/lib/censor";
+import { getActressSlug } from "@/lib/slugs";
 
 interface Post {
   id: string;
@@ -316,7 +317,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
           <span className="text-slate-300">›</span>
           {(post.actresses || []).length > 0 && (
             <>
-              <Link href={`/actress/${encodeURIComponent(post.actresses[0])}`} className="hover:text-rose-600 transition-colors duration-200">{post.actresses[0]}</Link>
+              <Link href={`/actress/${getActressSlug(post.actresses[0])}`} className="hover:text-rose-600 transition-colors duration-200">{post.actresses[0]}</Link>
               <span className="text-slate-300">›</span>
             </>
           )}
