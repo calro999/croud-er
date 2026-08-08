@@ -106,6 +106,10 @@ export default function RootLayout({
             <nav className="flex items-center gap-5 text-xs font-bold text-slate-500">
               <a href="/" className="hover:text-slate-950 transition">Home</a>
               <span className="text-slate-300">/</span>
+              <a href="/features" className="hover:text-rose-600 transition text-amber-600 font-black flex items-center gap-1 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-lg">
+                👑 女優神作10選
+              </a>
+              <span className="text-slate-300">/</span>
               <a href="/ranking" className="hover:text-rose-600 transition">ランキング</a>
               <span className="text-slate-300">/</span>
               <a href="/genre/lesbian" className="hover:text-rose-600 transition font-black text-rose-600">👩‍❤️‍💋‍👩レズ専門</a>
@@ -162,6 +166,8 @@ export default function RootLayout({
             </div>
             <div className="flex flex-wrap gap-4 text-[10px] font-bold text-slate-500 justify-center md:justify-end">
               <a href="/" className="hover:text-slate-950">ホーム</a>
+              <span>•</span>
+              <a href="/features" className="hover:text-amber-600 text-amber-600 font-bold">👑女優神作10選</a>
               <span>•</span>
               <a href="/genre/lesbian" className="hover:text-rose-600 text-rose-600 font-bold">👩‍❤️‍💋‍👩レズ専門</a>
               <span>•</span>

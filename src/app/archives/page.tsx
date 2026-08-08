@@ -25,12 +25,17 @@ export const metadata: Metadata = {
 function getAllPosts(): Post[] {
   const postsDir = path.join(process.cwd(), "src", "data", "posts");
   if (!fs.existsSync(postsDir)) return [];
+  const now = new Date();
   try {
     return fs.readdirSync(postsDir)
       .filter(f => f.endsWith(".json"))
       .map(file => {
         try {
-          return JSON.parse(fs.readFileSync(path.join(postsDir, file), "utf-8")) as Post;
+          const post = JSON.parse(fs.readFileSync(path.join(postsDir, file), "utf-8")) as Post;
+          if (post.date && new Date(post.date).getTime() > now.getTime()) {
+            return null;
+          }
+          return post;
         } catch { return null; }
       })
       .filter(Boolean) as Post[];

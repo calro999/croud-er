@@ -161,6 +161,11 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
     notFound();
   }
 
+  // 発売日時前の未発売・予約商品は発売日まで非表示（404）
+  if (post.date && new Date(post.date).getTime() > Date.now()) {
+    notFound();
+  }
+
   const hinbanText = post.hinban || post.id;
   const relatedPosts = getRelatedPosts(post, postsDir);
 
