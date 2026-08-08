@@ -224,93 +224,105 @@ export default async function ActressPage({ params }: { params: Promise<{ name: 
               const isTop3 = rankNum <= 3;
               
               return (
-                <div key={post.id} className="relative bg-slate-950/80 border border-slate-800/80 rounded-2xl p-5 md:p-7 shadow-md transition duration-200 hover:border-slate-700 flex flex-col md:flex-row gap-6 items-stretch">
+                <div key={post.id} className="relative bg-slate-950/90 border border-slate-800 rounded-3xl overflow-hidden shadow-xl transition duration-300 hover:border-slate-700 space-y-6">
                   {/* 順位バッジ */}
-                  <div className={`absolute top-4 left-4 z-10 w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center font-black text-sm md:text-base shadow-lg ${
-                    rankNum === 1 ? 'bg-amber-400 text-slate-950' : rankNum === 2 ? 'bg-slate-300 text-slate-950' : rankNum === 3 ? 'bg-amber-700 text-white' : 'bg-slate-800 text-slate-300'
+                  <div className={`absolute top-4 left-4 z-20 w-10 h-10 md:w-12 md:h-12 rounded-2xl flex items-center justify-center font-black text-base md:text-lg shadow-2xl backdrop-blur-md ${
+                    rankNum === 1 ? 'bg-amber-400 text-slate-950' : rankNum === 2 ? 'bg-slate-200 text-slate-950' : rankNum === 3 ? 'bg-amber-600 text-white' : 'bg-slate-800/90 text-slate-300 border border-slate-700'
                   }`}>
                     #{rankNum}
                   </div>
 
-                  {/* ジャケット写真 */}
-                  <div className="w-full md:w-72 flex-shrink-0 aspect-[800/538] relative rounded-xl overflow-hidden bg-slate-900/90 border border-slate-800 flex items-center justify-center p-1">
+                  {/* 👑 ヒーローパッケージ画像（カード最上部に大きく全面配置） */}
+                  <div className="w-full aspect-[800/538] relative bg-slate-900 border-b border-slate-800 flex items-center justify-center p-2">
                     {post.image ? (
-                      <img src={post.image} alt={`${post.title} パッケージジャケット`} referrerPolicy="no-referrer" className="w-full h-full object-contain rounded-lg shadow" loading="lazy" />
+                      <img
+                        src={post.image}
+                        alt={`${post.title} パッケージジャケット`}
+                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-contain rounded-xl shadow-2xl"
+                        loading="lazy"
+                      />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-slate-500 text-xs">No Image</div>
+                      <div className="w-full h-full flex items-center justify-center text-slate-500 text-sm">No Image</div>
                     )}
                   </div>
 
-                  {/* 内容＆見どころ・プレイ解説 */}
-                  <div className="flex-grow flex flex-col justify-between space-y-4">
+                  {/* 📝 タイトル・作品情報・見どころ解説セクション */}
+                  <div className="px-5 md:px-8 pb-8 space-y-6">
                     <div className="space-y-3">
-                      <div className="flex flex-wrap items-center gap-2 text-[10px] font-extrabold text-slate-400">
+                      <div className="flex flex-wrap items-center gap-2 text-xs font-extrabold text-slate-400">
                         {post.hinban && (
-                          <span className="text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2 py-0.5 rounded font-black uppercase">
+                          <span className="text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-md font-black uppercase tracking-wider text-xs">
                             {post.hinban}
                           </span>
                         )}
                         <span>•</span>
-                        <span>{post.maker}</span>
+                        <span className="text-slate-300">{post.maker}</span>
                       </div>
-                      <h3 className="text-base md:text-lg font-black text-white leading-snug">
+                      <h3 className="text-lg md:text-2xl font-black text-white leading-snug">
                         {post.title}
                       </h3>
-                      <p className="text-xs md:text-sm text-slate-300 leading-relaxed font-medium bg-slate-900/60 p-3.5 rounded-xl border border-slate-800/60">
-                        <strong className="text-amber-400 block mb-1 font-bold">🔥 プレイの見どころ・推しポイント：</strong>
-                        {excerpt}
-                      </p>
-
-                      {/* 🎥 サンプル動画（表示可能時） */}
-                      {post.sample_movie_url && (
-                        <div className="space-y-1.5 pt-1">
-                          <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest block">🎥 サンプル動画プレビュー</span>
-                          <div className="w-full aspect-video rounded-xl overflow-hidden bg-black border border-slate-800">
-                            <iframe
-                              src={post.sample_movie_url}
-                              className="w-full h-full border-none"
-                              allowFullScreen
-                              scrolling="no"
-                              title={`${post.title} サンプル動画`}
-                            />
-                          </div>
-                        </div>
-                      )}
-
-                      {/* 📷 サンプル画像プレビュー（alt属性完全対応） */}
-                      {post.sample_images && post.sample_images.length > 0 && (
-                        <div className="space-y-1.5 pt-1">
-                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">📷 現場カット（サンプル写真）</span>
-                          <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
-                            {post.sample_images.slice(0, 6).map((img, i) => (
-                              <a key={i} href={post.affiliate_url} target="_blank" rel="noopener noreferrer" className="block aspect-video relative overflow-hidden rounded-lg border border-slate-800 bg-slate-900 hover:border-amber-400 transition">
-                                <img
-                                  src={img}
-                                  alt={`${actressName} ${post.title} サンプル名場面ショット ${i + 1}`}
-                                  className="w-full h-full object-cover opacity-80 hover:opacity-100 transition"
-                                  loading="lazy"
-                                />
-                              </a>
-                            ))}
-                          </div>
-                        </div>
-                      )}
+                      <div className="text-xs md:text-sm text-slate-200 leading-relaxed font-medium bg-slate-900/90 p-4 md:p-5 rounded-2xl border border-slate-800 space-y-1.5 shadow-inner">
+                        <strong className="text-amber-400 block text-sm font-bold flex items-center gap-1.5">
+                          🔥 プレイの見どころ・推しポイント
+                        </strong>
+                        <p className="text-slate-300">{excerpt}</p>
+                      </div>
                     </div>
 
+                    {/* 🎥 サンプル動画（表示可能時） */}
+                    {post.sample_movie_url && (
+                      <div className="space-y-2">
+                        <span className="text-xs font-extrabold text-amber-400 tracking-wider block flex items-center gap-1.5">
+                          🎥 サンプル動画プレビュー
+                        </span>
+                        <div className="w-full aspect-video rounded-2xl overflow-hidden bg-black border border-slate-800 shadow-lg">
+                          <iframe
+                            src={post.sample_movie_url}
+                            className="w-full h-full border-none"
+                            allowFullScreen
+                            scrolling="no"
+                            title={`${post.title} サンプル動画`}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 📷 サンプル画像プレビュー（全画像alt属性完全対応） */}
+                    {post.sample_images && post.sample_images.length > 0 && (
+                      <div className="space-y-2">
+                        <span className="text-xs font-extrabold text-slate-400 tracking-wider block flex items-center gap-1.5">
+                          📷 現場カット（サンプル写真）
+                        </span>
+                        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                          {post.sample_images.slice(0, 6).map((img, i) => (
+                            <a key={i} href={post.affiliate_url} target="_blank" rel="noopener noreferrer" className="block aspect-video relative overflow-hidden rounded-xl border border-slate-800 bg-slate-900 hover:border-amber-400 transition transform hover:scale-105">
+                              <img
+                                src={img}
+                                alt={`${actressName} ${post.title} サンプル名場面ショット ${i + 1}`}
+                                className="w-full h-full object-cover opacity-90 hover:opacity-100 transition"
+                                loading="lazy"
+                              />
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     {/* タグ＆CTAボタン */}
-                    <div className="space-y-3 pt-2">
-                      <div className="flex flex-wrap gap-1.5">
-                        {(post.genres || []).slice(0, 5).map(g => (
-                          <span key={g} className="text-[10px] font-bold text-slate-400 bg-slate-900 border border-slate-800 px-2.5 py-1 rounded-lg">
+                    <div className="space-y-4 pt-2 border-t border-slate-800/80">
+                      <div className="flex flex-wrap gap-1.5 pt-2">
+                        {(post.genres || []).slice(0, 8).map(g => (
+                          <span key={g} className="text-[10px] font-bold text-slate-400 bg-slate-900 border border-slate-800 px-3 py-1 rounded-lg">
                             #{g}
                           </span>
                         ))}
                       </div>
-                      <div className="flex flex-col sm:flex-row gap-2.5 pt-1">
-                        <Link href={`/posts/${post.id}`} className="flex-1 text-center text-xs font-bold text-slate-200 bg-slate-900 border border-slate-700 hover:bg-slate-800 py-3 rounded-xl transition">
+                      <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                        <Link href={`/posts/${post.id}`} className="flex-1 text-center text-xs md:text-sm font-bold text-slate-200 bg-slate-900 border border-slate-700 hover:bg-slate-800 py-3.5 rounded-xl transition">
                           詳細レビューを読む
                         </Link>
-                        <a href={post.affiliate_url} target="_blank" rel="noopener noreferrer" className="flex-1 text-center text-xs font-bold text-white bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-400 hover:to-rose-500 py-3 rounded-xl shadow-lg transition">
+                        <a href={post.affiliate_url} target="_blank" rel="noopener noreferrer" className="flex-1 text-center text-xs md:text-sm font-bold text-white bg-gradient-to-r from-rose-500 via-rose-600 to-pink-600 hover:from-rose-400 hover:to-rose-500 py-3.5 rounded-xl shadow-lg transition">
                           🔥 FANZAで今すぐ視聴する
                         </a>
                       </div>
