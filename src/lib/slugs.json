@@ -1652,7 +1652,9 @@
     "北山かんな": "kitayama-kanna",
     "川奈亜希": "kawana-aki",
     "野々宮あん": "nono-miya-an",
-    "八ッ橋さい子": "hachi-tsu-hashi-sai-ko"
+    "八ッ橋さい子": "hachi-tsu-hashi-sai-ko",
+    "松永あかり": "matsunaga-akari",
+    "守屋よしの": "moriya-yoshino"
   },
   "genres": {
     "ハイビジョン": "haibijon",
@@ -1908,6 +1910,9 @@
     "ダンス": "dansu",
     "大学生": "daigakusei",
     "裏切り": "uragiri",
-    "SF": "sf"
+    "SF": "sf",
+    "松永あかり": "matsunaga-akari",
+    "まつながあかり": "matsunagaakari",
+    "バニーガール": "baniigaaru"
   }
 }
