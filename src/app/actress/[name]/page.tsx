@@ -12,6 +12,8 @@ interface Post {
   title: string;
   review: string;
   image: string;
+  sample_images?: string[];
+  sample_movie_url?: string;
   affiliate_url: string;
   genres: string[];
   actresses: string[];
