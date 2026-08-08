@@ -12,14 +12,10 @@ export const metadata: Metadata = {
   },
   description: "FANZAの人気AV作品を徹底レビュー！人気女優の出演作・ジャンル別おすすめ・品番検索まで対応。巨乳・単体女優・人妻・素人など豊富なジャンルから厳選したレビューをまとめています。",
   keywords: [
-    // 主要検索キーワード
     "AV レビュー", "アダルト動画 感想", "FANZA おすすめ", "AV 品番 検索",
-    // ジャンル系
     "巨乳 AV", "単体女優 レビュー", "人妻 AV おすすめ", "素人 流出", "フェラ 動画",
     "騎乗位 おすすめ", "ハイビジョン AV", "美乳 女優", "中出し 動画",
-    // サイト名
     "背徳の深夜書斎", "大人向けレビュー", "アダルトビデオ 評価",
-    // ロングテール
     "AV女優 おすすめ 2026", "FANZA 人気ランキング", "アダルト動画 ランキング 2026"
   ],
   referrer: "no-referrer",
@@ -88,39 +84,39 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-[#f1f5f9] text-slate-900 selection:bg-rose-500 selection:text-white font-sans antialiased">
 
         {/* 極薄トップインフォバー */}
-        <div className="w-full text-center py-2 bg-gradient-to-r from-slate-200 via-rose-100 to-slate-200 border-b border-slate-300/60 text-[10px] font-bold tracking-widest text-slate-600">
+        <div className="w-full text-center py-1.5 bg-gradient-to-r from-slate-200 via-rose-100 to-slate-200 border-b border-slate-300/60 text-[10px] font-bold tracking-widest text-slate-600">
           FOR ADULTS ONLY • 18歳未満の閲覧は固く禁止されています
         </div>
 
-        {/* プレミアムなクリーンガラスヘッダー */}
-        <header className="border-b border-slate-200 glass-header sticky top-0 z-50 py-3.5 px-6 shadow-sm">
-          <div className="max-w-6xl mx-auto flex items-center justify-between">
-            <a href="/" className="flex items-center gap-2 group">
-              <span className="text-xl font-black tracking-tight bg-gradient-to-r from-slate-900 via-rose-700 to-slate-800 bg-clip-text text-transparent group-hover:opacity-90 transition">
+        {/* プレミアムなスマート1行ガラスヘッダー */}
+        <header className="border-b border-slate-200 glass-header sticky top-0 z-50 py-2.5 px-4 md:px-6 shadow-sm">
+          <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
+            <a href="/" className="flex items-center gap-1.5 group flex-shrink-0">
+              <span className="text-base md:text-lg font-black tracking-tight bg-gradient-to-r from-slate-900 via-rose-700 to-slate-800 bg-clip-text text-transparent group-hover:opacity-90 transition whitespace-nowrap">
                 背徳の深夜書斎
               </span>
-              <span className="text-[9px] font-bold tracking-widest text-slate-500 uppercase border border-slate-300 px-2 py-0.5 rounded-md bg-white">
+              <span className="text-[8px] font-bold tracking-widest text-slate-500 uppercase border border-slate-300 px-1.5 py-0.5 rounded bg-white">
                 AMATEUR
               </span>
             </a>
-            <nav className="flex items-center gap-5 text-xs font-bold text-slate-500">
+            <nav className="flex items-center gap-2 md:gap-3 text-[11px] font-bold text-slate-600 whitespace-nowrap overflow-x-auto no-scrollbar">
               <a href="/" className="hover:text-slate-950 transition">Home</a>
-              <span className="text-slate-300">/</span>
-              <a href="/features" className="hover:text-rose-600 transition text-amber-600 font-black flex items-center gap-1 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-lg">
-                👑 女優神作10選
+              <span className="text-slate-300 text-[10px]">/</span>
+              <a href="/features" className="hover:text-rose-600 transition text-amber-700 font-black flex items-center gap-1 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md text-[10px]">
+                👑 神作10選
               </a>
-              <span className="text-slate-300">/</span>
+              <span className="text-slate-300 text-[10px]">/</span>
               <a href="/ranking" className="hover:text-rose-600 transition">ランキング</a>
-              <span className="text-slate-300">/</span>
-              <a href="/genre/lesbian" className="hover:text-rose-600 transition font-black text-rose-600">👩‍❤️‍💋‍👩レズ専門</a>
-              <span className="text-slate-300">/</span>
+              <span className="text-slate-300 text-[10px]">/</span>
+              <a href="/genre/lesbian" className="hover:text-rose-600 transition font-black text-rose-600">👩‍❤️‍💋‍👩レズ</a>
+              <span className="text-slate-300 text-[10px]">/</span>
               <a href="/manga" className="hover:text-purple-600 transition font-black text-purple-600">📚漫画</a>
-              <span className="text-slate-300">/</span>
-              <a href="https://er-2.pages.dev/" target="_blank" rel="noopener noreferrer" className="hover:text-rose-600 transition text-rose-700 border border-rose-500/30 px-2 py-1 rounded">姉妹サイト: バクロファイル</a>
-              <span className="text-slate-300">/</span>
-              <a href="https://er-3.pages.dev/" target="_blank" rel="noopener noreferrer" className="hover:text-rose-600 transition text-rose-700 border border-rose-500/30 px-2 py-1 rounded">姉妹サイト: 美女ギャル</a>
-              <span className="text-slate-300">/</span>
-              <span className="text-[10px] bg-rose-500 text-white font-black px-2 py-0.5 rounded">
+              <span className="text-slate-300 text-[10px]">/</span>
+              <a href="https://er-2.pages.dev/" target="_blank" rel="noopener noreferrer" className="hover:text-rose-600 transition text-rose-700 bg-rose-50/60 border border-rose-200 px-2 py-0.5 rounded text-[10px]">バクロファイル</a>
+              <span className="text-slate-300 text-[10px]">/</span>
+              <a href="https://er-3.pages.dev/" target="_blank" rel="noopener noreferrer" className="hover:text-rose-600 transition text-rose-700 bg-rose-50/60 border border-rose-200 px-2 py-0.5 rounded text-[10px]">美女ギャル</a>
+              <span className="text-slate-300 text-[10px]">/</span>
+              <span className="text-[9px] bg-rose-500 text-white font-black px-1.5 py-0.5 rounded">
                 R-18
               </span>
             </nav>
@@ -147,10 +143,6 @@ export default function RootLayout({
             <AmateurBanner affiliateId="onchan555-003" bannerId="1506_300_250" />
           </aside>
         </div>
-
-
-
-
 
         {/* ランダムタグクラウド */}
         <TagCloud />
