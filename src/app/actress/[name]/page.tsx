@@ -233,9 +233,9 @@ export default async function ActressPage({ params }: { params: Promise<{ name: 
                   </div>
 
                   {/* ジャケット写真 */}
-                  <div className="w-full md:w-64 flex-shrink-0 aspect-[16/10] md:aspect-[4/3] relative rounded-xl overflow-hidden bg-slate-900 border border-slate-800">
+                  <div className="w-full md:w-72 flex-shrink-0 aspect-[800/538] relative rounded-xl overflow-hidden bg-slate-900/90 border border-slate-800 flex items-center justify-center p-1">
                     {post.image ? (
-                      <img src={post.image} alt={`${post.title} ジャケット`} referrerPolicy="no-referrer" className="w-full h-full object-cover" loading="lazy" />
+                      <img src={post.image} alt={`${post.title} パッケージジャケット`} referrerPolicy="no-referrer" className="w-full h-full object-contain rounded-lg shadow" loading="lazy" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-slate-500 text-xs">No Image</div>
                     )}
