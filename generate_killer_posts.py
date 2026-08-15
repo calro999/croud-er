@@ -229,43 +229,6 @@ def filter_items(items, posted_cache):
             
     return valid_items
 
-def generate_killer_article(item):
-    title = item.get("title")
-    comment = item.get("comment", "")
-    genres = ", ".join([g.get("name", "") for g in item.get("iteminfo", {}).get("genre", [])])
-    
-    safe_title = clean_for_safety(title)
-    safe_comment = clean_for_safety(comment)
-    safe_genres = clean_for_safety(genres)
-
-    prompt = f"""以下の大人向け映像作品の情報を基にして、SEO超特化・最強執筆ルールに従ってブログ記事のHTML本文を生成してください。
-
-【作品名】: {safe_title}
-【あらすじ】: {safe_comment}
-【ジャンル】: {safe_genres}
-
-【SEO超特化・最強執筆ルール】
-1. 【長さ】: 必ず2000文字以上の底つきのある記事を書くこと。短い記事は絶対に禁止。
-2. 【見出し構成】: <h2>を2つ以上、<h3>を4つ以上、<h4>を2つ以上使って論理的な見出し階層を作ること。
-3. 【検索意図】: 「レビュー」「感想」「評価」「見どころ」「おすすめ」「サンプル」など読者が使う検索キーワードを自然に盛り込む。
-4. 【導入フック】: 冒頭で読者を引き込む強烈なフック文を書く（「見た瞬間に後悔する」「完全に予想を裏切ってくる」など）。
-5. 【独自性】: 他サイトのレビューと全く異なるライターの個性を濃く出すこと。
-6. 【構成必須セクション】:
-   ・作品概要（どんな内容か）
-   ・見どころ分析（なぜこの作品が優れているか）
-   ・キャスト分析（出演者の魅力）
-   ・演出・カメラワーク（技術面の評価）
-   ・評価表（tableタグで各要素をスコア付け）
-   ・総評
-7. 【表現の防壁】: 直接的な性描写ワードを完全に避け、官能的で文学的な表現に変換。
-8. 【フォーマット】: HTMLのみ出力（h2, h3, h4, p, strong, ul, li, table, thead, tbody, tr, th, td）。マークダウンのコードブロック（```html等）は使用禁止。
-
-SEO最強のHTML本文のみを出力してください。
-"""
-
-    system_message = "あなたはネットで絶大な支持を集めるカリスマレビュアーです。規約に配慮しつつ極めて熱量の高いレビュー文をHTML形式で作成します。"
-
-
 def proofread_and_optimize_er_article(title, html_content):
     """誤字脱字最終チェックとSEO, AI-SEO, GEO的な修正ブラッシュアップ工程"""
     if not html_content or len(html_content.strip()) < 50:
@@ -324,7 +287,58 @@ def ensure_complete_er_article(html_content):
     if open_divs > close_divs:
         html_content += "</div>" * (open_divs - close_divs)
     return html_content
-            
+
+def generate_killer_article(item):
+    title = item.get("title", "")
+    comment = item.get("comment", "")
+    genres = ", ".join([g.get("name", "") for g in item.get("iteminfo", {}).get("genre", [])])
+    
+    safe_title = clean_for_safety(title)
+    safe_comment = clean_for_safety(comment)
+    safe_genres = clean_for_safety(genres)
+
+    prompt = f"""以下の大人向け映像作品の情報を基にして、SEO超特化・最強執筆ルールに従ってブログ記事のHTML本文を生成してください。
+
+【作品名】: {safe_title}
+【あらすじ】: {safe_comment}
+【ジャンル】: {safe_genres}
+
+【SEO超特化・最強執筆ルール】
+1. 【長さ】: 必ず2000文字以上の底つきのある記事を書くこと。短い記事は絶対に禁止。
+2. 【見出し構成】: <h2>を2つ以上、<h3>を4つ以上、<h4>を2つ以上使って論理的な見出し階層を作ること。
+3. 【検索意図】: 「レビュー」「感想」「評価」「見どころ」「おすすめ」「サンプル」など読者が使う検索キーワードを自然に盛り込む。
+4. 【導入フック】: 冒頭で読者を引き込む強烈なフック文を書く（「見た瞬間に後悔する」「完全に予想を裏切ってくる」など）。
+5. 【独自性】: 他サイトのレビューと全く異なるライターの個性を濃く出すこと。
+6. 【構成必須セクション】:
+   ・作品概要（どんな内容か）
+   ・見どころ分析（なぜこの作品が優れているか）
+   ・キャスト分析（出演者の魅力）
+   ・演出・カメラワーク（技術面の評価）
+   ・評価表（tableタグで各要素をスコア付け）
+   ・総評
+7. 【表現の防壁】: 直接的な性描写ワードを完全に避け、官能的で文学的な表現に変換。
+8. 【フォーマット】: HTMLのみ出力（h2, h3, h4, p, strong, ul, li, table, thead, tbody, tr, th, td）。マークダウンのコードブロック（```html等）は使用禁止。
+
+SEO最強のHTML本文のみを出力してください。
+"""
+
+    system_message = "あなたはネットで絶大な支持を集めるカリスマレビュアーです。規約に配慮しつつ極めて熱量の高いレビュー文をHTML形式で作成します。"
+
+    # API呼び出し
+    article_html = call_groq_api(prompt, system_message)
+    if article_html:
+        if "```html" in article_html:
+            article_html = article_html.split("```html", 1)[1].split("```")[0]
+        elif "```" in article_html:
+            article_html = article_html.split("```", 1)[1].split("```")[0]
+        article_html = article_html.strip()
+        
+        article_html = proofread_and_optimize_er_article(title, article_html)
+        article_html = ensure_complete_er_article(article_html)
+        if len(article_html) > 200:
+            return article_html
+
+    # フォールバック処理
     fallback_title = title or "この作品"
     fallback_genres = "、".join(genres.split(", ")) if genres else "大人の背徳ドラマ"
     fallback_maker = item.get("iteminfo", {}).get("maker", [{}])[0].get("name", "一流メーカー") if item.get("iteminfo", {}).get("maker") else "一流メーカー"

@@ -266,7 +266,16 @@ SEO最強のHTML本文のみを出力してください。
 
     system_message = "あなたはネットで絶大な支持を集める「百合・女性同士の恋愛・背徳ドラマ専門」のカリスマ熱血レビュアーです。規約に配慮しつつ極めて熱量の高いレビュー文をHTML形式で作成します。"
 
-            
+    article_html = call_groq_api(prompt, system_message)
+    if article_html:
+        if "```html" in article_html:
+            article_html = article_html.split("```html", 1)[1].split("```")[0]
+        elif "```" in article_html:
+            article_html = article_html.split("```", 1)[1].split("```")[0]
+        article_html = article_html.strip()
+        if len(article_html) > 200:
+            return article_html
+
     fallback_title = title or "この作品"
     fallback_genres = "、".join(genres.split(", ")) if genres else "女性同士の禁断ドラマ"
     fallback_maker = item.get("iteminfo", {}).get("maker", [{}])[0].get("name", "一流メーカー") if item.get("iteminfo", {}).get("maker") else "一流メーカー"
