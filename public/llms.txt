@@ -10,8 +10,8 @@
 - [サイトマップ](https://haitoku.pages.dev/sitemap.xml): 完全サイトマップ
 
 ## コンテンツ概要
-- 収録記事数: 1663 件
-- 収録マンガレビュー数: 315 件
+- 収録記事数: 1676 件
+- 収録マンガレビュー数: 320 件
 - 完全詳細データセット: [llms-full.txt](https://haitoku.pages.dev/llms-full.txt)
 
 ## 最新記事ピックアップ
@@ -95,5 +95,5 @@
 - [しゅきイキまみれ](https://haitoku.pages.dev/manga/b064bcmcm02779): 
 - [女子大生調教日誌〜涼子〜](https://haitoku.pages.dev/manga/b064bcmcm02799): 
 - [交尾指導 蕩ける子宮を受精するまで躾け中【デジタル特装版】](https://haitoku.pages.dev/manga/b064bcmcm02950): 
+- [艶華【デジタル特装版】](https://haitoku.pages.dev/manga/b064bcmcm02955): 
 - [水鏡のマグノリア](https://haitoku.pages.dev/manga/b064bcmcm03169): 
-- [ヒプノアプリ×タイムストップファンタジア](https://haitoku.pages.dev/manga/b073bktcm03210): 
