@@ -140,9 +140,34 @@ def generate_manga_article(item):
 5. ネタバレは最小限にし「続きはFANZAで確認」へ誘導
 6. HTMLのみ出力。マークダウン禁止。"""
 
+    system_message = "あなたはアダルトコミック・同人漫画のレビュー専門ライターです。読者の購買意欲を掻き立てる熱量の高い記事をHTML形式で出力します。"
+    res = call_groq_api(prompt, system_message)
+    if res:
+        if "```html" in res:
+            res = res.split("```html", 1)[1].split("```")[0]
+        elif "```" in res:
+            res = res.split("```", 1)[1].split("```")[0]
+        res = res.strip()
+        if len(res) > 200:
+            return res
 
-
-    return f"<h2>{title}</h2><p>{comment}</p>"
+    # 動的フォールバック
+    clean_t = re.sub(r'【.*?】', '', title).strip() or title
+    author_str = authors if authors else "人気作家"
+    genre_str = genres if genres else "注目の同人コミック"
+    
+    html = f"""<h2>『{clean_t}』作品レビュー＆見どころ解説</h2>
+<p>『{clean_t}』（著: {author_str}）は、{genre_str}の魅力を余すところなく詰め込んだ話題作です。</p>
+<h3>作品の概要とシチュエーション</h3>
+<p>{comment if comment else f"{genre_str}をテーマに、登場人物たちの葛藤と高まる情熱が美麗な作画で描かれます。"}</p>
+<h3>見どころとおすすめポイント</h3>
+<ul>
+<li><strong>美麗な作画力</strong>：{author_str}ならではの繊細なタッチと表情豊かな描写。</li>
+<li><strong>引き込まれるストーリー展開</strong>：ページをめくる手が止まらなくなる濃密なシチュエーション。</li>
+</ul>
+<h3>総評</h3>
+<p>{genre_str}ファンなら必読のハイクオリティな一冊。ぜひ本編でお楽しみください。</p>"""
+    return html
 
 def main():
     print(f"--- Manga Generator ({SITE}) | Target: {TARGET_POST_COUNT} ---")

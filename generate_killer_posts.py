@@ -1,27 +1,44 @@
 
-def call_groq_api(prompt, system_content="You are a helpful assistant.", model="llama-3.3-70b-versatile"):
+def call_multi_llm_api(prompt, system_content="You are a helpful assistant."):
+    # 1. Groq API
     groq_key = os.environ.get("GROQ_API_KEY")
-    if not groq_key:
-        return None
-    url = "https://api.groq.com/openai/v1/chat/completions"
-    headers = {
-        "Authorization": f"Bearer {groq_key}",
-        "Content-Type": "application/json"
-    }
-    payload = {
-        "model": model,
-        "messages": [
-            {"role": "system", "content": system_content},
-            {"role": "user", "content": prompt}
-        ],
-        "temperature": 0.7
-    }
-    try:
-        res = requests.post(url, headers=headers, json=payload, timeout=30)
-        if res.status_code == 200:
-            return res.json()["choices"][0]["message"]["content"].strip()
-    except Exception as e:
-        print(f"Groq API error: {e}")
+    if groq_key:
+        for model_name in ["llama-3.3-70b-versatile", "llama3-70b-8192"]:
+            try:
+                headers = {"Authorization": f"Bearer {groq_key}", "Content-Type": "application/json"}
+                payload = {
+                    "model": model_name,
+                    "messages": [{"role": "system", "content": system_content}, {"role": "user", "content": prompt}],
+                    "temperature": 0.7
+                }
+                res = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload, timeout=30)
+                if res.status_code == 200:
+                    text = res.json()["choices"][0]["message"]["content"].strip()
+                    if len(text) > 100:
+                        return text
+            except Exception as e:
+                print(f"Groq API error ({model_name}): {e}")
+
+    # 2. Gemini API
+    gemini_key = os.environ.get("GEMINI_API_KEY")
+    if gemini_key:
+        for model_name in ["gemini-2.0-flash", "gemini-1.5-flash"]:
+            try:
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={gemini_key}"
+                payload = {
+                    "contents": [{"parts": [{"text": f"{system_content}\n\n{prompt}"}]}],
+                    "generationConfig": {"temperature": 0.7, "maxOutputTokens": 2048}
+                }
+                res = requests.post(url, json=payload, timeout=30)
+                if res.status_code == 200:
+                    candidate = res.json().get("candidates", [{}])[0]
+                    parts = candidate.get("content", {}).get("parts", [])
+                    text = "".join(p.get("text", "") for p in parts if p.get("text")).strip()
+                    if len(text) > 100:
+                        return text
+            except Exception as e:
+                print(f"Gemini API error ({model_name}): {e}")
+
     return None
 
 import os
@@ -325,7 +342,7 @@ SEO最強のHTML本文のみを出力してください。
     system_message = "あなたはネットで絶大な支持を集めるカリスマレビュアーです。規約に配慮しつつ極めて熱量の高いレビュー文をHTML形式で作成します。"
 
     # API呼び出し
-    article_html = call_groq_api(prompt, system_message)
+    article_html = call_multi_llm_api(prompt, system_message)
     if article_html:
         if "```html" in article_html:
             article_html = article_html.split("```html", 1)[1].split("```")[0]
@@ -338,101 +355,59 @@ SEO最強のHTML本文のみを出力してください。
         if len(article_html) > 200:
             return article_html
 
-    # フォールバック処理
+    # フォールバック処理: 固定テンプレートを廃止し、作品データに基づく完全動的レビューを生成
     fallback_title = title or "この作品"
-    fallback_genres = "、".join(genres.split(", ")) if genres else "大人の背徳ドラマ"
+    clean_t = re.sub(r'【.*?】', '', fallback_title).strip() or fallback_title
+    fallback_genres = "、".join(genres.split(", ")) if genres else "大人のエンターテインメント"
     fallback_maker = item.get("iteminfo", {}).get("maker", [{}])[0].get("name", "一流メーカー") if item.get("iteminfo", {}).get("maker") else "一流メーカー"
+    actresses = [a.get("name", "") for a in item.get("iteminfo", {}).get("actress", [])]
+    actress_str = "・".join(actresses) if actresses else ""
 
-    # 5パターンのフォールバックテンプレート（Duplicate Content回避）
-    pattern = random.randint(1, 5)
-
-    if pattern == 1:
-        return f"""<h2>『{fallback_title}』完全レビュー——{fallback_genres}マニアが唸る傑作の全分析</h2>
-<p>当サイトのレビュアーが今年観た作品の中で、脳裏に濃く刻まれた一本がこれ。『{fallback_title}』は単なるエンターテインメントを超えて、見る者の内側に何かを残す作品だ。</p>
-<h3>『{fallback_title}』を見るべき3つの理由</h3>
-<ul>
-<li><strong>理由①：シチュエーションの独自性</strong>——{fallback_genres}ならではのリアリティに満ちた設定が秀逸。</li>
-<li><strong>理由②：{fallback_maker}の本気</strong>——一切妥協しない映像クオリティと緻密な編集技術。</li>
-<li><strong>理由③：何度でも楽しめる作り</strong>——見るたびに新たな発見がある丁寧な作品構成。</li>
-</ul>
-<h3>レビュアーが驚いた「神カット」分析</h3>
-<p>{fallback_genres}のシチュエーションを与えられたキャストのリアクションは、まさにこれこそが整局のハイライトと言えるシーンの連続だ。なぜそんな表情ができるのかと考えさせるほどの深みがある。</p>
-<h3>カメラワーク・編集・音響の「トリプルな魅力」</h3>
-<p>{fallback_maker}が手がけた、まるでドキュメンタリーのような角度の高いアングル。映像全体に流れる緊迫感が、開始数分で心拍数を跳ね上げること間違いなし。</p>
-<h4>映像美のポイント</h4>
-<p>高画質映像ならではの鮮明な映像美と、静寂の中に響く環境音がリアリティを係数的に引き上げる。</p>
-<h2>総合評価——『{fallback_title}』の評定</h2>
-<table><thead><tr><th>評価項目</th><th>スコア</th></tr></thead><tbody><tr><td>シチュエーション</td><td>★★★★★</td></tr><tr><td>キャスト</td><td>★★★★☆</td></tr><tr><td>映像クオリティ</td><td>★★★★★</td></tr><tr><td>総合</td><td>★★★★★</td></tr></tbody></table>
-<p>当サイトが誇る中でも特におすすめする作品。見逃している方はぜひ御覧に。</p>"""
-
-    elif pattern == 2:
-        return f"""<h2>『{fallback_title}』出演キャストの百面の魅力——{fallback_genres}エクストリーム全分析</h2>
-<p>『{fallback_title}』を初めて観た頭から感じるのは、キャストの知性と本能が交差するような圧倒的な存在感だ。{fallback_maker}が全力を注いでいるからこそ、これほどのクオリティが実現する。</p>
-<h3>レビュアーが認める「{fallback_title}」の真の価値</h3>
-<p>{fallback_genres}のシチュエーションを与えられた出演者のリアクションは、見る者が「自分もその立場にいる」と感じるほどの没入感に満ちている。</p>
-<h3>スタッフが情熱を注いだ「見せ場」の確かな演出</h3>
-<p>{fallback_maker}が追求した高めのカメラ位置と編集リズムは、観る者の感情を完全に深い場所へ引き込む。その没入感の高さはネット上のレビューでも高評価を集めている。</p>
-<h4>注目ポイント</h4>
-<ul>
-<li>知性と本能が交差する予測不能な表情変化。</li>
-<li>プロだからこそ出る、計算を超えた真摯な演技。</li>
-<li>確かなリズム感で完結へ向かって醸す構成力。</li>
-</ul>
-<h2>総合評価</h2>
-<table><thead><tr><th>評価項目</th><th>スコア</th></tr></thead><tbody><tr><td>キャストの存在感</td><td>★★★★★</td></tr><tr><td>シチュエーション</td><td>★★★★★</td></tr><tr><td>映像クオリティ</td><td>★★★★☆</td></tr><tr><td>総合</td><td>★★★★★</td></tr></tbody></table>
-<p>一度視聴し始めたら最後まで目が離せない作品。</p>"""
-
-    elif pattern == 3:
-        return f"""<h2>『{fallback_title}』全力レビュー——{fallback_genres}マニア必見のエッセンス</h2>
-<p>『{fallback_title}』を観る前に知っておくべきことが3つある。ライターが自信を持っておすすめできる理由を全力で語る。</p>
-<h3>1. 「{fallback_title}」の内容概要</h3>
-<p>{fallback_genres}をメインに据えながらも、完全にテンプレート的な展開を拒否する独自のシナリオ機構が秀逸。{fallback_maker}の制作陣の実力が遺憾なく発揮されている。</p>
-<h3>2. レビュアーが驚いた「神カット」分析</h3>
-<p>観る者が「自分もその場にいる」と感じるほどの没入感。カメラと編集の能力が最高点をたどるような構成で、状況の盛り上がりは最後のクライマックスに向けて一気に上昇する。</p>
-<h3>3. まだ「{fallback_title}」を観ていない方へ</h3>
-<p>見ていないのは今だけ。躊躇していることをやめて今すぐ見るべき作品だ。</p>
-<h4>レビュアー最大注目ポイント</h4>
-<ul>
-<li>{fallback_maker}が本気を入れた映像美と編集。</li>
-<li>出演者とカメラが対話するような奥行きのあるカメラワーク。</li>
-<li>緊張と解放が交互に訪れるシナリオ構成の妙味。</li>
-</ul>
-<h2>総合評価</h2>
-<table><thead><tr><th>評価項目</th><th>スコア</th></tr></thead><tbody><tr><td>シチュエーション</td><td>★★★★★</td></tr><tr><td>映像クオリティ</td><td>★★★★★</td></tr><tr><td>総合</td><td>★★★★★</td></tr></tbody></table><p>一度見ると忘れられない作品。</p>"""
-
-    elif pattern == 4:
-        return f"""<h2>{fallback_genres}の極致——『{fallback_title}』はなぜ今期最高峰なのか</h2>
-<p>{fallback_maker}が近年リリースした作品群の中でも、『{fallback_title}』は途中で止められなくなる吸引力を持つ特別な一本だ。</p>
-<h3>この作品が世代を超えて語られる理由</h3>
-<p>{fallback_genres}の出演者たちが織りなす関係性の深さ、そして{fallback_maker}が追求した美しい映像美が、その没入感を係数的に高めている。</p>
-<h3>レビュアーが気に入った「見どころ」</h3>
-<ul>
-<li><strong>対話的な導入</strong>：開始から引き込まれる自然な流れ感。</li>
-<li><strong>目を奪う表現力</strong>：プロだからこそ出る、計算を超えた真摯な演技。</li>
-<li><strong>気の利いた編集</strong>：確かなリズム感で完結に向かって醸す構成力。</li>
-</ul>
-<h4>スタッフのこだわり</h4>
-<p>照明・音響・カメラアングル全てにおいて{fallback_maker}の妥協なきこだわりが見て取れる。</p>
-<h2>総合評価</h2>
-<table><thead><tr><th>評価項目</th><th>スコア</th></tr></thead><tbody><tr><td>シチュエーション</td><td>★★★★☆</td></tr><tr><td>キャスト</td><td>★★★★★</td></tr><tr><td>総合</td><td>★★★★★</td></tr></tbody></table>
-<p>『{fallback_title}』は興味のある人全員に自信を持っておすすめする作品。</p>"""
-
+    intro_hooks = [
+        f"数ある{fallback_maker}作品の中でも、ひときわ異彩を放つ濃密なシチュエーションが描かれた本作。",
+        f"タイトルのインパクトそのままに、最初から最後まで息をのむ展開が続く注目作。",
+        f"{fallback_genres}ファンならずとも引き込まれる、リアルな空気感と生々しい熱量が詰まった一本。",
+        f"日常のすぐ隣にある背徳感や非日常の刺激を極限まで追求した、完成度の高い作品。",
+        f"シチュエーションの作り込みとキャストの迫真のリアクションが融合した、見応え十分の映像作品。"
+    ]
+    
+    if actresses:
+        actress_focus = f"""
+<h3>出演キャスト（{actress_str}）の魅力と迫真の演技</h3>
+<p>{actress_str}の繊細な表情の変化、戸惑いから次第に快楽と本能に身を委ねていくグラデーションが鮮烈に描かれています。視線ひとつ、吐息ひとつに至るまで感情が乗っており、画面越しでもその熱気がダイレクトに伝わってきます。</p>
+"""
+    elif "素人" in genres or "素人" in fallback_title or "マジックミラー" in fallback_title or "モニタリング" in fallback_title:
+        actress_focus = f"""
+<h3>生々しいリアリティと予測不能なリアクション</h3>
+<p>台本通りでは決して出せない、その場限りの生々しい緊張感と戸惑いが画面全体から漂います。状況を受け入れざるを得なくなった瞬間の息遣いや、羞恥心が徐々に解き放たれていくリアルなプロセスは見逃せません。</p>
+"""
     else:
-        return f"""<h2>丁寧レビュー：『{fallback_title}』——{fallback_genres}マニアが唸る永遠の傑作</h2>
-<p>『{fallback_title}』——そのタイトルだけで引き込まれる人がいることは容易に想像できる。それほどに魅力的な内容と出演者が見る者の心を掴んで離さないからだ。</p>
-<h3>{fallback_genres}というラベルがこの作品を語り尽くせない理由</h3>
-<p>{fallback_genres}というカテゴリに属しながらも、この作品はそのジャンルの定石を完全に体得した上でさらに高みへ登ろうとする意欲作だ。</p>
-<h3>レビュアー最大注目ポイント</h3>
-<ul>
-<li>{fallback_maker}が本気を注いだ映像美と編集技術。</li>
-<li>出演者とカメラが対話するような奥行きのあるカメラワーク。</li>
-<li>緊張と解放が交互に訪れるシナリオ構成の妙味。</li>
-</ul>
-<h3>まだ「{fallback_title}」を観ていない方へのメッセージ</h3>
-<p>見ていないのは今だけ。躊躇しているなら今すぐ視聴すべき作品だ。後悔は絶対にしない。</p>
-<h2>総合評価</h2>
-<table><thead><tr><th>評価項目</th><th>スコア</th></tr></thead><tbody><tr><td>シチュエーション</td><td>★★★★★</td></tr><tr><td>キャスト</td><td>★★★★★</td></tr><tr><td>映像クオリティ</td><td>★★★★☆</td></tr><tr><td>総合</td><td>★★★★★</td></tr></tbody></table>
-<p>『{fallback_title}』は興味のある人全員に自信を持っておすすめする作品。</p>"""
+        actress_focus = f"""
+<h3>シチュエーションを極限まで高める演出と空気感</h3>
+<p>本作の持ち味は、なんといっても張り詰めた空気感の演出です。登場人物同士の絶妙な距離感と心理的な駆け引きが丁寧に描写されており、観ている側をグイグイとその世界観へ引き込みます。</p>
+"""
+
+    highlight_focus = f"""
+<h3>見どころ・おすすめの視聴ポイント</h3>
+<p>『{clean_t}』の最大のハイライトは、中盤からクライマックスにかけて一気に加速する怒涛の展開です。{fallback_genres}ならではの濃厚な絡みと、視覚・聴覚を刺激するアングルワークが完璧に計算されています。</p>
+<p>特に静寂と熱狂のコントラストが素晴らしく、ヘッドホンや高画質環境でじっくりと世界観に浸りながら鑑賞するのがベストです。</p>
+"""
+
+    closing_thoughts = [
+        f"『{clean_t}』は、{fallback_maker}のこだわりと熱量がストレートに伝わる満足度の高い一本。濃厚な時間をじっくり楽しみたい方におすすめです。",
+        f"最初から最後まで緊張感と興奮が途切れない傑作。{fallback_genres}の魅力を存分に堪能したいなら、迷わずチェックしておくべき作品です。",
+        f"キャストの魅力、シチュエーションの深さ、映像のクオリティが三拍子揃った充実作。ぜひリラックスしたプライベートな時間にご堪能ください。"
+    ]
+
+    selected_intro = random.choice(intro_hooks)
+    selected_closing = random.choice(closing_thoughts)
+
+    return f"""<h2>『{clean_t}』詳細レビュー・作品の見どころ</h2>
+<p>{selected_intro}</p>
+{actress_focus}
+{highlight_focus}
+<h3>総評</h3>
+<p>{selected_closing}</p>"""
 
 
 def save_individual_post(post_data):
