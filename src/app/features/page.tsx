@@ -75,14 +75,49 @@ export default function FeaturesPage() {
       {/* ヘッダーセクション */}
       <section className="rounded-3xl bg-gradient-to-r from-slate-900 via-rose-950 to-slate-900 p-8 md:p-12 border border-slate-800 text-white shadow-2xl space-y-4">
         <span className="inline-flex text-[10px] font-black tracking-widest text-amber-400 bg-amber-400/10 border border-amber-400/20 px-3.5 py-1 rounded-full uppercase">
-          SPECIAL SELECTION • 女優神作10選
+          SPECIAL SELECTION • 特集一覧
         </span>
         <h1 className="text-3xl md:text-5xl font-black tracking-tight leading-tight">
-          人気AV女優の『絶対に抜ける神作10選』特別特集
+          人気AV女優の『神作10選』＆ おすすめ特集
         </h1>
         <p className="text-slate-300 text-xs md:text-sm leading-relaxed max-w-3xl">
-          当サイトマニアが厳選！瀬戸環奈、松本いちか、松永あかりなど、トップAV女優たちの出演作品の中からシチュエーション・表情変化・プレイ内容を徹底分析した【ハズレなし神作10選】特集ページ一覧です。
+          当サイトマニアが厳選！月額見放題chの徹底比較から人気トップ女優の出演作品まで、シチュエーション・見どころ・名場面ショットを徹底分析した特集一覧です。
         </p>
+      </section>
+
+      {/* 最上部固定：FANZA見放題ch 殿堂入りキラー特集 */}
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-rose-950 via-slate-900 to-slate-950 border-2 border-rose-500/50 shadow-2xl p-6 md:p-8 text-white">
+        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-rose-500/20 rounded-full blur-3xl pointer-events-none" />
+        
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 relative z-10">
+          <div className="space-y-3 max-w-2xl">
+            <div className="flex items-center gap-2">
+              <span className="bg-gradient-to-r from-amber-400 to-amber-600 text-slate-950 text-[10px] font-black tracking-widest px-3 py-1 rounded-full uppercase shadow">
+                👑 殿堂入りNo.1特集
+              </span>
+              <span className="bg-rose-500/20 border border-rose-500/30 text-rose-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full">
+                定額エロ動画コスパ最強
+              </span>
+            </div>
+            
+            <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight leading-snug">
+              【2026年最新】エロ動画見放題ならFANZA見放題ch一択？コスパ・作品数・使い勝手を徹底本音レビュー！
+            </h2>
+            
+            <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
+              「単品買いで毎月数万円溶かしていた…」そんな悩みを一発解決！人気トップ女優の名作からVR・マニアック企画まで、なぜエロ動画サブスクで見放題chが選ばれるのか徹底解説。
+            </p>
+          </div>
+
+          <div className="flex-shrink-0 w-full lg:w-auto">
+            <Link
+              href="/fanza-tv-plus"
+              className="inline-flex items-center justify-center w-full lg:w-auto text-sm font-black text-white bg-gradient-to-r from-rose-600 via-pink-600 to-rose-500 hover:from-rose-500 hover:to-pink-400 px-8 py-4 rounded-2xl shadow-xl hover:shadow-rose-500/25 transition duration-200 transform hover:-translate-y-0.5 text-center"
+            >
+              🔥 見放題chの本音レビューを読む ›
+            </Link>
+          </div>
+        </div>
       </section>
 
       {/* 特集カードグリッド */}

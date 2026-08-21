@@ -177,6 +177,34 @@ export default function Home() {
           </div>
         </section>
 
+        {/* 特選PICKUP: FANZA見放題ch特集バナー */}
+        <section className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-rose-950 to-slate-900 p-5 md:p-6 border border-rose-500/30 shadow-md text-white">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1.5 max-w-2xl">
+              <div className="flex items-center gap-2">
+                <span className="bg-rose-600 text-white text-[9px] font-black px-2 py-0.5 rounded tracking-wide">
+                  👑 特選PICKUP
+                </span>
+                <span className="text-amber-400 text-xs font-bold">
+                  エロ動画サブスク徹底比較
+                </span>
+              </div>
+              <h2 className="text-base md:text-lg font-black text-white">
+                【2026年最新】エロ動画見放題ならFANZA見放題ch一択？作品数・コスパ・使い勝手を本音レビュー！
+              </h2>
+              <p className="text-xs text-slate-300 line-clamp-1">
+                単品買いで損していませんか？定額で好きなだけ抜けるFANZA見放題chの魅力を完全暴露！
+              </p>
+            </div>
+            <Link
+              href="/fanza-tv-plus"
+              className="flex-shrink-0 text-xs font-black text-white bg-rose-600 hover:bg-rose-500 px-5 py-2.5 rounded-xl shadow transition"
+            >
+              特集を読む ›
+            </Link>
+          </div>
+        </section>
+
         {/* フィルタおよび記事一覧 (クライアント側) */}
         <PostListContainer initialPosts={posts} />
         {/* 女優別・ジャンル別のクイックリンク集 (内部リンクSEO強化) */}

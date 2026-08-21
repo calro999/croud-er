@@ -8,6 +8,8 @@ BASE_URL = f"https://{HOST}"
 
 URL_SET = {
     f"{BASE_URL}/",
+    f"{BASE_URL}/fanza-tv-plus",
+    f"{BASE_URL}/features",
     f"{BASE_URL}/ranking",
     f"{BASE_URL}/archives",
     f"{BASE_URL}/manga"

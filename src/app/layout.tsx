@@ -102,6 +102,10 @@ export default function RootLayout({
             <nav className="flex items-center gap-2 md:gap-3 text-[11px] font-bold text-slate-600 whitespace-nowrap overflow-x-auto no-scrollbar">
               <a href="/" className="hover:text-slate-950 transition">Home</a>
               <span className="text-slate-300 text-[10px]">/</span>
+              <a href="/fanza-tv-plus" className="hover:text-rose-600 transition text-rose-700 font-black flex items-center gap-1 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-md text-[10px]">
+                🔥 見放題ch
+              </a>
+              <span className="text-slate-300 text-[10px]">/</span>
               <a href="/features" className="hover:text-rose-600 transition text-amber-700 font-black flex items-center gap-1 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md text-[10px]">
                 👑 神作10選
               </a>
@@ -158,6 +162,8 @@ export default function RootLayout({
             </div>
             <div className="flex flex-wrap gap-4 text-[10px] font-bold text-slate-500 justify-center md:justify-end">
               <a href="/" className="hover:text-slate-950">ホーム</a>
+              <span>•</span>
+              <a href="/fanza-tv-plus" className="hover:text-rose-600 text-rose-600 font-bold">🔥見放題ch徹底攻略</a>
               <span>•</span>
               <a href="/features" className="hover:text-amber-600 text-amber-600 font-bold">👑女優神作10選</a>
               <span>•</span>
