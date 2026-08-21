@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { censorText } from "@/lib/censor";
 import { getActressSlug, getActressNameBySlug, getGenreSlug } from "@/lib/slugs";
+import UnlimitedPromotionBox from "@/app/components/UnlimitedPromotionBox";
 
 interface Post {
   id: string;
@@ -402,6 +403,9 @@ export default async function ActressPage({ params }: { params: Promise<{ name: 
             </div>
           </div>
         </section>
+
+        {/* FANZA見放題ch 特設キラー誘導ボックス */}
+        <UnlimitedPromotionBox />
 
         <section className="text-center py-6">
           <a href={`https://al.fanza.co.jp/?lurl=https%3A%2F%2Fwww.dmm.co.jp%2Fsearch%2F-%2F%3Fsearchstr%3D${encodeURIComponent(actressName)}%2F&af_id=onchan555-003`}

@@ -3,6 +3,7 @@ import path from "path";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+import UnlimitedPromotionBox from "@/app/components/UnlimitedPromotionBox";
 
 interface MangaPost {
   id: string;
@@ -166,6 +167,9 @@ export default async function MangaDetailPage({ params }: { params: Promise<{ id
           [&_ul]:list-disc [&_ul]:pl-5 [&_li]:text-sm [&_li]:text-slate-600 [&_li]:leading-relaxed">
           <div dangerouslySetInnerHTML={{ __html: post.review }} />
         </section>
+
+        {/* FANZA見放題ch 特設キラー誘導ボックス */}
+        <UnlimitedPromotionBox />
 
         {/* CTAボタン */}
         <section className="text-center py-6 space-y-3">

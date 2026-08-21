@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Metadata } from "next";
 import { censorText } from "@/lib/censor";
 import { getActressSlug } from "@/lib/slugs";
+import UnlimitedPromotionBox from "@/app/components/UnlimitedPromotionBox";
 
 interface Post {
   id: string;
@@ -533,6 +534,9 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
               )}
             </div>
           </section>
+
+          {/* 全記事下部：FANZA見放題ch 特設キラー誘導ボックス */}
+          <UnlimitedPromotionBox />
 
           {/* 極上のプレミアムCTAボタン */}
           <section className="pt-6 border-t border-slate-100 text-center space-y-3" aria-label="視聴誘導">
