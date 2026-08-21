@@ -42,10 +42,34 @@ function main() {
       const dateB = new Date(b.date || 0);
       return dateB.getTime() - dateA.getTime();
     });
-  }
 
-  fs.writeFileSync(OUTPUT_FILE, JSON.stringify(posts, null, 2), 'utf8');
-  console.log(`Bundled ${posts.length} posts into ${OUTPUT_FILE}`);
+    // 一覧表示・検索に必要な軽量フィールドのみを抽出（巨大なreview長文HTMLやsample_images配列を省きHTMLサイズを劇的に軽量化）
+    const summaryPosts = posts.map(post => {
+      // reviewからHTMLタグを除去して先頭120文字のみ抽出
+      let shortReview = "";
+      if (post.review) {
+        shortReview = post.review.replace(/<[^>]*>?/gm, '').trim().slice(0, 120);
+        if (post.review.length > 120) shortReview += '...';
+      }
+
+      return {
+        id: post.id,
+        hinban: post.hinban || "",
+        title: post.title || "",
+        review: shortReview,
+        image: post.image || "",
+        affiliate_url: post.affiliate_url || "",
+        genres: post.genres || [],
+        actresses: post.actresses || [],
+        maker: post.maker || "",
+        date: post.date || "",
+        labels: post.labels || []
+      };
+    });
+
+    fs.writeFileSync(OUTPUT_FILE, JSON.stringify(summaryPosts), 'utf8');
+    console.log(`Bundled ${summaryPosts.length} posts into ${OUTPUT_FILE} (Optimized for ultra-fast load and Cloudflare Pages limit)`);
+  }
 }
 
 main();
