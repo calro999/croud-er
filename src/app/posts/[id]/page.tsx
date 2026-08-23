@@ -425,7 +425,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             <h2 className="sr-only">レビュー詳細</h2>
             <div
               className="review-content-html"
-              dangerouslySetInnerHTML={{ __html: post.review }}
+              dangerouslySetInnerHTML={{ __html: post.review || (post as any).content || "" }}
             />
           </section>
 
