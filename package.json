@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "node bundle_posts.js && node generate_sitemap.js && next build && find out -name '*__next*' -delete",
+    "build": "node bundle_posts.js && node generate_sitemap.js && next build --webpack && find out -name '*__next*' -delete",
     "dev": "next dev",
     "start": "next start",
     "lint": "eslint",
