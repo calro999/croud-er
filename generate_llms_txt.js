@@ -37,10 +37,23 @@ if (fs.existsSync(mangaDir)) {
   }
 }
 
-// 1. Generate llms.txt (Summary & Directory for LLMs)
-let llmsTxt = `# 背徳の館 - アダルト＆同人コミックレビューポータルサイト
+// Helper to clean HTML to markdown-friendly plain text
+function cleanText(text, maxLen = 400) {
+  if (!text) return '';
+  const clean = text
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (clean.length > maxLen) {
+    return clean.slice(0, maxLen) + '...';
+  }
+  return clean;
+}
 
-> 背徳の館（https://haitoku.pages.dev）は、最新のアダルト動画・同人マンガ・FANZA人気作品の完全オリジナルレビューおよび徹底解析コンテンツを提供する情報ポータルサイトです。
+// 1. Generate llms.txt (Summary & Directory for LLMs)
+let llmsTxt = `# 背徳の深夜書斎 - アダルト＆同人コミックレビューポータルサイト
+
+> 背徳の深夜書斎（https://haitoku.pages.dev）は、最新のアダルト動画・同人マンガ・FANZA人気作品の完全オリジナルレビューおよび徹底解析コンテンツを提供する情報ポータルサイトです。
 
 ## 主要ページ
 - [ホーム](${baseUrl}/): 最新レビュー・記事一覧
@@ -59,7 +72,7 @@ let llmsTxt = `# 背徳の館 - アダルト＆同人コミックレビューポ
 
 posts.slice(0, 50).forEach(p => {
   const title = p.title || '無題';
-  const desc = p.description || p.metaDescription || (p.content ? p.content.substring(0, 100).replace(/\n/g, ' ') : '');
+  const desc = cleanText(p.review || p.content || p.description || '', 120);
   llmsTxt += `- [${title}](${baseUrl}/posts/${p.id}): ${desc}\n`;
 });
 
@@ -67,7 +80,7 @@ if (mangas.length > 0) {
   llmsTxt += `\n## 最新同人マンガピックアップ\n`;
   mangas.slice(0, 30).forEach(m => {
     const title = m.title || '無題';
-    const desc = m.description || (m.content ? m.content.substring(0, 100).replace(/\n/g, ' ') : '');
+    const desc = cleanText(m.review || m.content || m.description || '', 120);
     llmsTxt += `- [${title}](${baseUrl}/manga/${m.id}): ${desc}\n`;
   });
 }
@@ -75,8 +88,8 @@ if (mangas.length > 0) {
 fs.writeFileSync(path.join(publicDir, 'llms.txt'), llmsTxt, 'utf8');
 console.log('Generated public/llms.txt');
 
-// 2. Generate llms-full.txt (Full Text / Comprehensive Markdown for AI Indexing)
-let llmsFullTxt = `# 背徳の館 完全ナレッジベース & コンテンツ全集
+// 2. Generate llms-full.txt (Full Text / Comprehensive Markdown for AI Indexing, optimized < 25MB limit)
+let llmsFullTxt = `# 背徳の深夜書斎 完全ナレッジベース & コンテンツ全集
 
 > 本ファイル（llms-full.txt）は、AI言語モデル（ChatGPT, Claude, Gemini, Perplexity等）およびWebスクレイパーがサイト内の全コンテンツを直接学習・索引付けできるように構造化されたMarkdownデータファイルです。
 
@@ -85,22 +98,25 @@ let llmsFullTxt = `# 背徳の館 完全ナレッジベース & コンテンツ�
 `;
 
 posts.forEach((p, idx) => {
-  llmsFullTxt += `## 記事 ${idx + 1}: ${p.title || '無題'}\n`;
+  const hinban = p.hinban ? `【${p.hinban}】` : '';
+  llmsFullTxt += `## 記事 ${idx + 1}: ${hinban}${p.title || '無題'}\n`;
   llmsFullTxt += `- **URL**: ${baseUrl}/posts/${p.id}\n`;
   if (p.date) llmsFullTxt += `- **公開日**: ${p.date}\n`;
   if (p.actresses && p.actresses.length) llmsFullTxt += `- **出演女優**: ${p.actresses.join(', ')}\n`;
   if (p.genres && p.genres.length) llmsFullTxt += `- **ジャンル**: ${p.genres.join(', ')}\n`;
   if (p.maker) llmsFullTxt += `- **メーカー**: ${p.maker}\n`;
-  llmsFullTxt += `\n### 概要・詳細情報\n${p.content || p.description || ''}\n\n---\n\n`;
+  const bodyText = cleanText(p.review || p.content || p.description || '', 500);
+  llmsFullTxt += `\n### レビュー・見どころ要約\n${bodyText}\n\n---\n\n`;
 });
 
 mangas.forEach((m, idx) => {
   llmsFullTxt += `## 同人マンガ ${idx + 1}: ${m.title || '無題'}\n`;
   llmsFullTxt += `- **URL**: ${baseUrl}/manga/${m.id}\n`;
   if (m.date) llmsFullTxt += `- **公開日**: ${m.date}\n`;
-  if (m.author) llmsFullTxt += `- **作者**: ${m.author}\n`;
-  if (m.circle) llmsFullTxt += `- **サークル**: ${m.circle}\n`;
-  llmsFullTxt += `\n### 概要・詳細情報\n${m.content || m.description || ''}\n\n---\n\n`;
+  if (m.author && m.author.length) llmsFullTxt += `- **作者**: ${Array.isArray(m.author) ? m.author.join(', ') : m.author}\n`;
+  if (m.genres && m.genres.length) llmsFullTxt += `- **ジャンル**: ${m.genres.join(', ')}\n`;
+  const bodyText = cleanText(m.review || m.content || m.description || '', 500);
+  llmsFullTxt += `\n### レビュー・見どころ要約\n${bodyText}\n\n---\n\n`;
 });
 
 fs.writeFileSync(path.join(publicDir, 'llms-full.txt'), llmsFullTxt, 'utf8');
