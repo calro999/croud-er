@@ -2,24 +2,10 @@
 
 import { useState, useEffect, useMemo } from "react";
 import AmateurBanner from "./AmateurBanner";
-
-interface Post {
-  id: string;
-  hinban?: string;
-  title: string;
-  review: string;
-  image: string;
-  sample_images: string[];
-  affiliate_url: string;
-  genres: string[];
-  actresses: string[];
-  maker: string;
-  date: string;
-  labels: string[];
-}
+import { PostSummary } from "@/lib/posts";
 
 interface PostListContainerProps {
-  initialPosts: Post[];
+  initialPosts: PostSummary[];
 }
 
 export default function PostListContainer({ initialPosts }: PostListContainerProps) {

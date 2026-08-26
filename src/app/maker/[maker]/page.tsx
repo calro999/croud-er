@@ -1,63 +1,24 @@
-import fs from "fs";
-import path from "path";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { censorText } from "@/lib/censor";
+import { getAllSummaryPosts, PostSummary } from "@/lib/posts";
 
-interface Post {
-  id: string;
-  hinban?: string;
-  title: string;
-  review: string;
-  image: string;
-  affiliate_url: string;
-  genres: string[];
-  actresses: string[];
-  maker: string;
-  date: string;
-  labels: string[];
-}
+type Post = PostSummary;
 
 export const dynamicParams = false;
 
 export async function generateStaticParams() {
-  const postsDir = path.join(process.cwd(), "src", "data", "posts");
-  if (!fs.existsSync(postsDir)) return [];
-  try {
-    const files = fs.readdirSync(postsDir).filter(f => f.endsWith(".json"));
-    const makerSet = new Set<string>();
-    for (const file of files) {
-      try {
-        const content = fs.readFileSync(path.join(postsDir, file), "utf-8");
-        const post: Post = JSON.parse(content);
-        if (post.maker) makerSet.add(post.maker);
-      } catch { /* skip */ }
-    }
-    return Array.from(makerSet).map(maker => ({ maker: encodeURIComponent(maker) }));
-  } catch {
-    return [];
+  const posts = getAllSummaryPosts();
+  const makerSet = new Set<string>();
+  for (const post of posts) {
+    if (post.maker) makerSet.add(post.maker);
   }
+  return Array.from(makerSet).map(maker => ({ maker: encodeURIComponent(maker) }));
 }
 
 function getAllPosts(): Post[] {
-  const postsDir = path.join(process.cwd(), "src", "data", "posts");
-  if (!fs.existsSync(postsDir)) return [];
-  const now = new Date();
-  try {
-    return fs.readdirSync(postsDir)
-      .filter(f => f.endsWith(".json"))
-      .map(file => {
-        try {
-          const post = JSON.parse(fs.readFileSync(path.join(postsDir, file), "utf-8")) as Post;
-          if (post.date && new Date(post.date).getTime() > now.getTime()) {
-            return null;
-          }
-          return post;
-        } catch { return null; }
-      })
-      .filter(Boolean) as Post[];
-  } catch { return []; }
+  return getAllSummaryPosts();
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ maker: string }> }): Promise<Metadata> {

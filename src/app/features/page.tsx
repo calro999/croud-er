@@ -22,29 +22,12 @@ const FEATURED_ACTRESSES = [
   { name: "松永あかり", ruby: "まつながあかり", tag: "妖艶色気・熟れた肉体美" },
 ];
 
-interface Post {
-  id: string;
-  image: string;
-  actresses: string[];
-  date: string;
-}
+import { getAllSummaryPosts, PostSummary } from "@/lib/posts";
+
+type Post = PostSummary;
 
 function getAllPosts(): Post[] {
-  const postsDir = path.join(process.cwd(), "src", "data", "posts");
-  if (!fs.existsSync(postsDir)) return [];
-  const now = new Date();
-  try {
-    return fs.readdirSync(postsDir)
-      .filter(f => f.endsWith(".json"))
-      .map(file => {
-        try {
-          const post = JSON.parse(fs.readFileSync(path.join(postsDir, file), "utf-8")) as Post;
-          if (post.date && new Date(post.date).getTime() > now.getTime()) return null;
-          return post;
-        } catch { return null; }
-      })
-      .filter(Boolean) as Post[];
-  } catch { return []; }
+  return getAllSummaryPosts();
 }
 
 export default function FeaturesPage() {

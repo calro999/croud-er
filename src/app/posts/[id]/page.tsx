@@ -1,5 +1,3 @@
-import fs from "fs";
-import path from "path";
 import Link from "next/link";
 import Script from "next/script";
 import { notFound } from "next/navigation";
@@ -8,54 +6,28 @@ import { Metadata } from "next";
 import { censorText } from "@/lib/censor";
 import { getActressSlug } from "@/lib/slugs";
 import UnlimitedPromotionBox from "@/app/components/UnlimitedPromotionBox";
+import { getAllPostIds, getPostById, getRelatedPosts, PostDetail } from "@/lib/posts";
 
-interface Post {
-  id: string;
-  hinban?: string;
-  title: string;
-  review: string;
-  image: string;
-  sample_images: string[];
-  affiliate_url: string;
-  sample_movie_url?: string;
-  genres: string[];
-  actresses: string[];
-  maker: string;
-  date: string;
-  labels: string[];
-}
+type Post = PostDetail;
 
 export const dynamicParams = false;
 
 export async function generateStaticParams() {
-  const postsDir = path.join(process.cwd(), "src", "data", "posts");
-  if (!fs.existsSync(postsDir)) {
-    return [];
-  }
-  try {
-    const files = fs.readdirSync(postsDir).filter((f) => f.endsWith(".json"));
-    return files.map((file) => ({
-      id: file.replace(".json", ""),
-    }));
-  } catch (e) {
-    console.error("Failed to read posts directory for static params:", e);
-    return [];
-  }
+  const ids = getAllPostIds();
+  return ids.map((id) => ({ id }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
-  const postPath = path.join(process.cwd(), "src", "data", "posts", `${id}.json`);
+  const post = getPostById(id);
 
-  if (!fs.existsSync(postPath)) {
+  if (!post) {
     return {
       title: "作品が見つかりません",
     };
   }
 
   try {
-    const fileContent = fs.readFileSync(postPath, "utf-8");
-    const post: Post = JSON.parse(fileContent);
     const hinbanText = post.hinban || post.id;
     const actressText = (post.actresses || []).join("・");
     const genreText = (post.genres || []).slice(0, 3).join("・");
@@ -111,52 +83,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   }
 }
 
-// 関連作品の検索
-function getRelatedPosts(currentPost: Post, allPostsDir: string): Post[] {
-  try {
-    if (!fs.existsSync(allPostsDir)) return [];
-    const files = fs.readdirSync(allPostsDir).filter((f) => f.endsWith(".json") && f !== `${currentPost.id}.json`);
-    const related: Post[] = [];
-    const others: Post[] = [];
-    for (const file of files) {
-      const filePath = path.join(allPostsDir, file);
-      const content = fs.readFileSync(filePath, "utf-8");
-      const post: Post = JSON.parse(content);
-      const hasCommonActress = currentPost.actresses && currentPost.actresses.length > 0 && post.actresses?.some(act => currentPost.actresses.includes(act));
-      if (hasCommonActress) {
-        related.push(post);
-      } else {
-        others.push(post);
-      }
-    }
-    // 足りない場合はランダムで補充
-    if (related.length < 3) {
-      others.sort(() => 0.5 - Math.random());
-      related.push(...others.slice(0, 3 - related.length));
-    }
-    return related.slice(0, 3);
-  } catch (e) {
-    console.error("Failed to get related posts:", e);
-    return [];
-  }
-}
-
 export default async function PostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const postsDir = path.join(process.cwd(), "src", "data", "posts");
-  const postPath = path.join(postsDir, `${id}.json`);
-
-  if (!fs.existsSync(postPath)) {
-    notFound();
-  }
-
-  let post: Post | undefined;
-  try {
-    const fileContent = fs.readFileSync(postPath, "utf-8");
-    post = JSON.parse(fileContent);
-  } catch (e) {
-    console.error(`Failed to parse post JSON at ${postPath}:`, e);
-  }
+  const post = getPostById(id);
 
   if (!post) {
     notFound();
@@ -168,7 +97,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
   }
 
   const hinbanText = post.hinban || post.id;
-  const relatedPosts = getRelatedPosts(post, postsDir);
+  const relatedPosts = getRelatedPosts(post);
 
   // AI-SEO / GEO 向け JSON-LD 構造化データ
   const cleanReviewText = post.review ? post.review.replace(/<[^>]*>/g, "") : "";

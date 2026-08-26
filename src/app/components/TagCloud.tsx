@@ -1,31 +1,10 @@
-import fs from "fs";
-import path from "path";
 import Link from "next/link";
 import { getActressSlug, getGenreSlug } from "@/lib/slugs";
-
-interface Post {
-  id: string;
-  genres: string[];
-  actresses: string[];
-}
+import { getAllSummaryPosts } from "@/lib/posts";
 
 export default function TagCloud() {
-  const postsDir = path.join(process.cwd(), "src", "data", "posts");
-  if (!fs.existsSync(postsDir)) return null;
-
-  let allPosts: Post[] = [];
-  try {
-    const files = fs.readdirSync(postsDir).filter((f) => f.endsWith(".json"));
-    allPosts = files.map((file) => {
-      try {
-        return JSON.parse(fs.readFileSync(path.join(postsDir, file), "utf-8")) as Post;
-      } catch {
-        return null;
-      }
-    }).filter(Boolean) as Post[];
-  } catch {
-    return null;
-  }
+  const allPosts = getAllSummaryPosts();
+  if (!allPosts || allPosts.length === 0) return null;
 
   // 集計
   const genreCount: Record<string, number> = {};

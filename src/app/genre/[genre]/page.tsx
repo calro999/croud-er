@@ -1,68 +1,29 @@
-import fs from "fs";
-import path from "path";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { censorText } from "@/lib/censor";
 import { getGenreSlug, getGenreNameBySlug, getActressSlug } from "@/lib/slugs";
 import UnlimitedPromotionBox from "@/app/components/UnlimitedPromotionBox";
+import { getAllSummaryPosts, PostSummary } from "@/lib/posts";
 
-interface Post {
-  id: string;
-  hinban?: string;
-  title: string;
-  review: string;
-  image: string;
-  affiliate_url: string;
-  genres: string[];
-  actresses: string[];
-  maker: string;
-  date: string;
-  labels: string[];
-}
+type Post = PostSummary;
 
 export const dynamicParams = false;
 
 export async function generateStaticParams() {
-  const postsDir = path.join(process.cwd(), "src", "data", "posts");
-  if (!fs.existsSync(postsDir)) return [];
-  try {
-    const files = fs.readdirSync(postsDir).filter(f => f.endsWith(".json"));
-    const genreSet = new Set<string>();
-    for (const file of files) {
-      try {
-        const content = fs.readFileSync(path.join(postsDir, file), "utf-8");
-        const post: Post = JSON.parse(content);
-        (post.genres || []).forEach(g => genreSet.add(g));
-      } catch { /* skip */ }
-    }
-    const params = Array.from(genreSet).map(genre => ({ genre: getGenreSlug(genre) }));
-    // lesbianのパスを強制的に追加（記事が0件の時でもビルドで404にならないようにする）
-    params.push({ genre: "lesbian" });
-    return params;
-  } catch {
-    return [{ genre: "lesbian" }];
+  const posts = getAllSummaryPosts();
+  const genreSet = new Set<string>();
+  for (const post of posts) {
+    (post.genres || []).forEach(g => genreSet.add(g));
   }
+  const params = Array.from(genreSet).map(genre => ({ genre: getGenreSlug(genre) }));
+  // lesbianのパスを強制的に追加（記事が0件の時でもビルドで404にならないようにする）
+  params.push({ genre: "lesbian" });
+  return params;
 }
 
 function getAllPosts(): Post[] {
-  const postsDir = path.join(process.cwd(), "src", "data", "posts");
-  if (!fs.existsSync(postsDir)) return [];
-  const now = new Date();
-  try {
-    return fs.readdirSync(postsDir)
-      .filter(f => f.endsWith(".json"))
-      .map(file => {
-        try {
-          const post = JSON.parse(fs.readFileSync(path.join(postsDir, file), "utf-8")) as Post;
-          if (post.date && new Date(post.date).getTime() > now.getTime()) {
-            return null;
-          }
-          return post;
-        } catch { return null; }
-      })
-      .filter(Boolean) as Post[];
-  } catch { return []; }
+  return getAllSummaryPosts();
 }
 
 const getMappedGenreName = (rawGenre: string) => {

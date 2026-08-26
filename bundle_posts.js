@@ -63,7 +63,9 @@ function main() {
         actresses: post.actresses || [],
         maker: post.maker || "",
         date: post.date || "",
-        labels: post.labels || []
+        labels: post.labels || [],
+        sample_movie_url: post.sample_movie_url || "",
+        sample_images: post.sample_images || []
       };
     });
 

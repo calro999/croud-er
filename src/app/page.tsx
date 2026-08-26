@@ -1,23 +1,8 @@
-import fs from "fs";
-import path from "path";
 import Link from "next/link";
 import { Metadata } from "next";
 import PostListContainer from "./components/PostListContainer";
 import { getActressSlug, getGenreSlug } from "@/lib/slugs";
-
-interface Post {
-  id: string;
-  title: string;
-  review: string;
-  image: string;
-  sample_images: string[];
-  affiliate_url: string;
-  genres: string[];
-  actresses: string[];
-  maker: string;
-  date: string;
-  labels: string[];
-}
+import { getAllSummaryPosts } from "@/lib/posts";
 
 export const metadata: Metadata = {
   alternates: {
@@ -25,21 +10,8 @@ export const metadata: Metadata = {
   },
 };
 
-function getPosts(): Post[] {
-  try {
-    const postsPath = path.join(process.cwd(), "public", "data", "posts.json");
-    if (fs.existsSync(postsPath)) {
-      const postsData = fs.readFileSync(postsPath, "utf8");
-      return JSON.parse(postsData);
-    }
-  } catch (error) {
-    console.error("Error reading posts.json in page.tsx:", error);
-  }
-  return [];
-}
-
 export default function Home() {
-  const posts = getPosts();
+  const posts = getAllSummaryPosts();
 
   // JSON-LD 構造化データ
   // 1. WebSite 構造化データ

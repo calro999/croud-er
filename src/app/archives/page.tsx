@@ -3,14 +3,9 @@ import path from "path";
 import Link from "next/link";
 import { Metadata } from "next";
 
-interface Post {
-  id: string;
-  title: string;
-  date: string;
-  genres: string[];
-  actresses: string[];
-  maker: string;
-}
+import { getAllSummaryPosts, PostSummary } from "@/lib/posts";
+
+type Post = PostSummary;
 
 interface MangaPost {
   id: string;
@@ -23,23 +18,7 @@ export const metadata: Metadata = {
 };
 
 function getAllPosts(): Post[] {
-  const postsDir = path.join(process.cwd(), "src", "data", "posts");
-  if (!fs.existsSync(postsDir)) return [];
-  const now = new Date();
-  try {
-    return fs.readdirSync(postsDir)
-      .filter(f => f.endsWith(".json"))
-      .map(file => {
-        try {
-          const post = JSON.parse(fs.readFileSync(path.join(postsDir, file), "utf-8")) as Post;
-          if (post.date && new Date(post.date).getTime() > now.getTime()) {
-            return null;
-          }
-          return post;
-        } catch { return null; }
-      })
-      .filter(Boolean) as Post[];
-  } catch { return []; }
+  return getAllSummaryPosts();
 }
 
 function getAllManga(): MangaPost[] {
