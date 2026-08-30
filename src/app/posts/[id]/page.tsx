@@ -584,38 +584,41 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             </div>
           </section>
 
-          {/* 👯 【追加依頼2位】女優 → 類似女優（「この女優が好きならこの人も」） */}
+          {/* 👯 【推し探し特化】女優 → 類似女優（「この女優が好きならこの人も」） */}
           {mainActress && similarActresses.length > 0 && (
             <section className="pt-6 border-t border-slate-100 space-y-4">
               <div className="space-y-1">
-                <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2.5 py-0.5 rounded-full uppercase">
-                  SIMILAR ACTRESSES
+                <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2.5 py-0.5 rounded-full uppercase inline-block">
+                  NEXT OSHI • この女優が好きならおすすめ
                 </span>
                 <h2 className="text-lg md:text-xl font-black text-slate-900">
                   『{mainActress}』が好きならこの女優もチェック！
                 </h2>
                 <p className="text-xs text-slate-500">
-                  同系統の極上ボディや演技スタイルを持つ注目女優です。
+                  同系統の極上ボディや共通の監督・シチュエーションで魅せる注目女優です。
                 </p>
               </div>
 
-              <div className="grid grid-cols-3 gap-3 pt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
                 {similarActresses.map(sim => (
                   <Link
                     key={sim.name}
                     href={`/actress/${getActressSlug(sim.name)}`}
-                    className="group block bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden hover:border-indigo-300 transition text-center p-3 space-y-2"
+                    className="group flex sm:flex-col bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden hover:border-indigo-300 hover:shadow-sm transition p-3 gap-3"
                   >
-                    <div className="w-16 h-16 mx-auto rounded-full bg-slate-200 overflow-hidden relative">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full bg-slate-200 overflow-hidden relative flex-shrink-0">
                       {sim.image ? (
                         <img src={sim.image} alt={sim.name} className="w-full h-full object-cover group-hover:scale-110 transition" loading="lazy" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-xs text-slate-400">{sim.name[0]}</div>
+                        <div className="w-full h-full flex items-center justify-center text-xs text-slate-400 font-bold">{sim.name[0]}</div>
                       )}
                     </div>
-                    <div>
-                      <h3 className="text-xs font-bold text-slate-900 group-hover:text-indigo-600 truncate">{sim.name}</h3>
-                      <p className="text-[10px] text-slate-500 truncate">{sim.cup ? `${sim.cup}カップ` : sim.reason}</p>
+                    <div className="flex-1 space-y-1 text-left sm:text-center">
+                      <h3 className="text-xs md:text-sm font-bold text-slate-900 group-hover:text-indigo-600 truncate">{sim.name}</h3>
+                      <div className="bg-white border border-indigo-100 rounded-lg p-2 text-left">
+                        <span className="text-[9px] font-bold text-indigo-600 block mb-0.5">💡 推しポイント</span>
+                        <p className="text-[10px] text-slate-600 line-clamp-2 leading-relaxed">{sim.reason}</p>
+                      </div>
                     </div>
                   </Link>
                 ))}
@@ -623,11 +626,11 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             </section>
           )}
 
-          {/* 🏷️ 【追加依頼3位】ジャンル → 横展開（「このジャンルならこの作品群」） */}
+          {/* 🏷️ 関連ジャンル一覧 */}
           {post.genres && post.genres.length > 0 && (
             <section className="pt-6 border-t border-slate-100 space-y-3">
               <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">
-                🏷️ 関連ジャンル横展開（このジャンルならこの作品群）
+                🏷️ 関連ジャンル・おすすめ特集
               </h3>
               <div className="flex flex-wrap gap-2">
                 {post.genres.slice(0, 10).map(g => (

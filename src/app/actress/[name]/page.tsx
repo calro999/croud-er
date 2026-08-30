@@ -335,12 +335,12 @@ export default async function ActressPage({ params }: { params: Promise<{ name: 
         {/* 🏷️ 主な出演ジャンル一覧 */}
         {relatedGenres.length > 0 && (
           <section className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3">
-            <h2 className="text-xs font-bold text-slate-500 uppercase tracking-widest">{actressName} の主な出演ジャンル（横展開）</h2>
+            <h2 className="text-xs font-bold text-slate-500 uppercase tracking-widest">🏷️ {actressName} の主な出演ジャンル・得意シチュエーション</h2>
             <div className="flex flex-wrap gap-2">
               {relatedGenres.map(genre => (
                 <Link key={genre} href={`/genre/${getGenreSlug(genre)}`}
                   className="text-xs font-bold text-slate-600 bg-slate-100 hover:bg-rose-50 hover:text-rose-600 border border-slate-200 hover:border-rose-200 px-3 py-1.5 rounded-full transition-colors duration-200">
-                  {genre}
+                  #{genre}
                 </Link>
               ))}
             </div>
@@ -491,29 +491,29 @@ export default async function ActressPage({ params }: { params: Promise<{ name: 
           </div>
         </section>
 
-        {/* 👯 【追加依頼2位】類似女優（「この女優が好きならこの人も」） */}
+        {/* 👯 【推し探し特化】類似女優（「この女優が好きならこの人もおすすめ！」） */}
         {similarActresses.length > 0 && (
           <section className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-sm space-y-4">
             <div className="space-y-1">
-              <span className="text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-100 px-2.5 py-0.5 rounded-full uppercase">
-                RECOMMENDED ACTRESSES
+              <span className="text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-100 px-2.5 py-0.5 rounded-full uppercase inline-block">
+                NEXT OSHI • 新たな推し女優を探す
               </span>
               <h2 className="text-lg md:text-xl font-black text-slate-900">
                 『{actressName}』が好きならこの女優もおすすめ！
               </h2>
               <p className="text-xs text-slate-500">
-                体型・ルックス・出演シチュエーションが近く、同じ系統の快感を味わえる注目女優を厳選。
+                体型・カップ数・担当監督・出演シチュエーションの共通点から、同じ系統の快感を味わえる注目女優を厳選。
               </p>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
               {similarActresses.map(sim => (
                 <Link
                   key={sim.name}
                   href={`/actress/${getActressSlug(sim.name)}`}
-                  className="group block bg-slate-50 border border-slate-200/90 rounded-2xl overflow-hidden hover:border-rose-300 hover:shadow-md transition duration-200"
+                  className="group flex sm:flex-col bg-slate-50 border border-slate-200/90 rounded-2xl overflow-hidden hover:border-rose-300 hover:shadow-md transition duration-200 p-3 sm:p-0 gap-3 sm:gap-0"
                 >
-                  <div className="aspect-[4/5] bg-slate-200 relative overflow-hidden">
+                  <div className="w-24 h-28 sm:w-full sm:aspect-[4/5] sm:h-auto bg-slate-200 relative overflow-hidden rounded-xl sm:rounded-none flex-shrink-0">
                     {sim.image ? (
                       <img src={sim.image} alt={`${sim.name} 写真`} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" loading="lazy" />
                     ) : (
@@ -525,9 +525,19 @@ export default async function ActressPage({ params }: { params: Promise<{ name: 
                       </span>
                     )}
                   </div>
-                  <div className="p-3 space-y-1">
-                    <h3 className="text-xs font-bold text-slate-800 group-hover:text-rose-600 truncate">{sim.name}</h3>
-                    <p className="text-[10px] text-slate-500 line-clamp-1">{sim.reason}</p>
+                  <div className="p-1 sm:p-3 space-y-1.5 flex-1 flex flex-col justify-between">
+                    <div>
+                      <h3 className="text-sm font-black text-slate-800 group-hover:text-rose-600 truncate">{sim.name}</h3>
+                      <div className="bg-rose-50/80 border border-rose-100 rounded-lg p-2 mt-1.5">
+                        <span className="text-[9px] font-bold text-rose-600 block mb-0.5">💡 おすすめの理由</span>
+                        <p className="text-[11px] text-slate-700 font-medium leading-relaxed">
+                          {sim.reason}
+                        </p>
+                      </div>
+                    </div>
+                    <span className="text-[10px] font-bold text-rose-500 block pt-1 group-hover:underline">
+                      👉 プロフ・神作10選を見る ›
+                    </span>
                   </div>
                 </Link>
               ))}
