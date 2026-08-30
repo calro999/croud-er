@@ -22,7 +22,22 @@ def call_multi_llm_api(prompt, system_content="You are a helpful assistant."):
     # 2. Gemini API
     gemini_key = os.environ.get("GEMINI_API_KEY")
     if gemini_key:
-        for model_name in ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.5-flash-lite", "gemini-2.0-flash-lite"]:
+        gemini_models = [
+            "gemini-2.5-flash",
+            "gemini-2.0-flash",
+            "gemini-2.5-flash-lite",
+            "gemini-2.0-flash-lite",
+            "gemini-2.5-pro",
+            "gemini-3-flash",
+            "gemini-3.1-pro",
+            "gemini-3.1-flash-lite",
+            "gemini-3.5-flash-lite",
+            "gemini-3.5-flash",
+            "gemini-3.6-flash",
+            "gemini-3.7-flash"
+        ]
+        random.shuffle(gemini_models)
+        for model_name in gemini_models:
             try:
                 url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={gemini_key}"
                 payload = {
@@ -325,7 +340,9 @@ def generate_killer_article(item):
 2. 【見出し構成】: <h2>を2つ以上、<h3>を4つ以上、<h4>を2つ以上使って論理的な見出し階層を作ること。
 3. 【検索意図】: 「レビュー」「感想」「評価」「見どころ」「おすすめ」「サンプル」など読者が使う検索キーワードを自然に盛り込む。
 4. 【導入フック】: 冒頭で読者を引き込む強烈なフック文を書く（「見た瞬間に後悔する」「完全に予想を裏切ってくる」など）。
-5. 【独自性】: 他サイトのレビューと全く異なるライターの個性を濃く出すこと。
+5. 【AI臭さ・メタ表現の完全禁止】:
+   ・「検索ユーザーの間で今まさに検索熱が高まっている」「〜ジャンルの決定版作品」「あらすじ・作品背景：」「多層的なフェチ要素が絡み合い」等の不自然なAIメタ解説文は一切使用禁止。
+   ・本物の熱烈な映画・AVファンが個人の熱量で語る、生々しく臨場感のあるレビュー口調で書くこと。
 6. 【構成必須セクション】:
    ・作品概要（どんな内容か）
    ・見どころ分析（なぜこの作品が優れているか）
@@ -480,7 +497,9 @@ def main():
             "affiliate_url": affiliate_url,
             "genres": [g.get("name", "") for g in item.get("iteminfo", {}).get("genre", [])],
             "actresses": [a.get("name", "") for a in item.get("iteminfo", {}).get("actress", [])],
+            "directors": [d.get("name", "") for d in item.get("iteminfo", {}).get("director", [])],
             "maker": item.get("iteminfo", {}).get("maker", [{}])[0].get("name", ""),
+            "price": item.get("prices", {}).get("price", "300~"),
             "date": item.get("date", time.strftime("%Y-%m-%d %H:%M:%S")),
             "labels": ["超話題作", "2026年最新", "SNSで話題", "人気"]
         }

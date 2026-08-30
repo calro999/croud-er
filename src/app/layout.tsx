@@ -151,6 +151,16 @@ export default function RootLayout({
         {/* ランダムタグクラウド */}
         <TagCloud />
 
+        {/* 忍者AdMax広告（フッター手前に1箇所のみ配置） */}
+        <div className="w-full flex justify-center items-center my-8 block clear-both overflow-hidden">
+          <Script
+            id="ninja-admax"
+            src="https://adm.shinobi.jp/st/auto.js"
+            data-admax-id="6940cf426d8b05585fbd28930455285d"
+            strategy="lazyOnload"
+          />
+        </div>
+
         {/* ミニマル・モダンなフッター */}
         <footer className="border-t border-slate-200 bg-white py-10 text-xs text-slate-500 shadow-inner">
           <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6">

@@ -1,0 +1,36 @@
+{
+  "name": "青木琴美",
+  "ruby": "あおきことみ",
+  "fanza_id": "1859",
+  "bust": "78",
+  "cup": null,
+  "waist": "56",
+  "hip": "90",
+  "height": "158",
+  "birthday": "1964-01-27",
+  "blood_type": null,
+  "hobby": null,
+  "prefectures": "神奈川県",
+  "image_large": "",
+  "image_small": "",
+  "affiliate_url": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fwww.dmm.co.jp%2Fsearch%2F-%2F%3Fsearchstr%3D%E9%9D%92%E6%9C%A8%E7%90%B4%E7%BE%8E%2F&af_id=onchan555-003",
+  "directors": [],
+  "works_count": 1,
+  "works": [
+    {
+      "id": "49he18",
+      "title": "お宝ガールズ",
+      "date": "2002-12-20 10:01:42",
+      "image": "https://pics.dmm.co.jp/digital/video/49he00018/49he00018pl.jpg",
+      "affiliate_url": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3D49he18&af_id=onchan555-003&ch=api",
+      "directors": [],
+      "maker": "クリスタル映像",
+      "genres": [
+        "アイドル・芸能人",
+        "ベスト・総集編"
+      ],
+      "price": "300~"
+    }
+  ],
+  "updated_at": "2026-08-31 08:18:36"
+}

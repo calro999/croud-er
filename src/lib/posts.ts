@@ -13,6 +13,8 @@ export interface PostSummary {
   genres: string[];
   actresses: string[];
   maker: string;
+  directors?: string[];
+  price?: string;
   date: string;
   labels: string[];
 }
@@ -28,7 +30,6 @@ const postDetailCache = new Map<string, PostDetail>();
 
 /**
  * 全記事のサマリー一覧を取得（インメモリキャッシュ付き）
- * public/data/posts.json があればそれを1度だけロード、無ければ個別JSONから構築
  */
 export function getAllSummaryPosts(): PostSummary[] {
   if (cachedSummaryPosts) {
@@ -82,6 +83,8 @@ export function getAllSummaryPosts(): PostSummary[] {
           genres: post.genres || [],
           actresses: post.actresses || [],
           maker: post.maker || "",
+          directors: post.directors || [],
+          price: post.price || "300~",
           date: post.date || "",
           labels: post.labels || [],
         });
@@ -124,35 +127,81 @@ export function getPostById(id: string): PostDetail | null {
 }
 
 /**
- * 関連作品を取得（インメモリキャッシュから探索）
+ * 類似作品を取得（「この作品が好きなら次はこれ」）
+ * 同一女優、同ジャンル、同監督、同メーカーの作品を関連度順にレコメンド
  */
-export function getRelatedPosts(currentPost: { id: string; actresses?: string[] }): PostSummary[] {
+export function getSimilarPosts(currentPost: { id: string; actresses?: string[]; genres?: string[]; maker?: string; directors?: string[] }, limit = 4): { post: PostSummary; matchReason: string }[] {
   const allPosts = getAllSummaryPosts();
-  const related: PostSummary[] = [];
-  const others: PostSummary[] = [];
+  const scored: { post: PostSummary; score: number; matchReason: string }[] = [];
 
   const currentActresses = currentPost.actresses || [];
+  const currentGenres = currentPost.genres || [];
 
   for (const post of allPosts) {
     if (post.id === currentPost.id) continue;
 
-    const hasCommonActress =
-      currentActresses.length > 0 &&
-      post.actresses &&
-      post.actresses.some((act) => currentActresses.includes(act));
+    let score = 0;
+    let reasons: string[] = [];
 
-    if (hasCommonActress) {
-      related.push(post);
-    } else {
-      others.push(post);
+    // 1. 同一女優 (最優先)
+    if (currentActresses.length > 0 && post.actresses) {
+      const commonAct = currentActresses.filter(a => post.actresses.includes(a));
+      if (commonAct.length > 0) {
+        score += 10;
+        reasons.push(`${commonAct[0]} 出演作`);
+      }
+    }
+
+    // 2. 共通ジャンル数
+    if (currentGenres.length > 0 && post.genres) {
+      const commonGenres = currentGenres.filter(g => post.genres.includes(g));
+      if (commonGenres.length > 0) {
+        score += commonGenres.length * 2;
+        if (reasons.length === 0) {
+          reasons.push(`同ジャンル「${commonGenres[0]}」`);
+        }
+      }
+    }
+
+    // 3. 同一メーカー
+    if (currentPost.maker && post.maker && currentPost.maker === post.maker) {
+      score += 3;
+      if (reasons.length === 0) {
+        reasons.push(`${currentPost.maker} 人気作`);
+      }
+    }
+
+    if (score > 0) {
+      scored.push({
+        post,
+        score,
+        matchReason: reasons[0] || "おすすめ類似作品"
+      });
     }
   }
 
-  if (related.length < 3) {
-    related.push(...others.slice(0, 3 - related.length));
+  scored.sort((a, b) => b.score - a.score);
+
+  if (scored.length < limit) {
+    for (const post of allPosts) {
+      if (post.id === currentPost.id || scored.some(s => s.post.id === post.id)) continue;
+      scored.push({
+        post,
+        score: 1,
+        matchReason: "話題の注目作"
+      });
+      if (scored.length >= limit) break;
+    }
   }
 
-  return related.slice(0, 3);
+  return scored.slice(0, limit);
+}
+
+/**
+ * 関連作品を取得（後方互換）
+ */
+export function getRelatedPosts(currentPost: { id: string; actresses?: string[]; genres?: string[]; maker?: string }): PostSummary[] {
+  return getSimilarPosts(currentPost, 3).map(s => s.post);
 }
 
 /**
