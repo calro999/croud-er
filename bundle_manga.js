@@ -29,6 +29,29 @@ for (const file of files) {
 // 日付降順ソート
 allManga.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
+// 一覧表示・検索・スコアリングに必要な軽量フィールドのみを抽出（巨大なreview長文HTMLやサンプル画像を省きファイルサイズを劇的に軽量化）
+const summaryManga = allManga.map(m => {
+  let shortReview = "";
+  if (m.review) {
+    shortReview = m.review.replace(/<[^>]*>?/gm, '').trim().slice(0, 120);
+    if (m.review.length > 120) shortReview += '...';
+  }
+  return {
+    id: m.id,
+    hinban: m.hinban || "",
+    title: m.title || "",
+    review: shortReview,
+    image: m.image || "",
+    affiliate_url: m.affiliate_url || "",
+    tachiyomi_url: m.tachiyomi_url || "",
+    genres: m.genres || [],
+    author: m.author || [],
+    publisher: m.publisher || "",
+    date: m.date || "",
+    labels: m.labels || []
+  };
+});
+
 fs.mkdirSync(path.join(__dirname, 'public', 'data'), { recursive: true });
-fs.writeFileSync(outputFile, JSON.stringify(allManga, null, 2), 'utf-8');
-console.log(`Bundled ${allManga.length} manga into ${outputFile}`);
+fs.writeFileSync(outputFile, JSON.stringify(summaryManga), 'utf-8');
+console.log(`Bundled ${summaryManga.length} manga into ${outputFile} (Optimized for Cloudflare Pages < 25MB limit)`);

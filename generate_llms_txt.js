@@ -105,7 +105,7 @@ posts.forEach((p, idx) => {
   if (p.actresses && p.actresses.length) llmsFullTxt += `- **出演女優**: ${p.actresses.join(', ')}\n`;
   if (p.genres && p.genres.length) llmsFullTxt += `- **ジャンル**: ${p.genres.join(', ')}\n`;
   if (p.maker) llmsFullTxt += `- **メーカー**: ${p.maker}\n`;
-  const bodyText = cleanText(p.review || p.content || p.description || '', 500);
+  const bodyText = cleanText(p.review || p.content || p.description || '', 250);
   llmsFullTxt += `\n### レビュー・見どころ要約\n${bodyText}\n\n---\n\n`;
 });
 
@@ -115,7 +115,7 @@ mangas.forEach((m, idx) => {
   if (m.date) llmsFullTxt += `- **公開日**: ${m.date}\n`;
   if (m.author && m.author.length) llmsFullTxt += `- **作者**: ${Array.isArray(m.author) ? m.author.join(', ') : m.author}\n`;
   if (m.genres && m.genres.length) llmsFullTxt += `- **ジャンル**: ${m.genres.join(', ')}\n`;
-  const bodyText = cleanText(m.review || m.content || m.description || '', 500);
+  const bodyText = cleanText(m.review || m.content || m.description || '', 250);
   llmsFullTxt += `\n### レビュー・見どころ要約\n${bodyText}\n\n---\n\n`;
 });
 
