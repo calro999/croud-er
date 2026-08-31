@@ -83,43 +83,30 @@ export function getMangaById(id: string): MangaPostSummary | null {
   }
 }
 
-/**
- * キャッチコピー風の推薦理由テンプレート
- */
-const CATCHCOPY_PATTERNS = {
-  author: [
-    (author: string) => `✍️ ${author}先生の真骨頂！美麗作画とフェチズムの結晶`,
-    (author: string) => `🔥 ${author}ファン必読！筆致が冴え渡る極上シチュエーション`,
-    (author: string) => `✨ ${author}先生が描く、息をのむほど濃密な官能美`
-  ],
-  genre: [
-    (genre: string) => `💥 『${genre}』好き悶絶！快楽に堕ちていく背徳の傑作`,
-    (genre: string) => `💖 ${genre}ファン必見！感情と欲望が交錯する最高傑作`,
-    (genre: string) => `🔞 濃密な『${genre}』の悦びを極限まで引き出した注目作`,
-    (genre: string) => `⚡ 理性が溶ける…！『${genre}』の決定版コミック`
-  ],
-  publisher: [
-    (pub: string) => `🏢 レーベル【${pub}】が誇るハイクオリティ話題作`,
-    (pub: string) => `🏆 【${pub}】発！読者の五感を刺激するおすすめ作`
-  ],
-  general: [
-    () => `⭐ FANZA屈指の高評価！一度読んだら止まらない傑作`,
-    () => `🔥 美麗作画と濃厚エロの極致！読者満足度トップクラス`,
-    () => `📖 試し読みで即堕ち者続出！今一番読まれている話題作`,
-    () => `💫 興奮のツボを的確に刺激する、至福のフルカラー体験`
-  ]
-};
+// 汎用すぎて類似度判定に向かないタグ
+const GENERIC_GENRES = new Set([
+  "無料作品", "単行本", "単話", "フルカラー", "EROTOON", "独占販売", "先行販売",
+  "デジタル特装版", "合冊版", "分冊版"
+]);
 
 /**
- * 類似・関連する漫画作品を高精度スコアリングで取得（キャッチコピー風レコメンド）
+ * 類似・関連する漫画作品を高精度スコアリングで取得（IDF重み付け & キャッチコピー風レコメンド）
  */
 export function getSimilarManga(
-  currentManga: { id: string; author?: string[]; genres?: string[]; publisher?: string },
+  currentManga: { id: string; title: string; author?: string[]; genres?: string[]; publisher?: string },
   limit: number = 4
 ): { manga: MangaPostSummary; matchReason: string; score: number }[] {
   const allManga = getAllManga();
   const currentAuthors = (currentManga.author || []).map(a => a.trim()).filter(Boolean);
-  const currentGenres = currentManga.genres || [];
+  const currentGenres = (currentManga.genres || []).filter(g => !GENERIC_GENRES.has(g));
+
+  // ジャンル出現頻度のマップ（IDF用）
+  const genreFreqMap: Record<string, number> = {};
+  allManga.forEach(m => {
+    (m.genres || []).forEach(g => {
+      genreFreqMap[g] = (genreFreqMap[g] || 0) + 1;
+    });
+  });
 
   const scored: { manga: MangaPostSummary; matchReason: string; score: number }[] = [];
 
@@ -127,54 +114,68 @@ export function getSimilarManga(
     if (m.id === currentManga.id) continue;
 
     let score = 0;
-    let matchReason = "";
+    const reasons: { priority: number; idf?: number; text: string }[] = [];
 
-    // 決定論的乱数シード（作品ペアごとに固定）
-    const seed = (currentManga.id + m.id).split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
-
-    // 1. 同一作者 (最優先 +20点)
+    // 1. 同一作者 (最優先 +60点)
     if (currentAuthors.length > 0 && m.author) {
       const commonAuthor = currentAuthors.filter(a => m.author.includes(a));
       if (commonAuthor.length > 0) {
-        score += 20;
-        const authorName = commonAuthor[0];
-        const fn = CATCHCOPY_PATTERNS.author[seed % CATCHCOPY_PATTERNS.author.length];
-        matchReason = fn(authorName);
+        score += 60;
+        reasons.push({ priority: 1, text: `✍️ 【${commonAuthor[0]}】先生が贈るもう一つの傑作！` });
       }
     }
 
-    // 2. 共通ジャンル数 (+4点/個)
+    // 2. 特徴的ジャンルの一致（出現頻度が低いジャンルほど高加点）
     if (currentGenres.length > 0 && m.genres) {
-      const commonGenres = currentGenres.filter(g => m.genres.includes(g));
-      if (commonGenres.length > 0) {
-        score += commonGenres.length * 4;
-        if (!matchReason) {
-          const selectedGenre = commonGenres[seed % commonGenres.length];
-          const fn = CATCHCOPY_PATTERNS.genre[seed % CATCHCOPY_PATTERNS.genre.length];
-          matchReason = fn(selectedGenre);
-        }
+      const targetGenres = (m.genres || []).filter(g => !GENERIC_GENRES.has(g));
+      const commonGenres = currentGenres.filter(g => targetGenres.includes(g));
+
+      for (const g of commonGenres) {
+        const freq = genreFreqMap[g] || 1;
+        // 希少なジャンルほどスコアを大きく（5回出現なら+25点、50回なら+5点）
+        const idf = Math.max(4, Math.round(100 / (Math.sqrt(freq) + 2)));
+        score += idf;
+        reasons.push({
+          priority: 2,
+          idf,
+          text: `💥 『${g}』好き悶絶！快楽に堕ちていく背徳の傑作`
+        });
       }
     }
 
-    // 3. 同一レーベル/出版社 (+3点)
-    if (currentManga.publisher && m.publisher && currentManga.publisher === m.publisher) {
-      score += 3;
-      if (!matchReason) {
-        const fn = CATCHCOPY_PATTERNS.publisher[seed % CATCHCOPY_PATTERNS.publisher.length];
-        matchReason = fn(currentManga.publisher);
+    // 3. タイトルキーワードの一致
+    const cleanCurrentTitle = (currentManga.title || "").replace(/[【】\[\]（）\(\)\s]/g, "");
+    const cleanMTitle = (m.title || "").replace(/[【】\[\]（）\(\)\s]/g, "");
+    for (const kw of ["不倫", "人妻", "義母", "百合", "レズ", "NTR", "寝取", "催眠", "調教", "幼なじみ", "女教師", "ギャル", "妹", "姉", "後輩", "先輩", "巨乳"]) {
+      if (cleanCurrentTitle.includes(kw) && cleanMTitle.includes(kw)) {
+        score += 15;
+        reasons.push({
+          priority: 3,
+          text: `🔥 『${kw}』シチュエーションが最高に刺さる注目作！`
+        });
       }
+    }
+
+    // 4. 同一レーベル/出版社 (+5点)
+    if (currentManga.publisher && m.publisher && currentManga.publisher === m.publisher) {
+      score += 5;
+      reasons.push({
+        priority: 4,
+        text: `🏢 レーベル【${currentManga.publisher}】が誇るハイクオリティ話題作`
+      });
     }
 
     if (score > 0) {
+      reasons.sort((a, b) => (a.priority - b.priority) || ((b.idf || 0) - (a.idf || 0)));
       scored.push({
         manga: m,
         score,
-        matchReason
+        matchReason: reasons[0]?.text || "⭐ 読者満足度トップクラスの人気コミック！"
       });
     }
   }
 
-  // スコア順かつ多様性を保つためソート
+  // スコア順にソート
   scored.sort((a, b) => b.score - a.score);
 
   const finalResults: { manga: MangaPostSummary; matchReason: string; score: number }[] = [];
@@ -187,17 +188,15 @@ export function getSimilarManga(
     if (finalResults.length >= limit) break;
   }
 
-  // 足りない場合は全体の漫画からバリエーション豊かに補完
+  // 足りない場合は作品一覧から補完
   if (finalResults.length < limit) {
     for (let i = 0; i < allManga.length; i++) {
       const m = allManga[i];
       if (m.id === currentManga.id || pickedIds.has(m.id)) continue;
-      const seed = (currentManga.id + m.id).split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
-      const fn = CATCHCOPY_PATTERNS.general[seed % CATCHCOPY_PATTERNS.general.length];
       finalResults.push({
         manga: m,
         score: 1,
-        matchReason: fn()
+        matchReason: "⭐ FANZA屈指の高評価！一度読んだら止まらない話題作"
       });
       pickedIds.add(m.id);
       if (finalResults.length >= limit) break;
