@@ -149,6 +149,39 @@ export default async function MangaDetailPage({ params }: { params: Promise<{ id
           <div dangerouslySetInnerHTML={{ __html: post.review }} />
         </section>
 
+        {/* 🔰 【初めての方へ】FANZA電子書籍 購入・閲覧ガイド キラーCTA */}
+        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-950 via-slate-900 to-purple-950 border-2 border-indigo-500/40 p-6 md:p-8 text-white shadow-xl space-y-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[10px] font-black text-indigo-300 bg-indigo-500/20 border border-indigo-500/40 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+              🔰 初めての電子書籍購入ガイド
+            </span>
+            <span className="text-[10px] font-bold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2 py-0.5 rounded-full">
+              安心・秘密厳守
+            </span>
+          </div>
+
+          <div className="space-y-2">
+            <h3 className="text-lg md:text-xl font-black text-white leading-snug">
+              「FANZAで漫画を買ってみたいけれど、バレないか不安…」という方へ
+            </h3>
+            <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
+              紙の本のように部屋に置く必要がなく、クレジットカード明細にも作品名は一切載りません（DMM名義）。専用アプリ不要でスマホ・PCのブラウザから今すぐ読めて、パソコンなら<b>キーボード操作（←/→）で両手を完全にフリーにした状態</b>でゆっくり楽しめます。
+            </p>
+          </div>
+
+          <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
+            <Link
+              href="/posts/feature_why_buy_fanza_manga_complete_guide"
+              className="w-full sm:w-auto inline-flex items-center justify-center text-xs md:text-sm font-black text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-rose-600 hover:opacity-95 px-6 py-3.5 rounded-xl shadow-lg transition duration-150 transform hover:-translate-y-0.5 text-center"
+            >
+              📖 なぜみんなFANZAで買うのか？メリット・買い方・人気10選を見る ›
+            </Link>
+            <span className="text-[11px] text-slate-400">
+              ※PayPay・楽天ペイ・クレカ対応 / 登録不要の無料立ち読みあり
+            </span>
+          </div>
+        </section>
+
         {/* 📚 【関連・類似作品レコメンド】 この漫画が好きな人におすすめの作品 */}
         {similarMangaList.length > 0 && (
           <section className="bg-white border border-purple-100 rounded-2xl p-6 md:p-8 shadow-sm space-y-4">
