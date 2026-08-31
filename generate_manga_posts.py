@@ -1,27 +1,57 @@
 
-def call_groq_api(prompt, system_content="You are a helpful assistant.", model="llama-3.3-70b-versatile"):
+def call_multi_llm_api(prompt, system_content="You are a helpful assistant."):
     groq_key = os.environ.get("GROQ_API_KEY")
-    if not groq_key:
-        return None
-    url = "https://api.groq.com/openai/v1/chat/completions"
-    headers = {
-        "Authorization": f"Bearer {groq_key}",
-        "Content-Type": "application/json"
-    }
-    payload = {
-        "model": model,
-        "messages": [
-            {"role": "system", "content": system_content},
-            {"role": "user", "content": prompt}
-        ],
-        "temperature": 0.7
-    }
-    try:
-        res = requests.post(url, headers=headers, json=payload, timeout=30)
-        if res.status_code == 200:
-            return res.json()["choices"][0]["message"]["content"].strip()
-    except Exception as e:
-        print(f"Groq API error: {e}")
+    if groq_key:
+        for model_name in ["llama-3.3-70b-versatile", "llama3-70b-8192"]:
+            try:
+                headers = {"Authorization": f"Bearer {groq_key}", "Content-Type": "application/json"}
+                payload = {
+                    "model": model_name,
+                    "messages": [{"role": "system", "content": system_content}, {"role": "user", "content": prompt}],
+                    "temperature": 0.7
+                }
+                res = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload, timeout=30)
+                if res.status_code == 200:
+                    text = res.json()["choices"][0]["message"]["content"].strip()
+                    if len(text) > 100:
+                        return text
+            except Exception as e:
+                print(f"Groq API error ({model_name}): {e}")
+
+    gemini_key = os.environ.get("GEMINI_API_KEY")
+    if gemini_key:
+        gemini_models = [
+            "gemini-2.5-flash",
+            "gemini-2.0-flash",
+            "gemini-2.5-flash-lite",
+            "gemini-2.0-flash-lite",
+            "gemini-2.5-pro",
+            "gemini-3-flash",
+            "gemini-3.1-pro",
+            "gemini-3.1-flash-lite",
+            "gemini-3.5-flash-lite",
+            "gemini-3.5-flash",
+            "gemini-3.6-flash",
+            "gemini-3.7-flash"
+        ]
+        random.shuffle(gemini_models)
+        for model_name in gemini_models:
+            try:
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={gemini_key}"
+                payload = {
+                    "contents": [{"parts": [{"text": f"{system_content}\n\n{prompt}"}]}],
+                    "generationConfig": {"temperature": 0.7, "maxOutputTokens": 2048}
+                }
+                res = requests.post(url, json=payload, timeout=30)
+                if res.status_code == 200:
+                    candidate = res.json().get("candidates", [{}])[0]
+                    parts = candidate.get("content", {}).get("parts", [])
+                    text = "".join(p.get("text", "") for p in parts if p.get("text")).strip()
+                    if len(text) > 100:
+                        return text
+            except Exception as e:
+                print(f"Gemini API error ({model_name}): {e}")
+
     return None
 
 import os
@@ -117,6 +147,8 @@ def filter_items(items, posted_cache):
             valid.append(item)
     return valid
 
+from update_all_manga_articles import generate_custom_review
+
 def generate_manga_article(item):
     title = item.get("title", "")
     comment = item.get("comment", "")
@@ -141,33 +173,26 @@ def generate_manga_article(item):
 6. HTMLのみ出力。マークダウン禁止。"""
 
     system_message = "あなたはアダルトコミック・同人漫画のレビュー専門ライターです。読者の購買意欲を掻き立てる熱量の高い記事をHTML形式で出力します。"
-    res = call_groq_api(prompt, system_message)
+    res = call_multi_llm_api(prompt, system_message)
     if res:
         if "```html" in res:
             res = res.split("```html", 1)[1].split("```")[0]
         elif "```" in res:
             res = res.split("```", 1)[1].split("```")[0]
         res = res.strip()
-        if len(res) > 200:
+        if len(res) > 300:
             return res
 
-    # 動的フォールバック
-    clean_t = re.sub(r'【.*?】', '', title).strip() or title
-    author_str = authors if authors else "人気作家"
-    genre_str = genres if genres else "注目の同人コミック"
-    
-    html = f"""<h2>『{clean_t}』作品レビュー＆見どころ解説</h2>
-<p>『{clean_t}』（著: {author_str}）は、{genre_str}の魅力を余すところなく詰め込んだ話題作です。</p>
-<h3>作品の概要とシチュエーション</h3>
-<p>{comment if comment else f"{genre_str}をテーマに、登場人物たちの葛藤と高まる情熱が美麗な作画で描かれます。"}</p>
-<h3>見どころとおすすめポイント</h3>
-<ul>
-<li><strong>美麗な作画力</strong>：{author_str}ならではの繊細なタッチと表情豊かな描写。</li>
-<li><strong>引き込まれるストーリー展開</strong>：ページをめくる手が止まらなくなる濃密なシチュエーション。</li>
-</ul>
-<h3>総評</h3>
-<p>{genre_str}ファンなら必読のハイクオリティな一冊。ぜひ本編でお楽しみください。</p>"""
-    return html
+    # 独自高品質SEOエンジンによる完全生成フォールバック
+    item_adapter = {
+        "id": cid,
+        "title": title,
+        "hinban": generate_hinban(cid),
+        "author": [a.get("name", "") for a in item.get("iteminfo", {}).get("author", [])],
+        "genres": [g.get("name", "") for g in item.get("iteminfo", {}).get("genre", [])],
+        "publisher": (item.get("iteminfo", {}).get("label", [{}]) or [{}])[0].get("name", "")
+    }
+    return generate_custom_review(item_adapter)
 
 def main():
     print(f"--- Manga Generator ({SITE}) | Target: {TARGET_POST_COUNT} ---")

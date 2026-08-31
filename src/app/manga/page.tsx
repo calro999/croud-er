@@ -20,28 +20,13 @@ export const metadata: Metadata = {
   description: "FANZA（DMM）で配信中のアダルト漫画を厳選レビュー！NTR・レズ・百合・SM・美少女系など様々なジャンルの漫画を、あらすじ・見どころ・評価とともに紹介します。",
 };
 
-function getAllManga(): MangaPost[] {
-  const mangaDir = path.join(process.cwd(), "src", "data", "manga");
-  if (!fs.existsSync(mangaDir)) return [];
-  try {
-    return fs.readdirSync(mangaDir)
-      .filter(f => f.endsWith(".json"))
-      .map(file => {
-        try {
-          return JSON.parse(fs.readFileSync(path.join(mangaDir, file), "utf-8")) as MangaPost;
-        } catch { return null; }
-      })
-      .filter(Boolean) as MangaPost[];
-  } catch { return []; }
-}
+import { getAllManga } from "@/lib/manga";
+import { getGenreSlug } from "@/lib/slugs";
 
 export default function MangaTopPage() {
-  const allManga = getAllManga().sort((a, b) =>
-    new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
-
+  const allManga = getAllManga();
   const genreSet = new Set(allManga.flatMap(m => m.genres || []));
-  const genres = Array.from(genreSet).slice(0, 12);
+  const genres = Array.from(genreSet).slice(0, 16);
 
   return (
     <div className="space-y-10 max-w-5xl mx-auto">
@@ -69,7 +54,7 @@ export default function MangaTopPage() {
           <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">ジャンルで絞り込む</p>
           <div className="flex flex-wrap gap-2">
             {genres.map(g => (
-              <Link key={g} href={`/genre/${encodeURIComponent(g)}`}
+              <Link key={g} href={`/genre/${getGenreSlug(g)}`}
                 className="text-xs font-bold text-purple-600 bg-purple-50 hover:bg-purple-100 border border-purple-200 px-3 py-1.5 rounded-full transition">
                 {g}
               </Link>

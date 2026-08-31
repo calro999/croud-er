@@ -8,13 +8,19 @@ import { getAllSummaryPosts, PostSummary } from "@/lib/posts";
 
 type Post = PostSummary;
 
+import { getAllManga } from "@/lib/manga";
+
 export const dynamicParams = false;
 
 export async function generateStaticParams() {
   const posts = getAllSummaryPosts();
+  const mangaList = getAllManga();
   const genreSet = new Set<string>();
   for (const post of posts) {
     (post.genres || []).forEach(g => genreSet.add(g));
+  }
+  for (const m of mangaList) {
+    (m.genres || []).forEach(g => genreSet.add(g));
   }
   const params = Array.from(genreSet).map(genre => ({ genre: getGenreSlug(genre) }));
   // lesbianのパスを強制的に追加（記事が0件の時でもビルドで404にならないようにする）
@@ -80,8 +86,13 @@ export default async function GenrePage({ params }: { params: Promise<{ genre: s
     .filter(p => (p.genres || []).includes(genreName))
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
+  const allMangaList = getAllManga();
+  const mangaPosts = allMangaList
+    .filter(m => (m.genres || []).includes(genreName))
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
   // まだ記事がない新しいジャンル（レズなど）の場合は404にせず、空のページを表示させる
-  if (genrePosts.length === 0 && genreName !== "レズ") notFound();
+  if (genrePosts.length === 0 && mangaPosts.length === 0 && genreName !== "レズ") notFound();
 
   // このジャンルに出演している女優を集計
   const relatedActresses = Array.from(new Set(genrePosts.flatMap(p => p.actresses || []))).slice(0, 8);
@@ -181,37 +192,84 @@ export default async function GenrePage({ params }: { params: Promise<{ genre: s
           </section>
         )}
 
-        <section className="space-y-4">
-          <h2 className="text-lg font-extrabold text-slate-800">{genreName} 作品レビュー一覧（{genrePosts.length}件）</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {genrePosts.map(post => (
-              <article key={post.id} className="flex flex-col rounded-2xl overflow-hidden bg-white border border-slate-200/80 shadow-sm card-hover-effect">
-                <div className="aspect-[16/10] relative overflow-hidden bg-slate-100">
-                  {post.image ? (
-                    <img src={post.image} alt={`${post.title} ジャケット`} referrerPolicy="no-referrer" className="w-full h-full object-cover" loading="lazy" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">No Image</div>
-                  )}
-                  <span className="absolute top-3 left-3 text-[9px] font-bold bg-rose-500 text-white px-2 py-0.5 rounded shadow">18+</span>
-                </div>
-                <div className="p-4 flex-grow flex flex-col justify-between space-y-3">
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between text-[9px] font-bold text-slate-400">
-                      <time dateTime={post.date}>{post.date?.split(" ")[0]}</time>
-                      {post.hinban && <span className="text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-100">{post.hinban}</span>}
+        {/* 漫画作品（該当ジャンルがある場合） */}
+        {mangaPosts.length > 0 && (
+          <section className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-extrabold text-slate-800 flex items-center gap-2">
+                📚 {genreName} 関連漫画レビュー（{mangaPosts.length}件）
+              </h2>
+              <Link href="/manga" className="text-xs font-bold text-purple-600 hover:underline">
+                漫画コーナーへ →
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {mangaPosts.map(m => (
+                <article key={m.id} className="flex flex-col rounded-2xl overflow-hidden bg-white border border-purple-100 shadow-sm hover:shadow-md transition">
+                  <div className="aspect-[3/4] relative overflow-hidden bg-slate-100">
+                    {m.image ? (
+                      <img src={m.image} alt={m.title} className="w-full h-full object-cover" loading="lazy" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-3xl">📚</div>
+                    )}
+                    <span className="absolute top-2 left-2 text-[9px] font-bold bg-purple-600 text-white px-1.5 py-0.5 rounded shadow">漫画</span>
+                  </div>
+                  <div className="p-3 flex-grow flex flex-col justify-between space-y-2">
+                    <div>
+                      <h3 className="text-xs font-bold text-slate-900 leading-snug line-clamp-2">{m.title}</h3>
+                      {m.author && m.author.length > 0 && (
+                        <p className="text-[10px] text-slate-500 mt-1">✍️ {m.author.join("、")}</p>
+                      )}
                     </div>
-                    <h3 className="text-sm font-extrabold text-slate-800 leading-snug line-clamp-2">{post.title}</h3>
-                    <p className="text-xs text-slate-500">{(post.actresses || []).join("・") || "出演女優"}</p>
+                    <div className="flex gap-1.5 pt-1">
+                      <Link href={`/manga/${m.id}`} className="flex-1 text-center text-[10px] font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 py-1.5 rounded-lg transition border border-purple-200">
+                        レビュー
+                      </Link>
+                      <a href={m.tachiyomi_url || m.affiliate_url} target="_blank" rel="noopener noreferrer" className="flex-1 text-center text-[10px] font-bold text-white bg-gradient-to-r from-purple-500 to-rose-500 hover:from-purple-400 hover:to-rose-400 py-1.5 rounded-lg shadow transition">
+                        試し読み
+                      </a>
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Link href={`/posts/${post.id}`} className="flex-1 text-center text-xs font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 py-2 rounded-lg transition">レビューを読む</Link>
-                    <a href={post.affiliate_url} target="_blank" rel="noopener noreferrer" className="flex-1 text-center text-xs font-bold text-white bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-400 hover:to-rose-500 py-2 rounded-lg shadow transition">視聴する</a>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* 動画作品 */}
+        {genrePosts.length > 0 && (
+          <section className="space-y-4">
+            <h2 className="text-lg font-extrabold text-slate-800">🎬 {genreName} 動画作品レビュー一覧（{genrePosts.length}件）</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {genrePosts.map(post => (
+                <article key={post.id} className="flex flex-col rounded-2xl overflow-hidden bg-white border border-slate-200/80 shadow-sm card-hover-effect">
+                  <div className="aspect-[16/10] relative overflow-hidden bg-slate-100">
+                    {post.image ? (
+                      <img src={post.image} alt={`${post.title} ジャケット`} referrerPolicy="no-referrer" className="w-full h-full object-cover" loading="lazy" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">No Image</div>
+                    )}
+                    <span className="absolute top-3 left-3 text-[9px] font-bold bg-rose-500 text-white px-2 py-0.5 rounded shadow">18+</span>
                   </div>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
+                  <div className="p-4 flex-grow flex flex-col justify-between space-y-3">
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between text-[9px] font-bold text-slate-400">
+                        <time dateTime={post.date}>{post.date?.split(" ")[0]}</time>
+                        {post.hinban && <span className="text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-100">{post.hinban}</span>}
+                      </div>
+                      <h3 className="text-sm font-extrabold text-slate-800 leading-snug line-clamp-2">{post.title}</h3>
+                      <p className="text-xs text-slate-500">{(post.actresses || []).join("・") || "出演女優"}</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Link href={`/posts/${post.id}`} className="flex-1 text-center text-xs font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 py-2 rounded-lg transition">レビューを読む</Link>
+                      <a href={post.affiliate_url} target="_blank" rel="noopener noreferrer" className="flex-1 text-center text-xs font-bold text-white bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-400 hover:to-rose-500 py-2 rounded-lg shadow transition">視聴する</a>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
 
         {relatedGenres.length > 0 && (
           <section className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3">
