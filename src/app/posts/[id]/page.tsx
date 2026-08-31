@@ -1,7 +1,5 @@
 import Link from "next/link";
-import Script from "next/script";
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import { Metadata } from "next";
 import { censorText } from "@/lib/censor";
 import { getActressSlug, getGenreSlug } from "@/lib/slugs";
@@ -24,7 +22,37 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   if (!post) {
     return {
-      title: "作品が見つかりません",
+      title: "記事が見つかりません",
+    };
+  }
+
+  const isFeature = post.id.startsWith("feature_");
+
+  if (isFeature) {
+    const cleanContent = (post.review || (post as any).content || "").replace(/<[^>]*>/g, "").replace(/\s+/g, " ");
+    const desc = cleanContent.slice(0, 155) + "...";
+    return {
+      title: `${post.title} | 背徳の深夜書斎`,
+      description: desc,
+      keywords: (post.genres || post.labels || []).join(","),
+      alternates: {
+        canonical: `https://haitoku.pages.dev/posts/${id}`,
+      },
+      openGraph: {
+        title: post.title,
+        description: desc,
+        url: `https://haitoku.pages.dev/posts/${id}`,
+        type: "article",
+        publishedTime: post.date || undefined,
+        authors: ["背徳エロス編集部"],
+        images: post.image ? [{ url: post.image, alt: post.title, width: 800, height: 538 }] : [],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: post.title,
+        description: desc,
+        images: post.image ? [post.image] : [],
+      }
     };
   }
 
@@ -97,6 +125,75 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
     notFound();
   }
 
+  const isFeature = post.id.startsWith("feature_");
+
+  // ==========================================
+  // 🌟 特集記事専用の独立レンダリング（ダークテーマ・AVテンプレート汚染ゼロ）
+  // ==========================================
+  if (isFeature) {
+    const articleContent = (post as any).content || post.review || "";
+    const featureSchema = {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": post.title,
+      "description": post.title,
+      "image": post.image ? [post.image] : [],
+      "author": {
+        "@type": "Organization",
+        "name": "背徳エロス編集部",
+        "url": "https://haitoku.pages.dev"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "背徳の深夜書斎",
+        "url": "https://haitoku.pages.dev"
+      },
+      "datePublished": post.date ? post.date.split(' ')[0] : new Date().toISOString().split('T')[0],
+      "dateModified": post.date ? post.date.split(' ')[0] : new Date().toISOString().split('T')[0],
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": `https://haitoku.pages.dev/posts/${post.id}`
+      }
+    };
+
+    return (
+      <>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(featureSchema) }} />
+
+        <div className="space-y-6 max-w-5xl mx-auto pb-16" lang="ja">
+          {/* 特集用パンくずナビ */}
+          <nav aria-label="パンくずリスト" className="flex items-center gap-1.5 text-xs font-medium text-slate-500">
+            <Link href="/" className="hover:text-purple-600 transition-colors">ホーム</Link>
+            <span className="text-slate-300">›</span>
+            <Link href="/features" className="hover:text-purple-600 transition-colors">特集一覧</Link>
+            <span className="text-slate-300">›</span>
+            <Link href="/manga" className="hover:text-purple-600 transition-colors">漫画コーナー</Link>
+            <span className="text-slate-300">›</span>
+            <span className="text-slate-700 font-bold line-clamp-1 max-w-[240px]">{post.title}</span>
+          </nav>
+
+          {/* 特集コンテンツ本体（独自の背景・文字色完全分離） */}
+          <div className="bg-slate-950 text-slate-100 rounded-3xl p-4 sm:p-8 md:p-10 shadow-2xl border border-slate-800">
+            <div dangerouslySetInnerHTML={{ __html: articleContent }} />
+          </div>
+
+          {/* 漫画コーナートップへの回遊導線 */}
+          <div className="text-center pt-6 space-y-3">
+            <Link
+              href="/manga"
+              className="inline-flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-sm rounded-xl shadow-lg transition transform hover:-translate-y-0.5"
+            >
+              <span>📚</span><span>FANZA漫画コーナー（全3,600作品以上）をもっと見る</span>
+            </Link>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // ==========================================
+  // 🎬 通常のAV作品レビュー詳細レンダリング
+  // ==========================================
   const hinbanText = post.hinban || post.id;
   const similarItems = getSimilarPosts(post, 4);
 
@@ -110,9 +207,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
   const actressNames = (post.actresses || []).join("・");
   const genreNames = (post.genres || []).join("・");
 
-  // 作品固有の魅力的で熱狂的な動的CTA文言生成（AI臭さゼロ・実用官能特化）
-  const cleanTitle = post.title.replace(/【.*?】/g, "").trim() || post.title;
-  // 「ハイビジョン」「4K」「独占配信」などの非官能タグを除外し、エロ・シチュエーション特化ジャンルを抽出
+  // 作品固有の魅力的で熱狂的な動的CTA文言生成
   const sexyGenres = (post.genres || []).filter(g => 
     !["ハイビジョン", "4K", "独占配信", "単体作品", "完全版", "大容量", "DMM独占", "ベスト・総集編"].includes(g)
   );
@@ -232,7 +327,6 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
     "@type": "BreadcrumbList",
     "itemListElement": [
       {
-        "@type": "ListItem",
         "position": 1,
         "name": "ホーム",
         "item": "https://haitoku.pages.dev"
@@ -320,7 +414,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             </a>
           </section>
 
-          {/* 🏷️ 【追加依頼5位】セール・価格・配信形態ボックス（「今買う理由」） */}
+          {/* セール・価格・配信形態ボックス */}
           <section className="bg-gradient-to-r from-slate-900 to-slate-950 text-white p-5 md:p-6 rounded-2xl border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="space-y-1 text-center sm:text-left">
               <span className="text-[10px] font-black text-amber-400 uppercase tracking-widest bg-amber-400/10 px-2.5 py-0.5 rounded border border-amber-400/20">
@@ -371,7 +465,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             </section>
           )}
 
-          {/* メタ情報・タグ探索ボックス（出演女優・作品属性・メーカー・品番） */}
+          {/* メタ情報・タグ探索ボックス */}
           <section className="p-5 md:p-6 rounded-3xl bg-slate-50 border border-slate-200 text-xs space-y-4 shadow-sm" aria-label="作品基本スペック情報">
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 border-b border-slate-200/80 pb-4">
               <div className="space-y-1">
@@ -399,7 +493,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
               </div>
             </div>
 
-            {/* 🏷️ 出演女優タグ（同女優の別作品・Wikiへワンタップ） */}
+            {/* 出演女優タグ */}
             <div className="space-y-2">
               <span className="text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-100 px-2.5 py-0.5 rounded-full uppercase inline-block">
                 ACTRESS • 出演女優（別作品・まとめを見る）
@@ -422,7 +516,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
               </div>
             </div>
 
-            {/* 🏷️ 作品属性（ジャンル）タグ（関連ジャンルの作品群へ横展開） */}
+            {/* 作品属性タグ */}
             {post.genres && post.genres.length > 0 && (
               <div className="space-y-2 pt-2 border-t border-slate-200/60">
                 <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2.5 py-0.5 rounded-full uppercase inline-block">
@@ -443,7 +537,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             )}
           </section>
 
-          {/* 濃厚レビューテキスト */}
+          {/* レビューテキスト */}
           <section className="prose prose-slate max-w-none text-slate-700 space-y-6 leading-relaxed text-sm md:text-base font-medium" aria-label="詳細考察レビュー">
             <div
               className="review-content-html"
@@ -451,7 +545,40 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             />
           </section>
 
-          {/* 🔥 【目立つ上部CTA】レビュー直後の個別作品クリック誘導ボタン */}
+          {/* 🔰 初めての電子書籍購入ガイド キラーCTA */}
+          <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-950 via-slate-900 to-purple-950 border-2 border-indigo-500/40 p-6 md:p-8 text-white shadow-xl space-y-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[10px] font-black text-indigo-300 bg-indigo-500/20 border border-indigo-500/40 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                🔰 初めての電子書籍購入ガイド
+              </span>
+              <span className="text-[10px] font-bold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2 py-0.5 rounded-full">
+                安心・秘密厳守
+              </span>
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="text-lg md:text-xl font-black text-white leading-snug">
+                「FANZAで漫画を買ってみたいけれど、バレないか不安…」という方へ
+              </h3>
+              <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
+                紙の本のように部屋に置く必要がなく、クレジットカード明細にも作品名は一切載りません（DMM名義）。専用アプリ不要でスマホ・PCのブラウザから今すぐ読めて、パソコンなら<b>キーボード操作（←/→）で両手を完全にフリーにした状態</b>でゆっくり楽しめます。
+              </p>
+            </div>
+
+            <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
+              <Link
+                href="/posts/feature_why_buy_fanza_manga_complete_guide"
+                className="w-full sm:w-auto inline-flex items-center justify-center text-xs md:text-sm font-black text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-rose-600 hover:opacity-95 px-6 py-3.5 rounded-xl shadow-lg transition duration-150 transform hover:-translate-y-0.5 text-center"
+              >
+                📖 なぜみんなFANZAで買うのか？メリット・買い方・人気10選を見る ›
+              </Link>
+              <span className="text-[11px] text-slate-400">
+                ※PayPay・楽天ペイ・クレカ対応 / 登録不要の無料立ち読みあり
+              </span>
+            </div>
+          </section>
+
+          {/* 個別作品クリック誘導ボタン */}
           <section className="py-2 text-center space-y-2 bg-gradient-to-r from-rose-50 via-pink-50 to-rose-50 border border-rose-200/80 rounded-2xl p-5 shadow-sm">
             <span className="text-[10px] font-black text-rose-600 bg-rose-100/80 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
               STREAMING & DOWNLOAD AVAILABLE
@@ -499,45 +626,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             </section>
           )}
 
-          {/* 🧭 【追加依頼4位＆6位】あなたならどれ？初心者向け探索 ＆ 診断ガイド */}
-          <section className="bg-gradient-to-br from-slate-900 to-slate-950 text-white rounded-3xl p-6 md:p-8 shadow-xl space-y-4">
-            <div className="space-y-1">
-              <span className="text-[10px] font-black text-rose-400 bg-rose-500/20 px-3 py-1 rounded-full uppercase tracking-wider">
-                EXPLORE & DIAGNOSIS • あなたならどれ？
-              </span>
-              <h2 className="text-lg md:text-xl font-black text-white">
-                【視聴診断】この作品を観るべきか迷っているあなたへ
-              </h2>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                「好みに合わなかったらどうしよう…」と迷ったときの選び方チェックシートです。
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-              <div className="bg-slate-800/80 border border-slate-700/60 p-4 rounded-2xl space-y-1.5">
-                <span className="text-xs font-black text-amber-400 flex items-center gap-1">✅ こんな人には絶対刺さる！</span>
-                <ul className="text-xs text-slate-300 space-y-1 list-disc list-inside">
-                  <li>{post.genres?.slice(0, 2).join('・') || 'このジャンル'}のシチュエーションで抜きたい</li>
-                  <li>女優の生々しい表情変化や焦らしの演技を楽しみたい</li>
-                  <li>前置きなしで即効性の高い実用シーンを求めている</li>
-                </ul>
-              </div>
-
-              <div className="bg-slate-800/80 border border-slate-700/60 p-4 rounded-2xl space-y-1.5">
-                <span className="text-xs font-black text-pink-400 flex items-center gap-1">💡 次に見るべき選択肢</span>
-                <p className="text-xs text-slate-300">
-                  {mainActress ? `${mainActress}の他作品をチェックするか、同系統の類似作品を下記からお選びください。` : '関連ジャンルの他作品も合わせて比較してみてください。'}
-                </p>
-                {mainActress && (
-                  <Link href={`/actress/${getActressSlug(mainActress)}`} className="inline-block text-xs font-bold text-rose-400 hover:text-rose-300 pt-1">
-                    👉 {mainActress} のWikipedia風まとめ・神作10選へ
-                  </Link>
-                )}
-              </div>
-            </div>
-          </section>
-
-          {/* 🔗 【追加依頼1位】作品 → 類似作品（「この作品が好きなら次はこれ」） */}
+          {/* 類似作品レコメンド */}
           <section className="pt-6 border-t border-slate-100 space-y-4" aria-label="類似作品レコメンド">
             <div className="space-y-1">
               <span className="text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-100 px-2.5 py-0.5 rounded-full uppercase">
@@ -584,7 +673,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             </div>
           </section>
 
-          {/* 👯 【推し探し特化】女優 → 類似女優（「この女優が好きならこの人も」） */}
+          {/* 女優レコメンド */}
           {mainActress && similarActresses.length > 0 && (
             <section className="pt-6 border-t border-slate-100 space-y-4">
               <div className="space-y-1">
@@ -626,7 +715,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             </section>
           )}
 
-          {/* 🏷️ 関連ジャンル一覧 */}
+          {/* 関連ジャンル一覧 */}
           {post.genres && post.genres.length > 0 && (
             <section className="pt-6 border-t border-slate-100 space-y-3">
               <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">
