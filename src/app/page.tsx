@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   },
 };
 
+// Build trigger: 2026-08-31 16:50
 export default function Home() {
   const posts = getAllSummaryPosts();
 
