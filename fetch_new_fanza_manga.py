@@ -12,7 +12,7 @@ POSTS_DIR = "src/data/manga"
 API_ID = "4Lx0ftRf17Uuad6Ud7Gb"
 API_AFFILIATE_ID = "onchan555-999"
 LINK_AFFILIATE_ID = "onchan555-003"
-TARGET_NEW_POSTS = 500  # さらに500作品を直接FANZA APIから追加
+TARGET_NEW_POSTS = 600  # さらに600作品を直接FANZA APIから追加
 
 # レズ・百合・NTR・人妻・美少女・背徳など、当サイトに最も適した多様な検索キーワード
 SEARCH_KEYWORDS = [
@@ -22,7 +22,8 @@ SEARCH_KEYWORDS = [
     "ハメ撮り", "痴女", "主婦", "OL", "放課後", "黒ギャル", "淫乱", "処女", "肉便器", "アナル", "中出し",
     "近親相姦", "母乳", "パイズリ", "妹", "姉", "女装", "男の娘", "逆レイプ", "監禁", "洗脳", "マゾ", "サド",
     "オタサーの姫", "ツンデレ", "クーデレ", "ヤンデレ", "エルフ", "獣耳", "JK", "JD", "処女喪失", "ザーメン", "子宮", "開発",
-    "水着", "下着", "制服", "ナース", "女上司", "若妻", "寝取り", "ハーレム", "媚薬", "羞恥", "拘束", "玩具"
+    "水着", "下着", "制服", "ナース", "女上司", "若妻", "寝取り", "ハーレム", "媚薬", "羞恥", "拘束", "玩具",
+    "お泊まり", "看病", "同級生", "先輩後輩", "部活", "マネージャー", "巫女", "シスター", "女騎士", "くのいち", "魔法少女"
 ]
 EXCLUDE_WORDS = ["熟女", "五十路", "四十路", "六十路", "高齢", "ニューハーフ", "おばさん", "マダム"]
 
@@ -90,7 +91,7 @@ def fetch_fanza_manga():
     print(f"--- 📡 Fetching fresh manga directly from FANZA API ---")
     for keyword in SEARCH_KEYWORDS:
         for sort_type in ["rank", "date", "match"]:
-            for offset_val in [1, 31, 61, 91, 121]:
+            for offset_val in [1, 31, 61, 91, 121, 151, 181]:
                 params = {
                     "api_id": API_ID,
                     "affiliate_id": API_AFFILIATE_ID,
@@ -110,7 +111,7 @@ def fetch_fanza_manga():
                         all_items.extend(items)
                 except Exception as e:
                     pass
-                time.sleep(0.12)
+                time.sleep(0.1)
     random.shuffle(all_items)
     print(f"Total raw items fetched from FANZA API: {len(all_items)}")
     return all_items
