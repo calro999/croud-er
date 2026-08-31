@@ -4,7 +4,7 @@ import re
 import time
 import json
 import requests
-from update_all_manga_articles import generate_custom_review
+from update_all_manga_articles import generate_deep_custom_review
 
 SITE = "blogger-er"
 CACHE_FILE = "manga_cache.txt"
@@ -12,7 +12,7 @@ POSTS_DIR = "src/data/manga"
 API_ID = "4Lx0ftRf17Uuad6Ud7Gb"
 API_AFFILIATE_ID = "onchan555-999"
 LINK_AFFILIATE_ID = "onchan555-003"
-TARGET_NEW_POSTS = 30  # 30作品を確実に追加
+TARGET_NEW_POSTS = 50  # 50作品を新規追加
 
 # レズ・百合・NTR・人妻・美少女・背徳など、当サイトに最も適した多様な検索キーワード
 SEARCH_KEYWORDS = [
@@ -149,7 +149,7 @@ def generate_pure_fanza_article(item):
         "publisher": publisher,
         "comment": comment
     }
-    return generate_custom_review(item_adapter)
+    return generate_deep_custom_review(item_adapter)
 
 def main():
     posted_cache, existing_titles = load_posted_cache()
