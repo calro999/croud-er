@@ -12,7 +12,7 @@ POSTS_DIR = "src/data/manga"
 API_ID = "4Lx0ftRf17Uuad6Ud7Gb"
 API_AFFILIATE_ID = "onchan555-999"
 LINK_AFFILIATE_ID = "onchan555-003"
-TARGET_NEW_POSTS = 300  # さらに300作品を直接FANZA APIから追加
+TARGET_NEW_POSTS = 400  # さらに400作品を直接FANZA APIから追加
 
 # レズ・百合・NTR・人妻・美少女・背徳など、当サイトに最も適した多様な検索キーワード
 SEARCH_KEYWORDS = [
@@ -20,7 +20,8 @@ SEARCH_KEYWORDS = [
     "幼なじみ", "女教師", "お姉さん", "ギャル", "催眠", "調教", "不倫", "フルカラー",
     "同棲", "義母", "義妹", "後輩", "先輩", "令嬢", "メイド", "コスプレ", "露出", "温泉", "密着",
     "ハメ撮り", "痴女", "主婦", "OL", "放課後", "黒ギャル", "淫乱", "処女", "肉便器", "アナル", "中出し",
-    "近親相姦", "母乳", "パイズリ", "妹", "姉", "女装", "男の娘", "逆レイプ", "監禁", "洗脳", "マゾ", "サド"
+    "近親相姦", "母乳", "パイズリ", "妹", "姉", "女装", "男の娘", "逆レイプ", "監禁", "洗脳", "マゾ", "サド",
+    "オタサーの姫", "ツンデレ", "クーデレ", "ヤンデレ", "エルフ", "獣耳", "JK", "JD", "処女喪失", "ザーメン", "子宮", "開発"
 ]
 EXCLUDE_WORDS = ["熟女", "五十路", "四十路", "六十路", "高齢", "ニューハーフ", "おばさん", "マダム"]
 
@@ -87,29 +88,30 @@ def fetch_fanza_manga():
     all_items = []
     print(f"--- 📡 Fetching fresh manga directly from FANZA API ---")
     for keyword in SEARCH_KEYWORDS:
-        for sort_type in ["rank", "date"]:
-            params = {
-                "api_id": API_ID,
-                "affiliate_id": API_AFFILIATE_ID,
-                "site": "FANZA",
-                "service": "ebook",
-                "floor": "comic",
-                "keyword": keyword,
-                "sort": sort_type,
-                "offset": random.randint(1, 15),
-                "hits": 30,
-                "output": "json"
-            }
-            try:
-                r = requests.get(url, params=params, timeout=15)
-                if r.status_code == 200:
-                    items = r.json().get("result", {}).get("items", [])
-                    print(f"  Fetched {len(items)} items for keyword='{keyword}', sort='{sort_type}'")
-                    all_items.extend(items)
-            except Exception as e:
-                print(f"  Error fetching '{keyword}': {e}")
-            time.sleep(0.3)
+        for sort_type in ["rank", "date", "match"]:
+            for offset_val in [1, 31, 61]:
+                params = {
+                    "api_id": API_ID,
+                    "affiliate_id": API_AFFILIATE_ID,
+                    "site": "FANZA",
+                    "service": "ebook",
+                    "floor": "comic",
+                    "keyword": keyword,
+                    "sort": sort_type,
+                    "offset": offset_val,
+                    "hits": 30,
+                    "output": "json"
+                }
+                try:
+                    r = requests.get(url, params=params, timeout=15)
+                    if r.status_code == 200:
+                        items = r.json().get("result", {}).get("items", [])
+                        all_items.extend(items)
+                except Exception as e:
+                    pass
+                time.sleep(0.15)
     random.shuffle(all_items)
+    print(f"Total raw items fetched from FANZA API: {len(all_items)}")
     return all_items
 
 def filter_items(items, posted_cache, existing_titles):
