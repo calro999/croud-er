@@ -103,6 +103,41 @@ export default function FeaturesPage() {
         </div>
       </section>
 
+      {/* 漫画デビュー特集バナー */}
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-950 via-slate-900 to-slate-950 border-2 border-purple-500/50 shadow-2xl p-6 md:p-8 text-white">
+        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl pointer-events-none" />
+        
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 relative z-10">
+          <div className="space-y-3 max-w-2xl">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center text-[10px] font-black text-purple-300 bg-purple-500/20 border border-purple-500/40 px-3 py-1 rounded-full uppercase tracking-wider">
+                📚 漫画コーナー特設
+              </span>
+              <span className="text-[11px] font-bold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2.5 py-0.5 rounded-full">
+                初心者向け・完全ガイド
+              </span>
+            </div>
+            
+            <h2 className="text-2xl md:text-3xl font-black tracking-tight text-white">
+              【2026年最新】FANZAで漫画を初めて買うならコレ！絶対後悔しない殿堂入り傑作10選
+            </h2>
+            
+            <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
+              「FANZAで電子コミックを買ってみたいけど失敗したくない！」という方に向け、公式APIのリアルタイム売れ筋・高評価から厳選した傑作10選！美麗作画から背徳NTR・フルカラーまで全作試し読み付きで徹底レビュー。
+            </p>
+          </div>
+          
+          <div className="flex-shrink-0 w-full lg:w-auto">
+            <Link
+              href="/posts/feature_fanza_manga_starter_guide_10_best"
+              className="inline-flex items-center justify-center w-full lg:w-auto text-sm font-black text-white bg-gradient-to-r from-purple-600 via-purple-500 to-rose-500 hover:from-purple-500 hover:to-rose-400 px-8 py-4 rounded-2xl shadow-xl hover:shadow-purple-500/25 transition duration-200 transform hover:-translate-y-0.5 text-center"
+            >
+              📖 漫画デビュー10選を読む ›
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* 特集カードグリッド */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {featureList.map(item => (

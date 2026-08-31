@@ -48,6 +48,27 @@ export default function MangaTopPage() {
         </div>
       </section>
 
+      {/* 漫画デビュー特集バナー */}
+      <section className="rounded-2xl bg-gradient-to-r from-purple-900 via-purple-950 to-slate-900 border-2 border-purple-500/40 p-6 md:p-8 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="space-y-2 text-center md:text-left">
+          <span className="inline-block text-[10px] font-black text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+            🔰 初めてのFANZA漫画ガイド
+          </span>
+          <h2 className="text-xl md:text-2xl font-black text-white">
+            【2026最新】FANZAで漫画を初めて買うならコレ！絶対後悔しない殿堂入り傑作10選
+          </h2>
+          <p className="text-xs md:text-sm text-slate-300">
+            公式APIリアルタイム売れ筋から厳選。全作無料試し読み付きで徹底レビュー！
+          </p>
+        </div>
+        <Link
+          href="/posts/feature_fanza_manga_starter_guide_10_best"
+          className="flex-shrink-0 text-xs md:text-sm font-black text-white bg-gradient-to-r from-purple-500 to-rose-500 hover:from-purple-400 hover:to-rose-400 px-6 py-3 rounded-xl shadow transition transform hover:-translate-y-0.5"
+        >
+          📖 特集記事を読む ›
+        </Link>
+      </section>
+
       {/* ジャンルフィルタ */}
       {genres.length > 0 && (
         <section className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
