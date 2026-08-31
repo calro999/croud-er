@@ -92,16 +92,17 @@ export default async function MangaDetailPage({ params }: { params: Promise<{ id
               </span>
               <h1 className="text-2xl md:text-3xl font-black text-white leading-snug">{post.title}</h1>
 
-              <div className="flex flex-wrap gap-3 text-xs text-slate-300">
+              <div className="flex flex-wrap items-center gap-3 text-xs text-slate-300">
                 {post.author.length > 0 && (
-                  <span className="flex items-center gap-1">
-                    ✍️ 作者: {post.author.map((a, idx) => (
-                      <span key={a}>
-                        <strong className="text-purple-300 font-bold">{a}</strong>
-                        {idx < post.author.length - 1 ? "、" : ""}
-                      </span>
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="text-slate-400">✍️ 著者:</span>
+                    {post.author.map((a) => (
+                      <Link key={a} href={`/author/${encodeURIComponent(a.trim())}`}
+                        className="inline-flex items-center text-xs font-bold text-purple-200 bg-purple-500/20 hover:bg-purple-500/40 border border-purple-400/30 px-2.5 py-0.5 rounded-full transition">
+                        {a.trim()}
+                      </Link>
                     ))}
-                  </span>
+                  </div>
                 )}
                 {post.publisher && (
                   <span>🏢 レーベル: <span className="text-slate-200 font-semibold">{post.publisher}</span></span>
@@ -175,16 +176,21 @@ export default async function MangaDetailPage({ params }: { params: Promise<{ id
                   </div>
                   <div className="flex-1 flex flex-col justify-between space-y-1.5">
                     <div>
-                      <span className="text-[9px] font-bold text-purple-700 bg-purple-100 px-2 py-0.5 rounded-md inline-block mb-1">
+                      <span className="text-[10px] font-bold text-purple-700 bg-purple-100/90 px-2 py-0.5 rounded-md inline-block mb-1 border border-purple-200/60 leading-tight">
                         {matchReason}
                       </span>
                       <h3 className="text-xs font-bold text-slate-900 leading-snug line-clamp-2 group-hover:text-purple-600 transition">
                         {relManga.title}
                       </h3>
                       {relManga.author.length > 0 && (
-                        <p className="text-[11px] text-slate-500 mt-0.5">
-                          ✍️ {relManga.author.join("、")}
-                        </p>
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {relManga.author.map(a => (
+                            <Link key={a} href={`/author/${encodeURIComponent(a.trim())}`}
+                              className="text-[10px] text-purple-600 hover:text-purple-800 hover:underline">
+                              ✍️ {a.trim()}
+                            </Link>
+                          ))}
+                        </div>
                       )}
                     </div>
                     <div className="flex gap-2 pt-1">

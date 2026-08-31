@@ -91,7 +91,10 @@ export default function MangaTopPage() {
                     <p className="text-[10px] text-slate-400 font-bold mb-1">{post.date?.split(" ")[0]}</p>
                     <h3 className="text-xs font-extrabold text-slate-800 leading-snug line-clamp-3">{post.title}</h3>
                     {post.author.length > 0 && (
-                      <p className="text-[10px] text-slate-500 mt-1">✍️ {post.author[0]}</p>
+                      <Link href={`/author/${encodeURIComponent(post.author[0].trim())}`}
+                        className="inline-block text-[10px] text-purple-600 hover:text-purple-800 hover:underline mt-1">
+                        ✍️ {post.author[0].trim()}
+                      </Link>
                     )}
                   </div>
                   <Link href={`/manga/${post.id}`}

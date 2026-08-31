@@ -107,6 +107,8 @@ makerSet.forEach(m => {
   </url>\n`;
 });
 
+const authorSet = new Set();
+
 if (fs.existsSync(mangaDir)) {
   const mangaFiles = fs.readdirSync(mangaDir).filter(f => f.endsWith('.json'));
   for (const file of mangaFiles) {
@@ -120,9 +122,20 @@ if (fs.existsSync(mangaDir)) {
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>\n`;
+      (manga.author || []).forEach(a => { if (a && a.trim()) authorSet.add(a.trim()); });
+      (manga.genres || []).forEach(g => { if (g) genreSet.add(g); });
     } catch (e) {}
   }
 }
+
+authorSet.forEach(a => {
+  xml += `  <url>
+    <loc>${baseUrl}/author/${encodeURIComponent(a)}</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>\n`;
+});
 
 xml += `</urlset>`;
 
