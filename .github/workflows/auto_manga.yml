@@ -34,14 +34,19 @@ jobs:
       - name: Run Manga Generator
         run: python generate_manga_posts.py
 
-      - name: Bundle Manga
-        run: node bundle_manga.js
+      - name: Consolidate Duplicates
+        run: python consolidate_manga_duplicates.py
+
+      - name: Bundle Manga & Sitemap
+        run: |
+          node bundle_manga.js
+          node generate_sitemap.js
 
       - name: Commit and Push Changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add src/data/manga/ manga_cache.txt public/data/manga.json
+          git add src/data/manga/ manga_cache.txt public/data/manga.json public/sitemap.xml
           if ! git diff --cached --quiet; then
             git commit -m "chore: update manga database (blogger-er)"
             git pull --rebase origin main || true
