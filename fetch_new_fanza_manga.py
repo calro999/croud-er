@@ -12,7 +12,7 @@ POSTS_DIR = "src/data/manga"
 API_ID = "4Lx0ftRf17Uuad6Ud7Gb"
 API_AFFILIATE_ID = "onchan555-999"
 LINK_AFFILIATE_ID = "onchan555-003"
-TARGET_NEW_POSTS = 50  # 50作品を新規追加
+TARGET_NEW_POSTS = 100  # さらに100作品を高品質追加
 
 # レズ・百合・NTR・人妻・美少女・背徳など、当サイトに最も適した多様な検索キーワード
 SEARCH_KEYWORDS = [
