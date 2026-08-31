@@ -87,11 +87,39 @@ def generate_hinban(content_id):
         return f"{a}-{c} ({std})" if c != n else std
     return content_id.upper()
 
+def normalize_manga_title(title):
+    if not title:
+        return ""
+    t = re.sub(r'【.*?】', '', title)
+    t = re.sub(r'\[.*?\]', '', t)
+    t = re.sub(r'（.*?）', '', t)
+    t = re.sub(r'\(.*?\)', '', t)
+    t = re.sub(r'[\s　]+', '', t)
+    t = re.sub(r'(第?\d+話|第?\d+巻|vol\.\d+|\#\d+|\d+$)', '', t, flags=re.IGNORECASE)
+    return t.strip() or title
+
 def load_posted_cache():
+    cache_ids = set()
     if os.path.exists(CACHE_FILE):
         with open(CACHE_FILE, "r", encoding="utf-8") as f:
-            return set(line.strip() for line in f if line.strip())
-    return set()
+            cache_ids = set(line.strip() for line in f if line.strip())
+    
+    # 既存の全漫画JSONファイルから正規化タイトルを収集（作品重複を永久に防止）
+    existing_titles = set()
+    if os.path.exists(POSTS_DIR):
+        for f in os.listdir(POSTS_DIR):
+            if f.endswith(".json"):
+                try:
+                    with open(os.path.join(POSTS_DIR, f), "r", encoding="utf-8") as fp:
+                        data = json.load(fp)
+                        norm = normalize_manga_title(data.get("title", ""))
+                        if norm:
+                            existing_titles.add(norm)
+                        if data.get("id"):
+                            cache_ids.add(data.get("id"))
+                except:
+                    pass
+    return cache_ids, existing_titles
 
 def save_to_cache(content_id):
     with open(CACHE_FILE, "a", encoding="utf-8") as f:
@@ -133,17 +161,22 @@ def fetch_fanza_manga():
     random.shuffle(all_items)
     return all_items
 
-def filter_items(items, posted_cache):
+def filter_items(items, posted_cache, existing_titles):
     valid = []
-    seen = set()
+    seen_ids = set()
+    seen_titles = set()
     for item in items:
         cid = item.get("content_id")
-        if not cid or cid in posted_cache or cid in seen:
+        if not cid or cid in posted_cache or cid in seen_ids:
             continue
-        seen.add(cid)
         title = item.get("title", "")
+        norm_title = normalize_manga_title(title)
+        if not norm_title or norm_title in existing_titles or norm_title in seen_titles:
+            continue
         genres = " ".join([g.get("name", "") for g in item.get("iteminfo", {}).get("genre", [])])
         if not any(w in title or w in genres for w in EXCLUDE_WORDS):
+            seen_ids.add(cid)
+            seen_titles.add(norm_title)
             valid.append(item)
     return valid
 
@@ -196,9 +229,9 @@ def generate_manga_article(item):
 
 def main():
     print(f"--- Manga Generator ({SITE}) | Target: {TARGET_POST_COUNT} ---")
-    posted_cache = load_posted_cache()
+    posted_cache, existing_titles = load_posted_cache()
     all_items = fetch_fanza_manga()
-    valid_items = filter_items(all_items, posted_cache)
+    valid_items = filter_items(all_items, posted_cache, existing_titles)
     print(f"Found {len(valid_items)} valid manga candidates.")
 
     count = 0
