@@ -103,36 +103,36 @@ export default function FeaturesPage() {
         </div>
       </section>
 
-      {/* 漫画デビュー特集バナー */}
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-950 via-slate-900 to-slate-950 border-2 border-purple-500/50 shadow-2xl p-6 md:p-8 text-white">
-        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl pointer-events-none" />
+      {/* 漫画購入完全ガイド・キラーバナー */}
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-950 border-2 border-indigo-500/50 shadow-2xl p-6 md:p-8 text-white">
+        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
         
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 relative z-10">
           <div className="space-y-3 max-w-2xl">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center text-[10px] font-black text-purple-300 bg-purple-500/20 border border-purple-500/40 px-3 py-1 rounded-full uppercase tracking-wider">
-                📚 漫画コーナー特設
+              <span className="inline-flex items-center text-[10px] font-black text-indigo-300 bg-indigo-500/20 border border-indigo-500/40 px-3 py-1 rounded-full uppercase tracking-wider">
+                🔰 初めての電子書籍
               </span>
-              <span className="text-[11px] font-bold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2.5 py-0.5 rounded-full">
-                初心者向け・完全ガイド
+              <span className="text-[11px] font-bold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-full">
+                クレカ明細・安全性・買い方完全解説
               </span>
             </div>
             
             <h2 className="text-2xl md:text-3xl font-black tracking-tight text-white">
-              【2026年最新】FANZAで漫画を初めて買うならコレ！絶対後悔しない殿堂入り傑作10選
+              なぜみんなFANZAで漫画を買うのか？メリット・購入方法・人気傑作10選
             </h2>
             
             <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
-              「FANZAで電子コミックを買ってみたいけど失敗したくない！」という方に向け、公式APIのリアルタイム売れ筋・高評価から厳選した傑作10選！美麗作画から背徳NTR・フルカラーまで全作試し読み付きで徹底レビュー。
+              「家族にバレない？」「スマホで快適に読める？」といった疑問をゼロから解決。FANZAで本を買う圧倒的メリットと購入手順、今すぐ試せる売れ筋傑作10選を徹底まとめ！
             </p>
           </div>
           
           <div className="flex-shrink-0 w-full lg:w-auto">
             <Link
-              href="/posts/feature_fanza_manga_starter_guide_10_best"
-              className="inline-flex items-center justify-center w-full lg:w-auto text-sm font-black text-white bg-gradient-to-r from-purple-600 via-purple-500 to-rose-500 hover:from-purple-500 hover:to-rose-400 px-8 py-4 rounded-2xl shadow-xl hover:shadow-purple-500/25 transition duration-200 transform hover:-translate-y-0.5 text-center"
+              href="/posts/feature_why_buy_fanza_manga_complete_guide"
+              className="inline-flex items-center justify-center w-full lg:w-auto text-sm font-black text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-rose-600 hover:opacity-95 px-8 py-4 rounded-2xl shadow-xl hover:shadow-indigo-500/25 transition duration-200 transform hover:-translate-y-0.5 text-center"
             >
-              📖 漫画デビュー10選を読む ›
+              🚀 購入完全ガイドを読む ›
             </Link>
           </div>
         </div>
