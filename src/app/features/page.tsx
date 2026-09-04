@@ -103,6 +103,41 @@ export default function FeaturesPage() {
         </div>
       </section>
 
+      {/* FANZA動画 対応デバイス・視聴ガイド */}
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-950 border-2 border-emerald-500/50 shadow-2xl p-6 md:p-8 text-white">
+        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none" />
+        
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 relative z-10">
+          <div className="space-y-3 max-w-2xl">
+            <div className="flex items-center gap-2">
+              <span className="bg-gradient-to-r from-emerald-400 to-teal-500 text-slate-950 text-[10px] font-black tracking-widest px-3 py-1 rounded-full uppercase shadow">
+                📱 初心者必見ガイド
+              </span>
+              <span className="bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full">
+                全デバイス対応表・見方完全網羅
+              </span>
+            </div>
+            
+            <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight leading-snug">
+              【2026年最新】FANZA動画はどうやって見る？対応デバイス一覧＆視聴方法完全ガイド
+            </h2>
+            
+            <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
+              パソコン、スマホ（iPhone/Android）、PS4/PS5、Fire TV Stick、Chromecast、スマートテレビまで！全デバイス別の視聴手順と家族バレ防止策を徹底解説。
+            </p>
+          </div>
+
+          <div className="flex-shrink-0 w-full lg:w-auto">
+            <Link
+              href="/fanza-device-guide"
+              className="inline-flex items-center justify-center w-full lg:w-auto text-sm font-black text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-400 px-8 py-4 rounded-2xl shadow-xl hover:shadow-emerald-500/25 transition duration-200 transform hover:-translate-y-0.5 text-center"
+            >
+              📺 視聴ガイドを読む ›
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* 漫画購入完全ガイド・キラーバナー */}
       <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-950 border-2 border-indigo-500/50 shadow-2xl p-6 md:p-8 text-white">
         <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />

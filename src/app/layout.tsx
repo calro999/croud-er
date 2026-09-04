@@ -110,6 +110,10 @@ export default function RootLayout({
                 👑 神作10選
               </a>
               <span className="text-slate-300 text-[10px]">/</span>
+              <a href="/fanza-device-guide" className="hover:text-emerald-600 transition text-emerald-700 font-black flex items-center gap-1 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md text-[10px]">
+                📱 視聴ガイド
+              </a>
+              <span className="text-slate-300 text-[10px]">/</span>
               <a href="/ranking" className="hover:text-rose-600 transition">ランキング</a>
               <span className="text-slate-300 text-[10px]">/</span>
               <a href="/genre/lesbian" className="hover:text-rose-600 transition font-black text-rose-600">👩‍❤️‍💋‍👩レズ</a>
