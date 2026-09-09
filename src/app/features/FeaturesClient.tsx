@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { PostSummary } from "@/lib/posts";
+import TenSelectionCollage from "@/app/components/TenSelectionCollage";
 
 interface FeaturesClientProps {
   tenSelectionPosts: PostSummary[];
@@ -185,28 +186,19 @@ export default function FeaturesClient({
                     className="relative group bg-white border border-slate-200/90 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
                   >
                     <div>
-                      {/* アイキャッチ */}
-                      <Link href={`/posts/${post.id}`} className="block w-full aspect-[800/538] relative bg-slate-900 overflow-hidden border-b border-slate-100">
-                        {post.image ? (
-                          <img
-                            src={post.image}
-                            alt={post.title}
-                            referrerPolicy="no-referrer"
-                            className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                            loading="lazy"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-rose-950 text-white p-4 text-center">
-                            <span className="text-3xl mb-1">👑</span>
-                            <span className="text-xs font-bold text-rose-300">{actressName}</span>
-                            <span className="text-[11px] font-black text-amber-400 mt-1">おすすめ神作10選</span>
-                          </div>
-                        )}
-                        <span className="absolute top-3 left-3 text-[10px] font-black bg-rose-600 text-white px-2.5 py-1 rounded-full shadow-md">
+                      {/* アイキャッチ（記事内の作品1〜4枚の2x2コラージュ） */}
+                      <Link href={`/posts/${post.id}`} className="block relative group">
+                        <TenSelectionCollage
+                          images={post.featured_images}
+                          fallbackImage={post.image}
+                          title={post.title}
+                          actressName={actressName}
+                        />
+                        <span className="absolute top-3 left-3 text-[10px] font-black bg-rose-600 text-white px-2.5 py-1 rounded-full shadow-md z-10">
                           神作10選
                         </span>
                         {post.date && (
-                          <span className="absolute bottom-2 right-2 text-[9px] font-bold bg-slate-950/70 text-slate-300 px-2 py-0.5 rounded-md backdrop-blur-sm">
+                          <span className="absolute bottom-2 right-2 text-[9px] font-bold bg-slate-950/70 text-slate-300 px-2 py-0.5 rounded-md backdrop-blur-sm z-10">
                             {post.date.split(" ")[0]}
                           </span>
                         )}

@@ -4,6 +4,7 @@ import { Metadata } from "next";
 import { censorText } from "@/lib/censor";
 import { getActressSlug, getGenreSlug } from "@/lib/slugs";
 import UnlimitedPromotionBox from "@/app/components/UnlimitedPromotionBox";
+import TenSelectionCollage from "@/app/components/TenSelectionCollage";
 import { getAllPostIds, getPostById, getSimilarPosts, PostDetail } from "@/lib/posts";
 import { getActressWikiData, getSimilarActresses } from "@/lib/actress";
 
@@ -397,21 +398,32 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             </div>
           </header>
 
-          {/* アートジャケット画像 */}
+          {/* アートジャケット画像 / 10選コラージュ画像 */}
           <section className="flex justify-center bg-slate-900 rounded-2xl p-4 border border-slate-800 overflow-hidden" aria-label="作品ジャケット">
-            <a href={post.affiliate_url} target="_blank" rel="noopener noreferrer" className="block relative group max-w-full">
-              <img
-                src={post.image}
-                alt={`${post.title} ジャケット公式画像`}
-                referrerPolicy="no-referrer"
-                className="max-h-[500px] w-auto object-contain rounded-xl shadow-2xl group-hover:opacity-90 transition duration-300"
-              />
-              <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition duration-200 flex items-center justify-center rounded-xl">
-                <span className="text-xs font-bold text-white bg-rose-600 px-5 py-3 rounded-xl shadow-xl">
-                  🔥 FANZA公式サイトで高画質プレビュー
-                </span>
+            {post.featured_images && post.featured_images.length >= 4 ? (
+              <div className="w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl">
+                <TenSelectionCollage
+                  images={post.featured_images}
+                  fallbackImage={post.image}
+                  title={post.title}
+                  actressName={mainActress || "人気女優"}
+                />
               </div>
-            </a>
+            ) : (
+              <a href={post.affiliate_url} target="_blank" rel="noopener noreferrer" className="block relative group max-w-full">
+                <img
+                  src={post.image}
+                  alt={`${post.title} ジャケット公式画像`}
+                  referrerPolicy="no-referrer"
+                  className="max-h-[500px] w-auto object-contain rounded-xl shadow-2xl group-hover:opacity-90 transition duration-300"
+                />
+                <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition duration-200 flex items-center justify-center rounded-xl">
+                  <span className="text-xs font-bold text-white bg-rose-600 px-5 py-3 rounded-xl shadow-xl">
+                    🔥 FANZA公式サイトで高画質プレビュー
+                  </span>
+                </div>
+              </a>
+            )}
           </section>
 
           {/* セール・価格・配信形態ボックス */}

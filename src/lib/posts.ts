@@ -7,6 +7,7 @@ export interface PostSummary {
   title: string;
   review: string;
   image: string;
+  featured_images?: string[];
   sample_images?: string[];
   sample_movie_url?: string;
   affiliate_url: string;

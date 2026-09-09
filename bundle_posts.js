@@ -52,12 +52,36 @@ function main() {
         if (post.review.length > 120) shortReview += '...';
       }
 
+      // 10選記事の場合、記事内の作品画像1〜4枚を抽出して4分割コラージュサムネイル用に保持
+      let featuredImages = undefined;
+      const isTenSelection = (post.title && post.title.includes("10選")) ||
+        (post.genres && post.genres.some(g => typeof g === 'string' && g.includes("10選")));
+
+      if (isTenSelection) {
+        const rawContent = post.review || post.content || "";
+        const matches = rawContent.match(/https?:\/\/[^\s"'<>]+\.(?:jpg|jpeg|png)/g) || [];
+        const seen = new Set();
+        const uniq = [];
+        for (const m of matches) {
+          if (!seen.has(m)) {
+            seen.add(m);
+            uniq.push(m);
+          }
+        }
+        if (uniq.length >= 4) {
+          featuredImages = uniq.slice(0, 4);
+        } else if (uniq.length > 0) {
+          featuredImages = uniq;
+        }
+      }
+
       return {
         id: post.id,
         hinban: post.hinban || "",
         title: post.title || "",
         review: shortReview,
         image: post.image || "",
+        featured_images: featuredImages,
         affiliate_url: post.affiliate_url || "",
         genres: post.genres || [],
         actresses: post.actresses || [],
