@@ -1883,3 +1883,9 @@ library-librarian-quiet-bookshelf
 business-trip-coworker-same-room
 piano-teacher-private-soundproof-room
 real-estate-agent-room-preview-contact
+childhood-friend-room-roomwear-stay
+junior-female-coworker-missed-train
+apparel-fitting-room-curtain-contact
+golf-lesson-beauty-instructor-stretch
+cooking-class-beauty-teacher-apron
+university-circle-summer-camp-lodge
