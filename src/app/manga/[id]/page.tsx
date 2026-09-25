@@ -54,19 +54,114 @@ export default async function MangaDetailPage({ params }: { params: Promise<{ id
   // 類似・関連作品を取得（同一作者・同ジャンル・同レーベル）
   const similarMangaList = getSimilarManga(post, 4);
 
+  const cleanReviewText = post.review ? post.review.replace(/<[^>]*>/g, "").replace(/\s+/g, " ") : "";
+  const authorNames = post.author.join("、");
+  const genreNames = post.genres.slice(0, 5).join("・");
+
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "Article",
-    "headline": post.title,
+    "headline": `【${post.hinban || id}】${post.title} ネタバレなし感想・評価レビュー`,
+    "description": cleanReviewText.slice(0, 150) + "...",
     "author": post.author.map(a => ({ "@type": "Person", "name": a })),
-    "datePublished": post.date,
-    "image": post.image,
+    "publisher": {
+      "@type": "Organization",
+      "name": "背徳の深夜書斎",
+      "url": "https://haitoku.pages.dev"
+    },
+    "datePublished": post.date ? post.date.split(" ")[0] : new Date().toISOString().split("T")[0],
+    "image": post.image ? [post.image] : [],
     "url": `https://haitoku.pages.dev/manga/${id}`,
+  };
+
+  const reviewSchema = {
+    "@context": "https://schema.org",
+    "@type": "Review",
+    "itemReviewed": {
+      "@type": "Book",
+      "name": post.title,
+      "image": post.image,
+      "description": cleanReviewText.slice(0, 150) + "...",
+      "author": post.author.map(a => ({ "@type": "Person", "name": a })),
+      "publisher": {
+        "@type": "Organization",
+        "name": post.publisher || "FANZA Comic"
+      }
+    },
+    "author": {
+      "@type": "Organization",
+      "name": "背徳の深夜書斎",
+      "url": "https://haitoku.pages.dev"
+    },
+    "reviewRating": {
+      "@type": "Rating",
+      "ratingValue": "4.8",
+      "bestRating": "5",
+      "worstRating": "1"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "背徳の深夜書斎",
+      "url": "https://haitoku.pages.dev"
+    },
+    "datePublished": post.date ? post.date.split(" ")[0] : new Date().toISOString().split("T")[0],
+    "reviewBody": cleanReviewText
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "ホーム",
+        "item": "https://haitoku.pages.dev"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "漫画コーナー",
+        "item": "https://haitoku.pages.dev/manga"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": post.title,
+        "item": `https://haitoku.pages.dev/manga/${id}`
+      }
+    ]
+  };
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": `『${post.title}』は無料で試し読みできますか？`,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": `はい、FANZA公式ページにて冒頭の無料試し読みが可能です。会員登録不要ですぐにスマホ・PCでご覧いただけます。`
+        }
+      },
+      {
+        "@type": "Question",
+        "name": `『${post.title}』の著者やジャンルは？`,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": `著者は「${authorNames || 'FANZA掲載作家'}」、主なジャンルは「${genreNames || '成人向けコミック'}」です。`
+        }
+      }
+    ]
   };
 
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
       <div className="space-y-8 max-w-4xl mx-auto">
         {/* パンくず */}

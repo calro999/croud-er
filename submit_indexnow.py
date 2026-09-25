@@ -80,25 +80,27 @@ INDEXNOW_ENDPOINTS = [
     "https://yandex.com/indexnow"
 ]
 
-payload = {
-    "host": HOST,
-    "key": KEY,
-    "keyLocation": f"{BASE_URL}/{KEY}.txt",
-    "urlList": URL_LIST
-}
-
 print("\n--- Sending IndexNow Push Signals ---")
-for endpoint in INDEXNOW_ENDPOINTS:
-    print(f"Submitting to {endpoint}...")
-    try:
-        res = requests.post(endpoint, json=payload, timeout=30)
-        print(f"[{endpoint}] Status: {res.status_code}")
-        if res.status_code in [200, 202]:
-            print(f" Successfully pushed to {endpoint}")
-        else:
-            print(f" Response: {res.text}")
-    except Exception as e:
-        print(f" Failed to connect to {endpoint}: {e}")
+CHUNK_SIZE = 10000
+for i in range(0, len(URL_LIST), CHUNK_SIZE):
+    chunk = URL_LIST[i:i + CHUNK_SIZE]
+    print(f"Submitting chunk {i // CHUNK_SIZE + 1} ({len(chunk)} URLs)...")
+    payload = {
+        "host": HOST,
+        "key": KEY,
+        "keyLocation": f"{BASE_URL}/{KEY}.txt",
+        "urlList": chunk
+    }
+    for endpoint in INDEXNOW_ENDPOINTS:
+        try:
+            res = requests.post(endpoint, json=payload, timeout=30)
+            print(f"[{endpoint}] Status: {res.status_code}")
+            if res.status_code in [200, 202]:
+                print(f" Successfully pushed chunk {i // CHUNK_SIZE + 1} to {endpoint}")
+            else:
+                print(f" Response: {res.text}")
+        except Exception as e:
+            print(f" Failed to connect to {endpoint}: {e}")
 
 # Search Engine Sitemap Pings
 print("\n--- Sending Sitemap Ping Crawling Signals ---")

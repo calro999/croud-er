@@ -64,6 +64,10 @@ export function getAllSummaryPosts(): PostSummary[] {
       try {
         const filePath = path.join(postsDir, file);
         const post = JSON.parse(fs.readFileSync(filePath, "utf-8")) as PostDetail;
+        if (!post) continue;
+        if (!post.id) {
+          post.id = file.replace(/\.json$/, '');
+        }
         if (post.date && new Date(post.date).getTime() > now) {
           continue;
         }

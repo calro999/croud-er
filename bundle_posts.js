@@ -21,12 +21,16 @@ function main() {
     posts = files.map(file => {
       try {
         const content = fs.readFileSync(path.join(POSTS_DIR, file), 'utf8');
-        return JSON.parse(content);
+        const data = JSON.parse(content);
+        if (data && !data.id) {
+          data.id = file.replace(/\.json$/, '');
+        }
+        return data;
       } catch (err) {
         console.error(`Failed to parse: ${file}`, err);
         return null;
       }
-    }).filter(Boolean);
+    }).filter(p => p && typeof p.id === 'string' && p.id.trim() !== '');
 
     // 未来の発売日・公開日（予約作品）を除外
     const now = new Date();
