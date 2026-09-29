@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const cleanContent = (post.review || (post as any).content || "").replace(/<[^>]*>/g, "").replace(/\s+/g, " ");
     const desc = cleanContent.slice(0, 155) + "...";
     return {
-      title: `${post.title} | 背徳の深夜書斎`,
+      title: post.title,
       description: desc,
       keywords: (post.genres || post.labels || []).join(","),
       alternates: {

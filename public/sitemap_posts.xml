@@ -76,7 +76,7 @@
     <loc>https://haitoku.pages.dev/posts/13dsvr002001</loc>
     <lastmod>2026-07-01T15:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
+    <priority>0.75</priority>
   </url>
   <url>
     <loc>https://haitoku.pages.dev/posts/13dsvr00878</loc>
@@ -268,7 +268,7 @@
     <loc>https://haitoku.pages.dev/posts/1ang00017</loc>
     <lastmod>2026-08-30T15:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.95</priority>
+    <priority>0.85</priority>
   </url>
   <url>
     <loc>https://haitoku.pages.dev/posts/1bkynb00038</loc>
@@ -772,7 +772,7 @@
     <loc>https://haitoku.pages.dev/posts/1sddm00870ai</loc>
     <lastmod>2026-08-30T15:00:14.000Z</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.95</priority>
+    <priority>0.85</priority>
   </url>
   <url>
     <loc>https://haitoku.pages.dev/posts/1sdjs00304</loc>
@@ -2020,7 +2020,7 @@
     <loc>https://haitoku.pages.dev/posts/adn00766</loc>
     <lastmod>2026-04-02T15:00:05.000Z</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.75</priority>
+    <priority>0.65</priority>
   </url>
   <url>
     <loc>https://haitoku.pages.dev/posts/adn00778</loc>
@@ -2296,13 +2296,13 @@
     <loc>https://haitoku.pages.dev/posts/atkd00424</loc>
     <lastmod>2026-04-02T15:00:15.000Z</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.75</priority>
+    <priority>0.65</priority>
   </url>
   <url>
     <loc>https://haitoku.pages.dev/posts/atkd00425</loc>
     <lastmod>2026-04-02T15:00:14.000Z</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.75</priority>
+    <priority>0.65</priority>
   </url>
   <url>
     <loc>https://haitoku.pages.dev/posts/atkd00429</loc>
@@ -2560,7 +2560,7 @@
     <loc>https://haitoku.pages.dev/posts/bmw00356</loc>
     <lastmod>2026-04-02T15:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.75</priority>
+    <priority>0.65</priority>
   </url>
   <url>
     <loc>https://haitoku.pages.dev/posts/bmw00358</loc>
@@ -2776,7 +2776,7 @@
     <loc>https://haitoku.pages.dev/posts/cawd00959</loc>
     <lastmod>2026-04-02T15:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.75</priority>
+    <priority>0.65</priority>
   </url>
   <url>
     <loc>https://haitoku.pages.dev/posts/cawd00987</loc>
@@ -4720,7 +4720,7 @@
     <loc>https://haitoku.pages.dev/posts/ebvr00129</loc>
     <lastmod>2026-07-01T15:00:52.000Z</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
+    <priority>0.75</priority>
   </url>
   <url>
     <loc>https://haitoku.pages.dev/posts/ebwh00054</loc>
@@ -6787,6 +6787,24 @@
     <priority>0.95</priority>
   </url>
   <url>
+    <loc>https://haitoku.pages.dev/posts/feature_fanza_doujin_cg_manga_high_rating_masterpieces</loc>
+    <lastmod>2026-09-29T09:20:00.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://haitoku.pages.dev/posts/feature_fanza_doujin_pc_game_top_masterpieces_guide</loc>
+    <lastmod>2026-09-29T15:07:00.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://haitoku.pages.dev/posts/feature_fanza_magic_mirror_go_real_amateur_best_ranking</loc>
+    <lastmod>2026-09-29T15:06:00.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
     <loc>https://haitoku.pages.dev/posts/feature_fanza_manga_starter_guide_10_best</loc>
     <lastmod>2026-08-29T15:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
@@ -6801,6 +6819,12 @@
   <url>
     <loc>https://haitoku.pages.dev/posts/feature_fanza_payment_methods_safe_buying_guide</loc>
     <lastmod>2026-09-29T09:15:00.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://haitoku.pages.dev/posts/feature_fanza_super_long_omnibus_best_selection_ranking</loc>
+    <lastmod>2026-09-29T15:05:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.95</priority>
   </url>
@@ -11704,7 +11728,7 @@
     <loc>https://haitoku.pages.dev/posts/h_1724a190b00002</loc>
     <lastmod>2026-07-01T15:00:28.000Z</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
+    <priority>0.75</priority>
   </url>
   <url>
     <loc>https://haitoku.pages.dev/posts/h_1724a190b00004</loc>
@@ -13324,13 +13348,13 @@
     <loc>https://haitoku.pages.dev/posts/kwbd00422</loc>
     <lastmod>2026-04-02T15:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.75</priority>
+    <priority>0.65</priority>
   </url>
   <url>
     <loc>https://haitoku.pages.dev/posts/kwbd00423</loc>
     <lastmod>2026-04-02T15:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.75</priority>
+    <priority>0.65</priority>
   </url>
   <url>
     <loc>https://haitoku.pages.dev/posts/kwbd00425</loc>
@@ -14068,25 +14092,25 @@
     <loc>https://haitoku.pages.dev/posts/mida00547</loc>
     <lastmod>2026-04-02T15:00:34.000Z</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.75</priority>
+    <priority>0.65</priority>
   </url>
   <url>
     <loc>https://haitoku.pages.dev/posts/mida00574</loc>
     <lastmod>2026-04-02T15:00:30.000Z</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.75</priority>
+    <priority>0.65</priority>
   </url>
   <url>
     <loc>https://haitoku.pages.dev/posts/mida00579</loc>
     <lastmod>2026-04-02T15:00:26.000Z</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.75</priority>
+    <priority>0.65</priority>
   </url>
   <url>
     <loc>https://haitoku.pages.dev/posts/mida00581</loc>
     <lastmod>2026-04-02T15:00:24.000Z</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.75</priority>
+    <priority>0.65</priority>
   </url>
   <url>
     <loc>https://haitoku.pages.dev/posts/mida00583</loc>
@@ -14632,7 +14656,7 @@
     <loc>https://haitoku.pages.dev/posts/mimk00273</loc>
     <lastmod>2026-04-02T15:00:39.000Z</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.75</priority>
+    <priority>0.65</priority>
   </url>
   <url>
     <loc>https://haitoku.pages.dev/posts/mimk00275</loc>
@@ -18238,7 +18262,7 @@
     <loc>https://haitoku.pages.dev/posts/stol00142</loc>
     <lastmod>2026-04-02T15:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.75</priority>
+    <priority>0.65</priority>
   </url>
   <url>
     <loc>https://haitoku.pages.dev/posts/stol00144</loc>
