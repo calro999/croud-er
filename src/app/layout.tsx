@@ -95,8 +95,8 @@ export default function RootLayout({
               <span className="text-base md:text-lg font-black tracking-tight bg-gradient-to-r from-slate-900 via-rose-700 to-slate-800 bg-clip-text text-transparent group-hover:opacity-90 transition whitespace-nowrap">
                 背徳の深夜書斎
               </span>
-              <span className="text-[8px] font-bold tracking-widest text-slate-500 uppercase border border-slate-300 px-1.5 py-0.5 rounded bg-white">
-                AMATEUR
+              <span className="text-[8px] font-bold tracking-widest text-rose-600 uppercase border border-rose-200 px-1.5 py-0.5 rounded bg-rose-50">
+                厳選レビュー
               </span>
             </a>
             <nav className="flex items-center gap-2 md:gap-3 text-[11px] font-bold text-slate-600 whitespace-nowrap overflow-x-auto no-scrollbar">
@@ -133,8 +133,8 @@ export default function RootLayout({
 
         {/* メインコンテンツ */}
         <div className="flex-grow w-full relative flex justify-center items-start">
-          {/* 左サイド追従バナー */}
-          <aside className="hidden xl:flex flex-col fixed left-4 top-24 w-[270px] z-30 space-y-6 items-center">
+          {/* 左サイド追従バナー (幅1720px以上の超ワイド画面のみ安全に表示して被りを完全防止) */}
+          <aside className="hidden 2xl:flex flex-col fixed left-4 top-24 w-[270px] z-30 space-y-6 items-center">
             <AmateurBanner affiliateId="onchan555-003" bannerId="1082_300_250" />
             <AmateurBanner affiliateId="onchan555-003" bannerId="377_300_250" />
             <AmateurBanner affiliateId="onchan555-003" bannerId="1980_300_250" />
@@ -144,8 +144,8 @@ export default function RootLayout({
             {children}
           </main>
 
-          {/* 右サイド追従バナー */}
-          <aside className="hidden xl:flex flex-col fixed right-4 xl:right-[calc((100vw-1152px)/4-135px)] top-24 w-[270px] z-30 space-y-6 items-center">
+          {/* 右サイド追従バナー (幅1720px以上の超ワイド画面のみ安全に表示して被りを完全防止) */}
+          <aside className="hidden 2xl:flex flex-col fixed right-4 top-24 w-[270px] z-30 space-y-6 items-center">
             <AmateurBanner affiliateId="onchan555-003" bannerId="75_300_250" />
             <AmateurBanner affiliateId="onchan555-003" bannerId="68_300_250" />
             <AmateurBanner affiliateId="onchan555-003" bannerId="1506_300_250" />

@@ -5,6 +5,7 @@ import { censorText } from "@/lib/censor";
 import { getActressSlug, getGenreSlug } from "@/lib/slugs";
 import UnlimitedPromotionBox from "@/app/components/UnlimitedPromotionBox";
 import TenSelectionCollage from "@/app/components/TenSelectionCollage";
+import FloatingCta from "@/app/components/FloatingCta";
 import { getAllPostIds, getPostById, getSimilarPosts, PostDetail } from "@/lib/posts";
 import { getActressWikiData, getSimilarActresses } from "@/lib/actress";
 
@@ -62,16 +63,34 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const actressText = (post.actresses || []).join("・");
     const genreText = (post.genres || []).slice(0, 3).join("・");
     const shortTitle = post.title.length > 15 ? post.title.slice(0, 15) + '…' : post.title;
-    const titleText = actressText 
-      ? `【ガチ評価】${hinbanText}（${shortTitle}）は本当に抜ける？${actressText}の出演シーンを徹底レビュー！`
-      : `【ガチ評価】${hinbanText}（${shortTitle}）は本当に抜ける？出演シーンを徹底レビュー！`;
+
+    // タイトルとディスクリプションに自然なバリエーションを付与（重複ペナルティ・AI臭さ回避）
+    const hash = (post.id || "").split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const titlePatterns = [
+      actressText
+        ? `【見どころ徹底解剖】${actressText}『${shortTitle}』（${hinbanText}）の実用度と名シーンまとめ`
+        : `【名作検証】『${shortTitle}』（${hinbanText}）の濃厚シーン・見どころを徹底解説！`,
+      actressText
+        ? `【本音レビュー】${actressText}主演『${hinbanText}』は本当に買い？抜きどころと演出を検証`
+        : `【ガチ評価】『${hinbanText}』は本当に抜ける？濃厚シーン・実用度を独自視点でレビュー！`,
+      actressText
+        ? `【傑作ピックアップ】${actressText}が魅せる極上シーン！『${hinbanText}』（${shortTitle}）の魅力`
+        : `【注目レビュー】『${hinbanText}』（${shortTitle}）のシチュエーションと魅力を徹底解説`,
+    ];
+    const titleText = titlePatterns[hash % titlePatterns.length];
 
     const cleanReview = post.review ? post.review.replace(/<[^>]*>/g, "").replace(/\s+/g, " ") : "";
-    const reviewExcerpt = cleanReview.slice(0, 50) + "...";
+    const reviewExcerpt = cleanReview.slice(0, 65) + "...";
 
-    const descriptionText = actressText
-      ? `${actressText}の最新作『${hinbanText}』を最速レビュー！SNSで話題の「${genreText || '注目ジャンル'}」はサンプル詐欺じゃない？【${reviewExcerpt}】ハズレを引きたくない方は購入前の参考にどうぞ！`
-      : `最新作『${hinbanText}』を最速レビュー！SNSで話題の「${genreText || '注目ジャンル'}」はサンプル詐欺じゃない？【${reviewExcerpt}】ハズレを引きたくない方は購入前の参考にどうぞ！`;
+    const descPatterns = [
+      actressText
+        ? `${actressText}が出演する話題作『${hinbanText}』の魅力と見逃せない注目ポイントを独自解説！【${reviewExcerpt}】購入検討や作品選びの参考にどうぞ。`
+        : `話題の注目作『${hinbanText}』の濃厚な世界観と見逃せない瞬間を徹底解説！【${reviewExcerpt}】作品選びの参考にどうぞ。`,
+      actressText
+        ? `【実用度チェック】${actressText}の熱演が光る『${hinbanText}』を詳しく解説。気になる抜けるポイント・見どころシーンをまとめています。`
+        : `【実用度チェック】注目作『${hinbanText}』の見どころ・おすすめポイントを詳しくレビュー。購入前の参考にどうぞ。`,
+    ];
+    const descriptionText = descPatterns[hash % descPatterns.length];
 
     const keywords = [
       ...(post.actresses || []).map(a => `${a} レビュー`),
@@ -433,10 +452,10 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
                 OFFICIAL STREAMING & DOWNLOAD
               </span>
               <h2 className="text-sm md:text-base font-black text-white">
-                ストリーミングなら <span className="text-amber-400 text-lg">300円〜</span> 今すぐ視聴可能！
+                FANZA公式で <span className="text-amber-400 text-lg">ストリーミング＆ダウンロード</span> 配信中！
               </h2>
               <p className="text-xs text-slate-400">
-                スマホ・PCでダウンロード保存して永久視聴（HD/4K）も選択できます。
+                期間限定セールや最安値プランあり。スマホ・PCで高画質HD/4K視聴できます。
               </p>
             </div>
             <a
@@ -445,7 +464,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
               rel="noopener noreferrer"
               className="w-full sm:w-auto text-center px-6 py-3.5 bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-400 hover:to-pink-500 text-white text-xs md:text-sm font-black rounded-xl shadow-lg transition flex-shrink-0"
             >
-              🔥 最安値で作品を見る（FANZA）
+              🔥 公式サイトで価格・本編を見る（FANZA）
             </a>
           </section>
 
@@ -498,9 +517,9 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
                 </div>
               </div>
               <div className="space-y-1 col-span-2 sm:col-span-1">
-                <span className="text-slate-400 font-bold uppercase tracking-wider block text-[9px]">公式最安配信価格</span>
+                <span className="text-slate-400 font-bold uppercase tracking-wider block text-[9px]">公式配信状況</span>
                 <span className="text-rose-600 font-black text-sm block">
-                  300円〜（ストリーミング）
+                  公式配信中（セール随時実施）
                 </span>
               </div>
             </div>
@@ -557,23 +576,23 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             />
           </section>
 
-          {/* 🔰 初めての電子書籍購入ガイド キラーCTA */}
+          {/* 🔰 特集ピックアップ：動画だけでなくFANZA電子書籍・漫画も楽しみたい方へ */}
           <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-950 via-slate-900 to-purple-950 border-2 border-indigo-500/40 p-6 md:p-8 text-white shadow-xl space-y-4">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-[10px] font-black text-indigo-300 bg-indigo-500/20 border border-indigo-500/40 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                🔰 初めての電子書籍購入ガイド
+                📚 FANZAおすすめ特集
               </span>
               <span className="text-[10px] font-bold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2 py-0.5 rounded-full">
-                安心・秘密厳守
+                安心・購入ガイド
               </span>
             </div>
 
             <div className="space-y-2">
               <h3 className="text-lg md:text-xl font-black text-white leading-snug">
-                「FANZAで漫画を買ってみたいけれど、バレないか不安…」という方へ
+                【あわせて読みたい】動画と並んで人気のFANZA同人・電子コミックをこっそり楽しむ方法
               </h3>
               <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
-                紙の本のように部屋に置く必要がなく、クレジットカード明細にも作品名は一切載りません（DMM名義）。専用アプリ不要でスマホ・PCのブラウザから今すぐ読めて、パソコンなら<b>キーボード操作（←/→）で両手を完全にフリーにした状態</b>でゆっくり楽しめます。
+                映像作品をチェックした後は、よりディープなシチュエーションを描いたFANZA同人・エロ漫画もおすすめ。スマホやPCからブラウザで即読破可能で、クレジットカードの請求も作品名は出ず安心です。
               </p>
             </div>
 
@@ -582,10 +601,10 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
                 href="/posts/feature_why_buy_fanza_manga_complete_guide"
                 className="w-full sm:w-auto inline-flex items-center justify-center text-xs md:text-sm font-black text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-rose-600 hover:opacity-95 px-6 py-3.5 rounded-xl shadow-lg transition duration-150 transform hover:-translate-y-0.5 text-center"
               >
-                📖 なぜみんなFANZAで買うのか？メリット・買い方・人気10選を見る ›
+                📖 初心者向けFANZA漫画購入ガイド＆名作特集を見る ›
               </Link>
               <span className="text-[11px] text-slate-400">
-                ※PayPay・楽天ペイ・クレカ対応 / 登録不要の無料立ち読みあり
+                ※無料立ち読み多数 / PayPay・楽天ペイ・クレカ対応
               </span>
             </div>
           </section>
@@ -765,6 +784,14 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             </p>
           </section>
         </div>
+
+        {/* 画面下部追従フロートCTA（モバイル＆デスクトップの離脱防止・CVR最大化） */}
+        <FloatingCta
+          affiliateUrl={post.affiliate_url}
+          title={post.title}
+          actressName={mainActress || undefined}
+          hinbanText={hinbanText}
+        />
       </article>
     </>
   );
