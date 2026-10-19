@@ -79,7 +79,7 @@ export default function FanzaBanner({
             setTimeout(function() {
               var ins = document.querySelector('.widget-banner');
               if (ins && (!ins.children || ins.children.length === 0)) {
-                ins.innerHTML = '<a href="https://al.fanza.co.jp/?lurl=https%3A%2F%2Fwww.dmm.co.jp%2Fdigital%2Fvideoa%2F&af_id=${affiliateId}" target="_blank" class="fallback-banner"><span style="font-size:26px;margin-bottom:6px;">🎬</span><strong style="font-size:15px;color:#fff;">FANZA 見放題ch 公式ページ</strong><span style="font-size:12px;color:#fecdd3;margin-top:6px;font-weight:bold;">圧倒的作品数！見放題を体験する ›</span></a>';
+                ins.innerHTML = '<a href="https://al.fanza.co.jp/?lurl=https%3A%2F%2Fwww.dmm.co.jp%2Fmonthly%2Fpremium%2F&af_id=${affiliateId}" target="_blank" class="fallback-banner"><span style="font-size:26px;margin-bottom:6px;">🎬</span><strong style="font-size:15px;color:#fff;">FANZA 見放題ch 公式ページ</strong><span style="font-size:12px;color:#fecdd3;margin-top:6px;font-weight:bold;">15万本以上見放題！今すぐ体験する ›</span></a>';
               }
             }, 1500);
           </script>

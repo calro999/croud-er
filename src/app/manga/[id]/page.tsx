@@ -214,18 +214,26 @@ export default async function MangaDetailPage({ params }: { params: Promise<{ id
                 ))}
               </div>
 
-              <div className="pt-2 flex flex-wrap gap-3">
-                {post.tachiyomi_url ? (
-                  <a href={post.tachiyomi_url} target="_blank" rel="noopener noreferrer"
-                    className="inline-block px-6 py-3 text-sm font-black text-white bg-gradient-to-r from-purple-500 to-rose-500 hover:from-purple-400 hover:to-rose-400 rounded-xl shadow transition">
-                    📖 無料で試し読みする（FANZA）
-                  </a>
-                ) : (
+              <div className="pt-2 space-y-2">
+                <div className="flex flex-wrap gap-3">
+                  {post.tachiyomi_url && (
+                    <a href={post.tachiyomi_url} target="_blank" rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-6 py-3 text-sm font-black text-white bg-gradient-to-r from-purple-500 via-purple-600 to-pink-500 hover:from-purple-400 hover:to-pink-400 rounded-xl shadow-lg shadow-purple-600/30 transition transform hover:-translate-y-0.5">
+                      <span>📖</span><span>今すぐ無料で試し読み（FANZA公式）</span>
+                    </a>
+                  )}
                   <a href={post.affiliate_url} target="_blank" rel="noopener noreferrer"
-                    className="inline-block px-6 py-3 text-sm font-black text-white bg-gradient-to-r from-purple-500 to-rose-500 hover:from-purple-400 hover:to-rose-400 rounded-xl shadow transition">
-                    📖 FANZAで読む（18禁）
+                    className="inline-flex items-center gap-1.5 px-6 py-3 text-sm font-black text-amber-950 bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 rounded-xl shadow transition transform hover:-translate-y-0.5">
+                    <span>🛒</span><span>本編を購入・今すぐ読む（最安）</span>
                   </a>
-                )}
+                </div>
+                <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-300 pt-1">
+                  <span className="text-emerald-400 font-bold">🔒 明細はDMM表記（作品名なし）</span>
+                  <span>•</span>
+                  <span>PayPay・楽天ペイ・クレカ対応</span>
+                  <span>•</span>
+                  <span>アプリ不要・ブラウザ即読</span>
+                </div>
               </div>
             </div>
           </div>
@@ -339,13 +347,38 @@ export default async function MangaDetailPage({ params }: { params: Promise<{ id
         {/* FANZA見放題ch 特設キラー誘導ボックス */}
         <UnlimitedPromotionBox />
 
-        {/* CTAボタン */}
-        <section className="text-center py-6 space-y-3">
-          <a href={post.affiliate_url} target="_blank" rel="noopener noreferrer"
-            className="inline-block px-10 py-4 text-base font-black text-white bg-gradient-to-r from-purple-500 via-purple-600 to-rose-500 hover:from-purple-400 hover:to-rose-400 rounded-xl shadow-lg transition">
-            📖 今すぐFANZAで読む（全ページ）
-          </a>
-          <p className="text-[10px] text-slate-400">※クリックするとFANZA（18禁公式サイト）へ遷移します</p>
+        {/* CTAボタン（成約率最大化・安心バッジ付き） */}
+        <section className="text-center py-8 space-y-4 bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50 border border-purple-200/80 rounded-3xl p-6 shadow-sm">
+          <div className="space-y-1">
+            <span className="text-[10px] font-black text-purple-700 bg-purple-100/90 px-3 py-1 rounded-full uppercase tracking-wider">
+              OFFICIAL MANGA & DOUJIN
+            </span>
+            <h3 className="text-base md:text-xl font-black text-slate-900 pt-1">
+              『{post.title}』をFANZA公式で今すぐ楽しむ
+            </h3>
+            <p className="text-xs text-slate-600">
+              高画質ビューアでスマホ・タブレット・PCから即閲覧可能！
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-1">
+            {post.tachiyomi_url && (
+              <a href={post.tachiyomi_url} target="_blank" rel="noopener noreferrer"
+                className="w-full sm:w-auto px-8 py-4 text-sm md:text-base font-black text-white bg-gradient-to-r from-purple-600 via-purple-500 to-pink-600 hover:from-purple-500 hover:to-pink-500 rounded-xl shadow-lg shadow-purple-600/30 transition transform hover:-translate-y-0.5">
+                📖 無料で試し読みする（FANZA公式）
+              </a>
+            )}
+            <a href={post.affiliate_url} target="_blank" rel="noopener noreferrer"
+              className="w-full sm:w-auto px-8 py-4 text-sm md:text-base font-black text-amber-950 bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 rounded-xl shadow-lg transition transform hover:-translate-y-0.5">
+              🛒 本編を購入して最後まで読む
+            </a>
+          </div>
+
+          <div className="pt-2 flex flex-wrap items-center justify-center gap-4 text-[11px] text-slate-500 border-t border-purple-200/50">
+            <span className="flex items-center gap-1 font-bold text-slate-700">🔒 クレカ明細はDMM表記（作品名なしで完全秘密）</span>
+            <span className="flex items-center gap-1">💳 PayPay・楽天ペイ・メルペイ対応</span>
+            <span className="flex items-center gap-1">📱 ダウンロード＆ブラウザ閲覧OK</span>
+          </div>
         </section>
 
         {/* 関連ジャンル */}

@@ -175,13 +175,30 @@ export default function FanzaTvPlusPage() {
               🔥 <strong>ズバリ結論：</strong>「月に2本以上エロ動画を観ているなら、今すぐ定額見放題（FANZA見放題ch）に切り替えないと、年間で数万円〜十数万円を余計にドブに捨てている」状態です！
             </div>
 
-            {/* バナー配置 1回目（導入直後・興味喚起） */}
-            <div className="my-8 py-6 px-4 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col items-center justify-center text-center space-y-3">
-              <span className="text-xs font-bold text-rose-600 bg-rose-100 px-3 py-1 rounded-full">
-                ▼ 今すぐ人気作をチェック！圧倒的ラインナップが見放題 ▼
+            {/* バナー＆HTML直リンクボタン配置 1回目（導入直後・興味喚起） */}
+            <div className="my-8 py-6 px-4 bg-gradient-to-r from-rose-50 to-pink-50 border border-rose-200 rounded-2xl flex flex-col items-center justify-center text-center space-y-4 shadow-sm">
+              <span className="text-xs font-black text-rose-600 bg-rose-100 px-3 py-1 rounded-full">
+                ▼ 今すぐ人気作をチェック！圧倒的15万本が見放題 ▼
               </span>
-              <FanzaBanner bannerId="164_300_250" affiliateId="onchan555-003" width={300} height={250} />
-              <p className="text-[11px] text-slate-500">※初回登録・最新の配信ラインナップは公式サイトで即確認できます</p>
+              <a
+                href="https://al.fanza.co.jp/?lurl=https%3A%2F%2Fwww.dmm.co.jp%2Fmonthly%2Fpremium%2F&af_id=onchan555-003"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto px-8 py-4 text-sm md:text-base font-black text-white bg-gradient-to-r from-rose-600 via-rose-500 to-pink-600 hover:from-rose-500 hover:to-pink-500 rounded-xl shadow-lg shadow-rose-600/30 transition transform hover:-translate-y-0.5"
+              >
+                👑 FANZA見放題ch 公式で今すぐ作品ラインナップを見る ›
+              </a>
+              <div className="flex flex-wrap items-center justify-center gap-3 text-[11px] text-slate-500">
+                <span className="text-emerald-700 font-bold">🔒 明細はDMM表記（作品名なしで安心）</span>
+                <span>•</span>
+                <span>PayPay・楽天ペイ・クレカ対応</span>
+                <span>•</span>
+                <span>いつでもWeb即解約OK</span>
+              </div>
+              <div className="pt-2">
+                <FanzaBanner bannerId="164_300_250" affiliateId="onchan555-003" width={300} height={250} />
+              </div>
+              <p className="text-[11px] text-slate-500">※登録完了後、スマホ・PCですぐに高画質ストリーミング再生できます</p>
             </div>
           </section>
 
@@ -540,15 +557,52 @@ export default function FanzaTvPlusPage() {
               怪しい無料動画サイトを探し回る時間とウイルスリスクから解放され、今夜から最高峰の画質と膨大なラインナップを心ゆくまで味わい尽くしましょう！
             </p>
 
-            {/* バナー配置 3回目（最終クロージングCTA） */}
-            <div className="pt-2 flex flex-col items-center justify-center space-y-3">
+            {/* 最終クロージングCTA（AdBlock完全回避・CVR最大化） */}
+            <div className="pt-2 flex flex-col items-center justify-center space-y-4 max-w-xl mx-auto">
               <span className="text-xs font-black text-amber-300 bg-amber-950/80 border border-amber-500/30 px-4 py-1.5 rounded-full shadow">
-                ＼ 迷ったらまずは登録！今すぐ極上の見放題体験をスタート ／
+                ＼ 迷ったらまずは体験！今すぐ極上の15万本見放題をスタート ／
               </span>
-              <div className="p-3 bg-white/5 rounded-2xl backdrop-blur-md border border-white/10">
+
+              <a
+                href="https://al.fanza.co.jp/?lurl=https%3A%2F%2Fwww.dmm.co.jp%2Fmonthly%2Fpremium%2F&af_id=onchan555-003"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full text-center px-8 py-4.5 text-base md:text-lg font-black text-white bg-gradient-to-r from-rose-600 via-rose-500 to-pink-600 hover:from-rose-500 hover:to-pink-500 rounded-2xl shadow-xl shadow-rose-600/30 transition transform hover:-translate-y-0.5"
+              >
+                👑 FANZA見放題ch 公式で今すぐ15万本を体験する ›
+              </a>
+
+              <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-slate-300">
+                <span className="text-emerald-400 font-bold">🔒 クレカ明細はDMM表記（作品名なし）</span>
+                <span>•</span>
+                <span>PayPay・楽天ペイ・コンビニ決済対応</span>
+                <span>•</span>
+                <span>Webから即解約OK</span>
+              </div>
+
+              <div className="pt-2 flex flex-col sm:flex-row gap-3 w-full">
+                <a
+                  href="https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fsale%2F&af_id=onchan555-003"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 text-center text-xs font-bold text-amber-300 hover:text-amber-200 bg-white/10 hover:bg-white/20 border border-amber-400/30 px-4 py-3 rounded-xl transition"
+                >
+                  🏷️ 100円〜お得セール会場を見る
+                </a>
+                <a
+                  href="https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Ffree%2F&af_id=onchan555-003"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 text-center text-xs font-bold text-slate-300 hover:text-white bg-white/10 hover:bg-white/20 border border-white/20 px-4 py-3 rounded-xl transition"
+                >
+                  🎁 無料動画コーナーを見る
+                </a>
+              </div>
+
+              <div className="pt-4 p-3 bg-white/5 rounded-2xl backdrop-blur-md border border-white/10">
                 <FanzaBanner bannerId="164_300_250" affiliateId="onchan555-003" width={300} height={250} />
               </div>
-              <p className="text-[11px] text-slate-400">※登録完了後、すぐに動画を視聴できます</p>
+              <p className="text-[11px] text-slate-400">※登録完了後、すぐにスマホ・PC・テレビで動画を視聴できます</p>
             </div>
           </section>
 

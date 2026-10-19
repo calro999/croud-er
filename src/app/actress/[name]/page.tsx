@@ -202,11 +202,24 @@ export default async function ActressPage({ params }: { params: Promise<{ name: 
               )}
 
               {/* クイックアクション */}
-              <div className="pt-3 flex flex-wrap gap-3">
-                <a href={fanzaActressSearchUrl} target="_blank" rel="noopener noreferrer"
-                  className="text-xs font-black text-white bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-400 hover:to-pink-500 px-5 py-3 rounded-xl shadow-md transition inline-flex items-center gap-1.5">
-                  <span>🔥</span> FANZA公式で全作品を見る（{wiki?.works_count || actressPosts.length}件）
-                </a>
+              <div className="pt-3 space-y-2">
+                <div className="flex flex-wrap gap-2.5">
+                  <a href={fanzaActressSearchUrl} target="_blank" rel="noopener noreferrer"
+                    className="text-xs font-black text-white bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 px-5 py-3 rounded-xl shadow-md transition inline-flex items-center gap-1.5 transform hover:-translate-y-0.5">
+                    <span>🔥</span> FANZA公式で全作品を見る（{wiki?.works_count || actressPosts.length}件）
+                  </a>
+                  <a href="https://al.fanza.co.jp/?lurl=https%3A%2F%2Fwww.dmm.co.jp%2Fmonthly%2Fpremium%2F&af_id=onchan555-003" target="_blank" rel="noopener noreferrer"
+                    className="text-xs font-bold text-amber-300 hover:text-amber-200 bg-slate-800 hover:bg-slate-700 border border-amber-400/40 hover:border-amber-400 px-4 py-3 rounded-xl shadow transition inline-flex items-center gap-1.5">
+                    <span>👑</span> 見放題chで作品を探す
+                  </a>
+                </div>
+                <div className="flex flex-wrap items-center gap-2.5 text-[11px] text-slate-400 pt-0.5">
+                  <span className="text-emerald-400 font-bold">🔒 明細はDMM表記（作品名なし）</span>
+                  <span>•</span>
+                  <span>PayPay・楽天ペイ・クレカOK</span>
+                  <span>•</span>
+                  <span>スマホ即再生</span>
+                </div>
               </div>
             </div>
 

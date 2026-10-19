@@ -150,31 +150,59 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 特選PICKUP: FANZA見放題ch特集バナー */}
-        <section className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-rose-950 to-slate-900 p-5 md:p-6 border border-rose-500/30 shadow-md text-white">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="space-y-1.5 max-w-2xl">
+        {/* 特選PICKUP: FANZA見放題ch＆お得セール特設バナー */}
+        <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-rose-950 to-slate-900 p-6 md:p-8 border border-rose-500/40 shadow-xl text-white space-y-4">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+            <div className="space-y-2 max-w-2xl">
               <div className="flex items-center gap-2">
-                <span className="bg-rose-600 text-white text-[9px] font-black px-2 py-0.5 rounded tracking-wide">
-                  👑 特選PICKUP
+                <span className="bg-gradient-to-r from-amber-400 to-amber-600 text-slate-950 text-[10px] font-black px-2.5 py-0.5 rounded tracking-wide shadow">
+                  👑 コスパ最強
                 </span>
-                <span className="text-amber-400 text-xs font-bold">
-                  エロ動画サブスク徹底比較
+                <span className="text-rose-300 text-xs font-bold bg-rose-500/20 border border-rose-500/30 px-2 py-0.5 rounded">
+                  15万本見放題・大型セール開催中
                 </span>
               </div>
-              <h2 className="text-base md:text-lg font-black text-white">
-                【2026年最新】エロ動画見放題ならFANZA見放題ch一択？作品数・コスパ・使い勝手を本音レビュー！
+              <h2 className="text-lg md:text-2xl font-black text-white leading-snug">
+                単品買いで損していませんか？定額で抜ける「FANZA見放題ch」＆100円〜公式セール特集
               </h2>
-              <p className="text-xs text-slate-300 line-clamp-1">
-                単品買いで損していませんか？定額で好きなだけ抜けるFANZA見放題chの魅力を完全暴露！
+              <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
+                1本2,500円〜の都度買いから月額定額へ！人気単体女優・大手レーベル・VRまで15万本以上が見放題。さらに過去の名作が100円から手に入る公式セールも随時実施中。
               </p>
+              <div className="pt-1 flex flex-wrap items-center gap-3 text-[11px] text-slate-400">
+                <span className="text-emerald-400 font-bold">🔒 クレカ明細はDMM表記（作品名なし）</span>
+                <span>•</span>
+                <span>PayPay・楽天ペイ対応</span>
+                <span>•</span>
+                <span>スマホ即再生OK</span>
+              </div>
             </div>
-            <Link
-              href="/fanza-tv-plus"
-              className="flex-shrink-0 text-xs font-black text-white bg-rose-600 hover:bg-rose-500 px-5 py-2.5 rounded-xl shadow transition"
-            >
-              特集を読む ›
-            </Link>
+
+            <div className="flex flex-col sm:flex-row lg:flex-col gap-2.5 w-full lg:w-auto flex-shrink-0">
+              <a
+                href="https://al.fanza.co.jp/?lurl=https%3A%2F%2Fwww.dmm.co.jp%2Fmonthly%2Fpremium%2F&af_id=onchan555-003"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full text-center text-xs font-black text-white bg-gradient-to-r from-rose-600 via-rose-500 to-pink-600 hover:from-rose-500 hover:to-pink-500 px-6 py-3 rounded-xl shadow-lg shadow-rose-600/30 transition transform hover:-translate-y-0.5"
+              >
+                👑 FANZA見放題ch 公式で今すぐ体験 ›
+              </a>
+              <div className="flex gap-2">
+                <a
+                  href="https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fsale%2F&af_id=onchan555-003"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 text-center text-xs font-bold text-amber-300 hover:text-amber-200 bg-amber-400/10 hover:bg-amber-400/20 border border-amber-400/30 px-3 py-2 rounded-lg transition"
+                >
+                  🏷️ 100円〜セール
+                </a>
+                <Link
+                  href="/fanza-tv-plus"
+                  className="flex-1 text-center text-xs font-bold text-slate-300 hover:text-white bg-white/10 hover:bg-white/20 border border-white/20 px-3 py-2 rounded-lg transition"
+                >
+                  📖 徹底比較記事
+                </Link>
+              </div>
+            </div>
           </div>
         </section>
 

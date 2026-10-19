@@ -44,20 +44,24 @@ export default function UnlimitedPromotionBox() {
           </ul>
 
           <div className="pt-2 flex flex-col sm:flex-row gap-3">
-            <Link
-              href="/fanza-tv-plus"
-              className="inline-flex items-center justify-center text-xs font-black text-white bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 px-6 py-3.5 rounded-xl shadow-lg hover:shadow-rose-500/25 transition duration-200 text-center"
-            >
-              📖 見放題chの徹底本音レビューを見る ›
-            </Link>
             <a
-              href="https://al.fanza.co.jp/?lurl=https%3A%2F%2Fwww.dmm.co.jp%2Fdigital%2Fvideoa%2F&af_id=onchan555-003"
+              href="https://al.fanza.co.jp/?lurl=https%3A%2F%2Fwww.dmm.co.jp%2Fmonthly%2Fpremium%2F&af_id=onchan555-003"
               target="_blank"
               rel="noopener noreferrer"
+              className="inline-flex items-center justify-center text-xs font-black text-white bg-gradient-to-r from-rose-600 via-rose-500 to-pink-600 hover:from-rose-500 hover:to-pink-500 px-6 py-3.5 rounded-xl shadow-lg shadow-rose-600/30 transition duration-200 text-center transform hover:-translate-y-0.5"
+            >
+              👑 FANZA見放題ch 公式で今すぐ15万本を体験する ›
+            </a>
+            <Link
+              href="/fanza-tv-plus"
               className="inline-flex items-center justify-center text-xs font-bold text-slate-300 hover:text-white bg-white/10 hover:bg-white/20 border border-white/20 px-5 py-3.5 rounded-xl transition text-center"
             >
-              🎬 公式サイトを直接チェック
-            </a>
+              📖 見放題chの徹底本音レビュー・コスパ比較を見る
+            </Link>
+          </div>
+          <div className="pt-1 flex flex-wrap items-center gap-3 text-[11px] text-slate-400">
+            <span className="flex items-center gap-1">🔒 クレジット明細はDMM表記（作品名なし）</span>
+            <span className="flex items-center gap-1">📱 スマホ即再生・縛りなし</span>
           </div>
         </div>
 

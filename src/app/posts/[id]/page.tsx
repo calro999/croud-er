@@ -197,8 +197,61 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             <div dangerouslySetInnerHTML={{ __html: articleContent }} />
           </div>
 
+          {/* 特集記事下部：FANZA見放題ch 特設キラー誘導ボックス */}
+          <UnlimitedPromotionBox />
+
+          {/* 🏷️ 【成約率爆上げ】FANZA公式セール＆100円〜ワンコイン動画特設ボックス */}
+          <section className="rounded-3xl bg-gradient-to-br from-amber-950/40 via-slate-900 to-slate-950 border-2 border-amber-500/40 p-6 md:p-8 text-white shadow-xl space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-black text-amber-950 bg-amber-400 px-3 py-1 rounded-full uppercase tracking-wider shadow">
+                  🔥 期間限定・大感謝祭
+                </span>
+                <span className="text-[10px] font-bold text-amber-300 bg-amber-500/10 border border-amber-500/30 px-2.5 py-0.5 rounded-full">
+                  100円〜 / 最大70%OFF
+                </span>
+              </div>
+              <span className="text-[11px] text-slate-400">※FANZA公式にて毎日更新中</span>
+            </div>
+
+            <div className="space-y-1">
+              <h3 className="text-base md:text-xl font-black text-white leading-snug">
+                「単品購入より安く楽しみたい」という方必見！<br className="hidden sm:inline" />
+                <span className="text-amber-400">100円〜ワンコイン＆最大70%OFFセール開催中</span>
+              </h3>
+              <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
+                FANZAでは人気単体女優の過去作や話題作が100円〜500円で手に入る激安セールを随時実施中。登録不要で今すぐ観られる公式無料動画コーナーも大充実！
+              </p>
+            </div>
+
+            <div className="pt-2 flex flex-col sm:flex-row gap-3">
+              <a
+                href="https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fsale%2F&af_id=onchan555-003"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 inline-flex items-center justify-center text-xs md:text-sm font-black text-slate-950 bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 px-6 py-3.5 rounded-xl shadow-lg shadow-amber-500/20 transition duration-200 text-center transform hover:-translate-y-0.5"
+              >
+                🏷️ 今すぐFANZA公式セール会場をチェック（100円〜） ›
+              </a>
+              <a
+                href="https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Ffree%2F&af_id=onchan555-003"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="sm:w-auto inline-flex items-center justify-center text-xs md:text-sm font-bold text-slate-200 hover:text-white bg-white/10 hover:bg-white/20 border border-white/20 px-5 py-3.5 rounded-xl transition text-center"
+              >
+                🎁 公式無料動画コーナーを見る（完全無料）
+              </a>
+            </div>
+
+            <div className="pt-2 flex flex-wrap items-center justify-center gap-4 text-[11px] text-slate-400 border-t border-slate-800">
+              <span className="flex items-center gap-1 font-bold text-slate-300">🔒 クレカ明細はDMM表記（作品名なし）</span>
+              <span className="flex items-center gap-1">💳 PayPay・楽天ペイ・クレカ対応</span>
+              <span className="flex items-center gap-1">📱 専用アプリ不要・ブラウザ即再生</span>
+            </div>
+          </section>
+
           {/* 漫画コーナートップへの回遊導線 */}
-          <div className="text-center pt-6 space-y-3">
+          <div className="text-center pt-4 space-y-3">
             <Link
               href="/manga"
               className="inline-flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-sm rounded-xl shadow-lg transition transform hover:-translate-y-0.5"
@@ -446,26 +499,52 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
           </section>
 
           {/* セール・価格・配信形態ボックス */}
-          <section className="bg-gradient-to-r from-slate-900 to-slate-950 text-white p-5 md:p-6 rounded-2xl border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="space-y-1 text-center sm:text-left">
-              <span className="text-[10px] font-black text-amber-400 uppercase tracking-widest bg-amber-400/10 px-2.5 py-0.5 rounded border border-amber-400/20">
-                OFFICIAL STREAMING & DOWNLOAD
-              </span>
-              <h2 className="text-sm md:text-base font-black text-white">
-                FANZA公式で <span className="text-amber-400 text-lg">ストリーミング＆ダウンロード</span> 配信中！
-              </h2>
-              <p className="text-xs text-slate-400">
-                期間限定セールや最安値プランあり。スマホ・PCで高画質HD/4K視聴できます。
-              </p>
+          <section className="bg-gradient-to-r from-slate-900 to-slate-950 text-white p-5 md:p-6 rounded-2xl border border-slate-800 space-y-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-4">
+              <div className="space-y-1 text-left">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-black text-amber-400 uppercase tracking-widest bg-amber-400/10 px-2.5 py-0.5 rounded border border-amber-400/20">
+                    OFFICIAL STREAMING & DOWNLOAD
+                  </span>
+                  <span className="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                    🔒 クレカ明細はDMM表記のみ
+                  </span>
+                </div>
+                <h2 className="text-sm md:text-base font-black text-white">
+                  FANZA公式で <span className="text-amber-400 text-lg">ストリーミング＆ダウンロード</span> 配信中！
+                </h2>
+                <p className="text-xs text-slate-400">
+                  専用アプリ不要！スマホ・PCのブラウザから今すぐ高画質HD/4Kで視聴できます。
+                </p>
+              </div>
+              <div className="text-[11px] text-slate-400 flex flex-wrap sm:flex-col gap-1.5 flex-shrink-0">
+                <span className="flex items-center gap-1 text-slate-300">💳 PayPay・楽天ペイ・クレカOK</span>
+                <span className="flex items-center gap-1 text-emerald-400">🛡️ 作品名は一切出ず家族バレゼロ</span>
+              </div>
             </div>
-            <a
-              href={post.affiliate_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto text-center px-6 py-3.5 bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-400 hover:to-pink-500 text-white text-xs md:text-sm font-black rounded-xl shadow-lg transition flex-shrink-0"
-            >
-              🔥 公式サイトで価格・本編を見る（FANZA）
-            </a>
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <a
+                href={post.affiliate_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 text-center px-6 py-3.5 bg-gradient-to-r from-rose-600 via-rose-500 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white text-xs md:text-sm font-black rounded-xl shadow-lg shadow-rose-600/30 transition flex items-center justify-center gap-2"
+              >
+                <span>🔥</span>
+                <span>この作品の無料プレビュー・本編を見る（FANZA公式）</span>
+                <span className="text-xs opacity-80">›</span>
+              </a>
+              <a
+                href="https://al.fanza.co.jp/?lurl=https%3A%2F%2Fwww.dmm.co.jp%2Fmonthly%2Fpremium%2F&af_id=onchan555-003"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="sm:w-auto text-center px-5 py-3.5 bg-slate-800 hover:bg-slate-700 border border-amber-400/40 hover:border-amber-400 text-amber-300 hover:text-amber-200 text-xs md:text-sm font-bold rounded-xl shadow transition flex items-center justify-center gap-1.5"
+                title="単品買いより圧倒的にお得な月額見放題"
+              >
+                <span>👑</span>
+                <span>単品よりお得！15万本見放題ch</span>
+              </a>
+            </div>
           </section>
 
           {/* サンプル写真スライド */}
@@ -609,24 +688,44 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             </div>
           </section>
 
-          {/* 個別作品クリック誘導ボタン */}
-          <section className="py-2 text-center space-y-2 bg-gradient-to-r from-rose-50 via-pink-50 to-rose-50 border border-rose-200/80 rounded-2xl p-5 shadow-sm">
-            <span className="text-[10px] font-black text-rose-600 bg-rose-100/80 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-              STREAMING & DOWNLOAD AVAILABLE
-            </span>
-            <div className="pt-1">
+          {/* 個別作品クリック誘導ボタン（レビュー直後・CVR最大化） */}
+          <section className="py-5 text-center space-y-4 bg-gradient-to-r from-rose-50 via-pink-50 to-rose-50 border border-rose-200/80 rounded-3xl p-6 shadow-sm">
+            <div className="space-y-1">
+              <span className="text-[10px] font-black text-rose-600 bg-rose-100/90 px-3 py-1 rounded-full uppercase tracking-wider">
+                OFFICIAL STREAMING & DOWNLOAD
+              </span>
+              <h3 className="text-base md:text-lg font-black text-slate-900 pt-1">
+                この作品の本編・無料プレビューを今すぐ楽しむ
+              </h3>
+              <p className="text-xs text-slate-600">
+                専用アプリ不要！ブラウザから今すぐHD高画質で即再生できます。
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-1">
               <a
                 href={post.affiliate_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block w-full sm:w-auto px-8 py-4 text-sm md:text-base font-black text-white bg-gradient-to-r from-rose-500 via-rose-600 to-pink-600 hover:from-rose-400 hover:to-pink-500 rounded-xl shadow-lg hover:shadow-rose-500/25 transition duration-200"
+                className="w-full sm:w-auto px-8 py-4 text-sm md:text-base font-black text-white bg-gradient-to-r from-rose-600 via-rose-500 to-pink-600 hover:from-rose-500 hover:to-pink-500 rounded-xl shadow-lg shadow-rose-600/30 transition duration-200 transform hover:-translate-y-0.5"
               >
                 {dynamicCtaText}
               </a>
+              <a
+                href="https://al.fanza.co.jp/?lurl=https%3A%2F%2Fwww.dmm.co.jp%2Fmonthly%2Fpremium%2F&af_id=onchan555-003"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto px-6 py-4 text-xs md:text-sm font-black text-amber-900 bg-amber-400 hover:bg-amber-300 rounded-xl shadow-md transition duration-200 text-center"
+              >
+                👑 15万本見放題の「FANZA見放題ch」で見る
+              </a>
             </div>
-            <p className="text-[10px] text-slate-500">
-              ※FANZA公式（最安300円〜 / 高画質HD・4K対応）で今すぐ視聴
-            </p>
+
+            <div className="pt-2 flex flex-wrap items-center justify-center gap-4 text-[11px] text-slate-500 border-t border-rose-200/50">
+              <span className="flex items-center gap-1 font-bold text-slate-700">🔒 クレカ明細はDMM表記（作品名なし）</span>
+              <span className="flex items-center gap-1">💳 PayPay・楽天ペイ・コンビニ決済対応</span>
+              <span className="flex items-center gap-1">📱 スマホ・PCで今すぐ即再生OK</span>
+            </div>
           </section>
 
           {/* サンプル動画 */}
@@ -769,18 +868,79 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
           {/* 全記事下部：FANZA見放題ch 特設キラー誘導ボックス */}
           <UnlimitedPromotionBox />
 
+          {/* 🏷️ 【成約率爆上げ】FANZA公式セール＆100円〜ワンコイン動画特設ボックス */}
+          <section className="rounded-3xl bg-gradient-to-br from-amber-950/40 via-slate-900 to-slate-950 border-2 border-amber-500/40 p-6 md:p-8 text-white shadow-xl space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-black text-amber-950 bg-amber-400 px-3 py-1 rounded-full uppercase tracking-wider shadow">
+                  🔥 期間限定・大感謝祭
+                </span>
+                <span className="text-[10px] font-bold text-amber-300 bg-amber-500/10 border border-amber-500/30 px-2.5 py-0.5 rounded-full">
+                  100円〜 / 最大70%OFF
+                </span>
+              </div>
+              <span className="text-[11px] text-slate-400">※FANZA公式にて毎日更新中</span>
+            </div>
+
+            <div className="space-y-1">
+              <h3 className="text-base md:text-xl font-black text-white leading-snug">
+                「単品2,000円〜はちょっと高い…」という方必見！<br className="hidden sm:inline" />
+                <span className="text-amber-400">100円〜ワンコイン＆最大70%OFFセール開催中</span>
+              </h3>
+              <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
+                FANZAでは人気単体女優の過去作や話題作が100円〜500円で手に入る激安セールを随時実施中。さらに登録不要で即再生できる公式無料動画コーナーも大充実！
+              </p>
+            </div>
+
+            <div className="pt-2 flex flex-col sm:flex-row gap-3">
+              <a
+                href="https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fsale%2F&af_id=onchan555-003"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 inline-flex items-center justify-center text-xs md:text-sm font-black text-slate-950 bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 px-6 py-3.5 rounded-xl shadow-lg shadow-amber-500/20 transition duration-200 text-center transform hover:-translate-y-0.5"
+              >
+                🏷️ 今すぐFANZA公式セール会場をチェック（100円〜） ›
+              </a>
+              <a
+                href="https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Ffree%2F&af_id=onchan555-003"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="sm:w-auto inline-flex items-center justify-center text-xs md:text-sm font-bold text-slate-200 hover:text-white bg-white/10 hover:bg-white/20 border border-white/20 px-5 py-3.5 rounded-xl transition text-center"
+              >
+                🎁 公式無料動画コーナーを見る（完全無料）
+              </a>
+            </div>
+          </section>
+
           {/* 極上のプレミアムCTAボタン（最下部） */}
-          <section className="pt-6 border-t border-slate-100 text-center space-y-3" aria-label="視聴誘導">
-            <a
-              href={post.affiliate_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block w-full sm:w-auto px-8 py-4.5 text-base font-extrabold text-white bg-gradient-to-r from-rose-500 via-rose-600 to-pink-600 hover:from-rose-400 hover:to-rose-500 rounded-2xl shadow-xl transition duration-200 cursor-pointer"
-            >
-              {dynamicCtaText}
-            </a>
+          <section className="pt-6 border-t border-slate-100 text-center space-y-4" aria-label="視聴誘導">
+            <div className="space-y-1">
+              <span className="text-[10px] font-black text-rose-600 bg-rose-50 border border-rose-200 px-3 py-1 rounded-full uppercase tracking-wider">
+                OFFICIAL HD/4K STREAMING
+              </span>
+              <h3 className="text-base md:text-xl font-black text-slate-900 pt-1">
+                『{post.title}』をFANZA公式で今すぐ視聴する
+              </h3>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <a
+                href={post.affiliate_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto px-8 py-4.5 text-base font-extrabold text-white bg-gradient-to-r from-rose-600 via-rose-500 to-pink-600 hover:from-rose-500 hover:to-pink-500 rounded-2xl shadow-xl shadow-rose-600/30 transition duration-200 cursor-pointer transform hover:-translate-y-0.5"
+              >
+                {dynamicCtaText}
+              </a>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-4 text-[11px] text-slate-500">
+              <span className="flex items-center gap-1 font-bold text-slate-700">🔒 クレカ明細はDMM表記（作品名なし）</span>
+              <span className="flex items-center gap-1">💳 PayPay・楽天ペイ・クレカ対応</span>
+              <span className="flex items-center gap-1">📱 アプリ不要・スマホで今すぐ再生</span>
+            </div>
             <p className="text-[10px] text-slate-400">
-              ※クリックするとFANZA（18禁公式サイト）へ直接遷移します
+              ※クリックするとFANZA（公式18禁ストア）へ直接遷移します。安全・高画質でお楽しみいただけます。
             </p>
           </section>
         </div>
