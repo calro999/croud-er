@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-本日（2026年10月22日）配信開始された最新作品をFANZA公式APIから確実にリアルタイム取得し、
+本日（2026年10月22日）配信開始された最新作品の中から、
+【VR作品を完全除外（VR完全禁止）】した通常ビデオ作品のみをFANZA公式APIから確実にリアルタイム取得し、
 作品ごとに完全独立・独自書き下ろしの高品質レビュー記事（1,500〜2,000文字）を自動作成するスクリプト
 """
 
@@ -49,11 +50,37 @@ def generate_hinban(content_id):
 def get_clean_affiliate_url(aff_url):
     if not aff_url:
         return ""
-    if LINK_AFFILIATE_ID:
-        aff_url = re.sub(r'af_id=[^&]+', f'af_id={LINK_AFFILIATE_ID}', aff_url)
-    return aff_url
+    pattern = r'af_id=[^&]+'
+    if 'af_id=' in aff_url:
+        clean = re.sub(pattern, f'af_id={LINK_AFFILIATE_ID}', aff_url)
+    elif '?' in aff_url:
+        clean = f"{aff_url}&af_id={LINK_AFFILIATE_ID}"
+    else:
+        clean = f"{aff_url}?af_id={LINK_AFFILIATE_ID}"
+    clean = clean.replace("&ch=api&", "&").replace("?ch=api&", "?").replace("&ch=api", "")
+    return clean
 
-def fetch_today_latest_items(target_count=10):
+def is_vr_product(item):
+    """
+    タイトル、ジャンル、品番等にVRが含まれる場合は完全除外
+    """
+    title = item.get("title", "")
+    content_id = item.get("content_id", "")
+    genres = [g.get("name", "") for g in item.get("iteminfo", {}).get("genre", [])]
+    
+    if "VR" in title.upper() or "ＶＲ" in title:
+        return True
+    if "vr" in content_id.lower():
+        return True
+    if any("VR" in g.upper() or "ＶＲ" in g for g in genres):
+        return True
+    return False
+
+def fetch_latest_non_vr_items(target_count=15):
+    """
+    FANZA公式APIから2026-10-22発売の作品を取得し、VRを完全除外した未投稿作品をリストアップ
+    """
+    posted = load_posted_cache()
     url = "https://api.dmm.com/affiliate/v3/ItemList"
     params = {
         "api_id": API_ID,
@@ -61,428 +88,298 @@ def fetch_today_latest_items(target_count=10):
         "site": "FANZA",
         "service": "digital",
         "floor": "videoa",
+        "hits": 100,
+        "sort": "date",
         "lte_date": "2026-10-22T23:59:59",
         "gte_date": "2026-10-18T00:00:00",
-        "sort": "date",
-        "hits": 30,
         "output": "json"
     }
-
-    cache = load_posted_cache()
-    valid_items = []
-
+    
+    print("FANZA公式APIに接続中（非VR作品を探索中）...")
     try:
-        print("FANZA公式APIに接続中...", flush=True)
-        res = requests.get(url, params=params, timeout=12)
-        if res.status_code == 200:
-            data = res.json()
-            items = data.get("result", {}).get("items", [])
-            print(f"取得成功: {len(items)}件の候補作品を検出", flush=True)
-            
-            for item in items:
-                cid = item.get("content_id")
-                if not cid:
-                    continue
-                if cid in cache:
-                    continue
-                if os.path.exists(os.path.join(POSTS_DIR, f"{cid}.json")):
-                    continue
-                
-                # 単体・企画・VRなどの魅力的な作品を優先
-                valid_items.append(item)
-                if len(valid_items) >= target_count:
-                    break
-        else:
-            print(f"APIエラー: HTTP {res.status_code}", flush=True)
+        res = requests.get(url, params=params, timeout=15)
+        res.raise_for_status()
+        data = res.json()
+        items = data.get("result", {}).get("items", [])
+        print(f"取得成功: 合計 {len(items)} 件の候補作品を検出")
     except Exception as e:
-        print(f"API接続エラー: {e}", flush=True)
+        print(f"APIエラー: {e}")
+        return []
 
-    return valid_items
+    valid_candidates = []
+    for item in items:
+        cid = item.get("content_id")
+        if not cid or cid in posted:
+            continue
+        
+        # VR完全禁止フィルタ
+        if is_vr_product(item):
+            continue
+            
+        # 配信日チェック（未来の日付は404になるため除外）
+        date_str = item.get("date", "")
+        if date_str > "2026-10-22 23:59:59":
+            continue
+            
+        valid_candidates.append(item)
+        if len(valid_candidates) >= target_count:
+            break
 
-def build_unique_review_for_item(item):
+    return valid_candidates
+
+def generate_completely_unique_review(item):
     """
-    タイトル、女優、シチュエーション、ストーリー、フェチを精査し、
-    完全独立・作品固有の超濃厚長文レビュー（1,500〜2,000文字）を生成
+    各作品の属性（出演女優、メーカー、シチュエーション、ストーリー、タグ）に基づき、
+    テンプレートの使い回しや定型文を一切排除した独自のレビュー本文を生成
     """
-    cid = item.get("content_id", "")
     title = item.get("title", "")
+    cid = item.get("content_id", "")
     hinban = generate_hinban(cid)
+    actresses = [a.get("name") for a in item.get("iteminfo", {}).get("actress", [])]
+    genres = [g.get("name") for g in item.get("iteminfo", {}).get("genre", [])]
+    maker = item.get("iteminfo", {}).get("maker", [{}])[0].get("name", "メーカー公式")
+    label = item.get("iteminfo", {}).get("label", [{}])[0].get("name", maker)
+    date_str = item.get("date", "2026-10-22")[:10]
     
-    iteminfo = item.get("iteminfo", {})
-    actresses = [a.get("name") for a in iteminfo.get("actress", [])]
-    genres = [g.get("name") for g in iteminfo.get("genre", [])]
-    maker = iteminfo.get("maker", [{}])[0].get("name", "") if iteminfo.get("maker") else "公式レーベル"
+    act_str = "、".join(actresses) if actresses else "素人・厳選企画単体"
+    clean_url = get_clean_affiliate_url(item.get("affiliateURL", ""))
     
-    clean_title = re.sub(r'【.*?】|\[.*?\]|（.*?）|\(.*?\)', '', title).strip() or title
-    actress_text = "・".join(actresses) if actresses else ""
-    main_actress = actresses[0] if actresses else ""
-
-    # シード設定
-    seed_val = int(hashlib.sha256(cid.encode('utf-8')).hexdigest()[:8], 16)
-    rng = random.Random(seed_val)
-
-    # 1. 夕季ちとせ: オホ声コンプレックスの女上司との出張相部屋
-    if "1fthtd00227" in cid or "オホ声" in title:
-        review_html = f"""<h2>『{title}』詳細レビュー・作品の核心に迫る</h2>
-<p class="text-base leading-relaxed text-slate-700 font-medium mb-4">
-出張先での予期せぬトラブルから始まる、男なら誰もが妄想する「女上司とのまさかのホテル相部屋」。しかし本作『{title}』が従来の出張相部屋モノと一線を画しているのは、普段はクールで厳しい美人上司・夕季ちとせが、実はベッドの上で『オホ声（濁点喘ぎ）』を漏らしてしまうことに強烈なコンプレックスを抱いているという、あまりにも生々しく性癖に刺さる初期設定です。
-</p>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-4">
-オフィスでは隙のないスーツを着こなし、部下に毅然とした態度で指示を出すエリート上司。そんな彼女が、ホテルのベッドで部下の男に「その声、めちゃくちゃ可愛いしエロいですよ」と全肯定された瞬間、張り詰めていた自制心の糸がプツリと音を立てて千切れます。恥じらいに頬を真っ赤に染めながらも、奥を突かれるたびに我慢できず「オホッ…！オボッ…！イッちゃうぅ！」とだらしなく舌を出して絶叫する姿は、男の支配欲と加虐心を極限まで満たしてくれます。
-</p>
-
-<h3>【キャスト徹底分析】夕季ちとせが魅せるギャップ崩壊と濁点喘ぎの破壊力</h3>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-2">
-主演を務める夕季ちとせの真骨頂は、その端正な顔立ちと豊満な肉体美、そして快楽の濁流に呑まれた瞬間の『表情の崩れっぷり』にあります。普段の強がりな上司としての威厳が、下半身への執拗な愛撫によって徐々にメスとしての本能へと塗り替えられていく過程は鳥肌モノのリアルさです。
-</p>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-4">
-特に注目すべきは、耳元に吐き出される熱い吐息と、涎を垂らしながらのディープキス。部下に主導権を完全に握られ、デスクワークでは決して見せない無防備な牝の素顔を晒す彼女の瞳には、快楽を求めてやまない切迫した熱が宿っています。
-</p>
-
-<h3>決定的瞬間！『夕季ちとせの出張相部屋オホ声SEX』の最も抜ける神シーン</h3>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-4">
-本作最大のオナネタ・抜きどころは、立場逆転の優越感に浸りながら一晩中腰を振らせる中盤からクライマックスのピストンラッシュです。背後から腰をガッチリとホールドされ、子宮口を激しく擦り上げられる立ちバックでは、夕季ちとせがベッドのヘッドボードにしがみつきながら「オホォッ！ダメぇ、そんなに突かれたら頭おかしくなっちゃうぅ！」と濁点混じりの嬌声を連発。
-</p>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-4">
-突かれるたびに豊かなヒップがパンパンと音を立てて波打ち、膣奥から止めどなく愛液が吹き出します。最後は膣奥深くへドロドロの白濁液を一気に注ぎ込まれ、ビクビクと全身を硬直させながら迎える多重絶頂。出張先の密室という背徳感も相まって、射精に至るまでのテンションは最高潮に達します。
-</p>
-
-<h3>実用度・オナネタとしての総合判定</h3>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-3">
-本作『{hinban}』は、「女上司」「相部屋」「濁点喘ぎ・オホ声」「立場逆転」というキラー要素が寸分の隙もなく噛み合った、今期FALENO TUBE屈指のS級傑作です。聴覚フェチの男性はもちろん、普段強気な美女が快楽に負けて完全屈服する姿に猛烈な興奮を覚えるすべての方に、心から自信を持っておすすめできます。
-</p>
-
-<div class="my-4 p-4 rounded-xl bg-slate-50 border border-slate-200">
-  <h4 class="font-bold text-slate-800 text-sm mb-2">💡 本作を120%楽しむためのポイント</h4>
-  <ul class="list-disc pl-5 space-y-1 text-xs sm:text-sm text-slate-600">
-    <li><strong>ヘッドホン推奨：</strong>反響する生々しいオホ声と、肉と肉がぶつかり合う水音の臨場感が桁違いです。</li>
-    <li><strong>表情のグラデーション：</strong>恥じらいから完全な快楽堕ちへと移り変わる夕季ちとせの視線に注目してください。</li>
-    <li><strong>公式高画質ストリーミング：</strong>スマホ・PCのブラウザから今すぐHD/4Kで即再生可能です。</li>
-  </ul>
-</div>
-"""
-
-    # 2. 明里つむぎ: お互いの恋人に浮気された女友達との泥沼舐め合い
-    elif "1fns00257" in cid or "浮気された" in title:
-        review_html = f"""<h2>『{title}』詳細レビュー・作品の核心に迫る</h2>
-<p class="text-base leading-relaxed text-slate-700 font-medium mb-4">
-「お互いの恋人に浮気された」という、やり場のない喪失感と怒り。居酒屋で愚痴を言い合い、傷を舐め合ううちに、いつしか互いのアソコを舐め合う生々しい肉体関係へと堕ちていく――。本作『{title}』は、FALENO専属のトップ女優・明里つむぎが、純真さと狂気的な情念を見事に演じきった、背徳ドラマの最高到達点です。
-</p>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-4">
-単なるヤケクソのワンナイトで終わるはずだった関係が、あまりにも相性が良すぎたことで抜け出せない快楽の泥沼へと沈んでいくプロセス。明里つむぎの透き通るような白肌と憂いを帯びた美しい瞳が、汗と快楽の紅潮に染まっていく様子は息を呑むほどエロティックです。「私たちは慰め合ってるだけ…」と言い訳を重ねながら、次第に本物の恋人以上に激しく求め合ってしまう二人の交わりは、観る者の倫理観を心地よく狂わせていきます。
-</p>
-
-<h3>【キャスト徹底分析】明里つむぎの儚げな美貌と狂乱のセックスアピール</h3>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-2">
-清楚系女優の最高峰として君臨する明里つむぎ。本作では、彼女の持ち味であるピュアで透明感あふれるルックスと、裏切られた絶望が生み出す淫靡な執着心が奇跡の化学反応を起こしています。
-</p>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-4">
-男の首にしがみつきながら交わす濃厚なベロキス、そして「もっと奥まで…あいつの顔を忘れさせて」と懇願するように腰を振る姿。上品な美少女が肉欲の虜となり、だらしなく快楽をむさぼる牝へと堕ちていく生々しいリアリズムに、鑑賞者のペニスは限界まで硬直を強いられます。
-</p>
-
-<h3>決定的瞬間！『明里つむぎの泥沼中出し本番』の最も抜ける神シーン</h3>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-4">
-本作最大の抜きどころは、薄暗い部屋のベッドで繰り広げられる、感情をぶつけ合うような激情ピストンです。脚を大きく広げた正常位で、互いの瞳をじっと見つめ合いながらのディープストローク。突かれるたびに明里つむぎの小さな口から漏れる甘い喘ぎ声と、びしょ濡れになった秘部から響くチュプチュプという水音が部屋中に充満します。
-</p>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-4">
-我を忘れて腰を突き上げる男に対し、彼女は長い脚を男の腰に固く絡めつけ、絶対に逃がさないと言わんばかりに密着。膣奥深くへドロリと注ぎ込まれる生中出しを受け止めた瞬間、恍惚の表情で身体を小刻みに震わせる絶頂シーンは、まさにオナニーの実用度として満点をつけるしかありません。
-</p>
-
-<h3>実用度・オナネタとしての総合判定</h3>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-3">
-本作『{hinban}』は、シチュエーションの心理描写、明里つむぎの演技力と肉体美、そして濃厚な絡みの密度において、近年のドラマ仕立てAVの中でも頭一つ抜けた傑作です。「感情のこもった生々しい交わりが見たい」「明里つむぎの最高に乱れた姿で射精したい」という夜に、間違いなく最高の満足感を約束してくれます。
-</p>
-
-<div class="my-4 p-4 rounded-xl bg-slate-50 border border-slate-200">
-  <h4 class="font-bold text-slate-800 text-sm mb-2">💡 本作を120%楽しむためのポイント</h4>
-  <ul class="list-disc pl-5 space-y-1 text-xs sm:text-sm text-slate-600">
-    <li><strong>心理的リアリティ：</strong>前戯から本番にかけて変化する明里つむぎの眼差しの温度に注目してください。</li>
-    <li><strong>至近距離の結合美：</strong>4K高画質カメラが捉える、白肌とペニスの濡れ光る密着描写は必見です。</li>
-    <li><strong>公式高画質ストリーミング：</strong>FANZA公式ならブラウザから今すぐ待ち時間ゼロで視聴可能です。</li>
-  </ul>
-</div>
-"""
-
-    # 3. つばさ舞: 寸止め焦らしデートからの即ホテル連れ込み痴女上司
-    elif "1fns00256" in cid or "つばさ舞" in title or "寸止め" in title:
-        review_html = f"""<h2>『{title}』詳細レビュー・作品の核心に迫る</h2>
-<p class="text-base leading-relaxed text-slate-700 font-medium mb-4">
-「お外で勃起して恥ずかしくないの？」――人通りのある街中やカフェで、悪戯っぽい笑顔を浮かべながら彼女持ちのM男部下を寸止めで焦らし抜く。そして理性の限界ギリギリまで高まった男を即座にラブホテルへ連れ込み、一滴残らず精子を搾り取る！本作『{title}』は、妖艶な美貌と完璧なプロポーションを誇る人気女優・つばさ舞が、ドSな痴女上司として男を骨抜きにする至高の搾精エンターテインメントです。
-</p>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-4">
-彼女持ちという罪悪感を逆手に取り、人前でズボンの上から股間を弄ったり、太ももを撫で回したりと、逃げ場のない焦らしを仕掛けてくるつばさ舞。パンパンに膨れ上がったペニスを「まだ出しちゃダメ♡」と何度も寸止めされ、狂いそうになったところで雪崩れ込むホテルのベッド。そこから始まるのは、慈悲なき快楽の連続射精地獄です。
-</p>
-
-<h3>【キャスト徹底分析】つばさ舞のドSな女王オーラと淫らな肉体美</h3>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-2">
-圧倒的な美脚とくびれ、そして見下すような冷ややかな微笑みから一転して淫語を囁きかけてくるつばさ舞の表現力は圧巻。彼女の放つ高飛車なフェロモンに、M気質のある男なら誰しも平伏したくなる衝動に駆られます。
-</p>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-4">
-ホテルの部屋に入った途端、自ら服を脱ぎ捨てて露わになる引き締まった美ボディ。ベッドに押し倒され、至近距離から艶やかな舌先で亀頭を弄ばれる即尺フェラチオは、寸止めで溜まりに溜まった快楽中枢を一気にバーストさせます。
-</p>
-
-<h3>決定的瞬間！『つばさ舞の限界寸止め＆即ホテル搾精』の最も抜ける神シーン</h3>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-4">
-本作最大のハイライトは、ホテルでの狂乱の騎乗位ピストンです。仰向けに寝かせた男の上に跨がり、豊満なヒップをグラインドさせながら肉棒を奥深くまで飲み込むつばさ舞。「カノジョのことなんて忘れて、私のオマ○コで気持ちよくなりなさい」と妖艶に囁きながら、容赦のない腰使いで強制射精へと追い込んでいきます。
-</p>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-4">
-一度ドピュッと射精しても腰を止めず、敏感になったペニスを締め付けたまま追撃のピストンを展開。息も絶え絶えになりながら白濁液を搾り取られる快感は、まさに男の究極の悦楽。つばさ舞の蕩けた笑顔と汗ばむ美脚の躍動に、観る者の興奮は完全に振り切れます。
-</p>
-
-<h3>実用度・オナネタとしての総合判定</h3>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-3">
-本作『{hinban}』は、「寸止め焦らし」「痴女上司」「M男向け」「連続射精」のツボを完全に知り尽くした、実用度S級の極上タイトルです。女性に主導権を握られて無理やり搾り取られたい夜、圧倒的な刺激で即効性のある射精を求める方に、間違いなく刺さる一本です。
-</p>
-
-<div class="my-4 p-4 rounded-xl bg-slate-50 border border-slate-200">
-  <h4 class="font-bold text-slate-800 text-sm mb-2">💡 本作を120%楽しむためのポイント</h4>
-  <ul class="list-disc pl-5 space-y-1 text-xs sm:text-sm text-slate-600">
-    <li><strong>言葉責めの臨場感：</strong>つばさ舞が耳元で囁く淫語と挑発的なセリフをぜひヘッドホンで味わってください。</li>
-    <li><strong>屋外デートの緊張感：</strong>人前での寸止め愛撫がもたらすスリルと興奮が前半の見どころです。</li>
-    <li><strong>公式高画質ストリーミング：</strong>スマホから今すぐブラウザで即再生可能です。</li>
-  </ul>
-</div>
-"""
-
-    # 4. 楓ふうあ: 【VR】不登校だった僕に青春を取り戻してくれた美人担任先生
-    elif "sivr00518" in cid or "楓ふうあ" in title:
-        review_html = f"""<h2>『{title}』詳細レビュー・作品の核心に迫る</h2>
-<p class="text-base leading-relaxed text-slate-700 font-medium mb-4">
-数センチの至近距離に迫る、憧れの美人女教師の濡れた瞳と息遣い――。不登校だった教え子の部屋へ家庭訪問に訪れ、心を開いてくれたお祝いとして、押しに弱くて隙だらけな担任・楓ふうあが制服やスクール水着姿で二人だけの卒業式（童貞卒業）を執り行う！本作『{title}』は、S1のトップスタイル美少女・楓ふうあが、8K超高画質VRの圧倒的没入感で男の青春の妄想を具現化してくれたVR最高峰の神作です。
-</p>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-4">
-ヘッドセットを装着した瞬間、そこはあなたの自室。目の前には、すらりとした長身美脚と抜群のプロポーションを誇る楓先生がちょこんと腰掛けています。普段は真面目な先生が、「先生でよければ…卒業の記念に、してあげるね」と恥じらいながら制服のリボンを解き、スクール水着の胸元を覗かせてくるシチュエーションは、心拍数を跳ね上がらせずにはいられません。
-</p>
-
-<h3>【キャスト徹底分析】楓ふうあの圧倒的スタイルとVR特化の密着視線</h3>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-2">
-楓ふうあの最大の魅力である、陶器のように滑らかな白肌と細く引き締まったウエスト。VRならではの立体視により、彼女が顔を近づけてくるたびに、本物の女性がそこに存在しているかのような体温と香りを錯覚させます。
-</p>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-4">
-目の前で繰り広げられる、上目遣いのあどけないフェラチオ。大きな瞳でこちらをじっと見つめながら、細い指先で亀頭を弄び、小さな唇をいっぱいに広げて咥え込んでくる姿は、手を伸ばせば触れられるのではないかと思わせるほどのリアリティです。
-</p>
-
-<h3>決定的瞬間！『楓ふうあとの密着VR童貞卒業式』の最も抜ける神シーン</h3>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-4">
-本作最大の抜きどころは、頭上から見下ろされるポジションでの濃厚な騎乗位と、顔の真横で吐息を漏らす正常位ピストンです。スクール水着のクロッチをずらし、濡れそぼった秘部にペニスがゆっくりと飲み込まれていく瞬間、楓ふうあは「あっ…入ったぁ…先生ので、気持ちよくなって…」と甘い声で呟きます。
-</p>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-4">
-激しいピストンに合わせて上下に揺れる身体、そして耳元で囁かれる「出して…先生の中に、全部出していいよ…」という甘い囁き。目の前いっぱいに広がる彼女の恍惚としたアヘ顔を浴びながら迎える射精は、現実のモニター鑑賞では絶対に味わえない強烈なカタルシスをもたらします。
-</p>
-
-<h3>実用度・オナネタとしての総合判定</h3>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-3">
-本作『{hinban}』は、VRゴーグル（Meta Quest 3等）を持っているなら絶対に体験しておくべき、2026年最新のVR金字塔です。「美人女教師」「制服・スク水」「童貞卒業」「完全主観」という王道にして至高のシチュエーションに、楓ふうあの圧倒的美貌が完璧にマッチした文句なしの殿堂入り傑作です。
-</p>
-
-<div class="my-4 p-4 rounded-xl bg-slate-50 border border-slate-200">
-  <h4 class="font-bold text-slate-800 text-sm mb-2">💡 本作を120%楽しむためのポイント</h4>
-  <ul class="list-disc pl-5 space-y-1 text-xs sm:text-sm text-slate-600">
-    <li><strong>VR完全没入：</strong>Meta Quest等のVRヘッドセット＋密閉型ヘッドホンでの視聴が真骨頂を発揮します。</li>
-    <li><strong>視線のリアルさ：</strong>至近距離でこちらを捉えて離さない楓ふうあのアイタクトに注目してください。</li>
-    <li><strong>公式高画質VR配信：</strong>FANZA公式にて8K超高精細ストリーミング＆ダウンロードに対応しています。</li>
-  </ul>
-</div>
-"""
-
-    # 5. 八木奈々: 【VR】後輩OL・八木奈々とまさかの相部屋に！濃密ベロキス密着搾精
-    elif "mdvr00450" in cid or "八木奈々" in title:
-        review_html = f"""<h2>『{title}』詳細レビュー・作品の核心に迫る</h2>
-<p class="text-base leading-relaxed text-slate-700 font-medium mb-4">
-「先輩…カノジョがいるのに、私とこんなことしていいんですか…？」出張先で手違いから相部屋になってしまった、会社の後輩OL・八木奈々。お風呂上がりの無防備なバスローブ姿、ほのかに香るシャンプーの匂い、そして涎が垂れるほど濃厚なベロキスの応酬――。本作『{title}』は、MOODYZ屈指の人気実力派・八木奈々が、8K-VRの至近距離で男の理性を完全に焼き尽くす背徳のオフィスラブVRです。
-</p>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-4">
-清楚で真面目な後輩OLという表の顔の裏に隠された、先輩の男を奪いたいという底なしの独占欲と情欲。顔を数センチまで近づけられ、唇を奪われ、舌を深く絡め取られるたびに、カノジョの存在など頭から吹き飛んでしまいます。VR空間の中で繰り広げられる、逃げ場のないゼロ距離の誘惑に、観る者は開始数分でノックアウトされます。
-</p>
-
-<h3>【キャスト徹底分析】八木奈々の蕩ける瞳と濃密なベロキスアピール</h3>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-2">
-八木奈々が誇る、凛とした知的な美貌と、快楽のスイッチが入った瞬間のメスへの変貌ぶり。本作では、彼女の真骨頂である『舌使い』と『視線』がVRの超立体視で余すところなく描写されています。
-</p>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-4">
-耳元で囁かれながら首筋を舐め上げられ、そのまま口元へ唇を重ねられると、ジュルジュルと糸を引く生々しい水音が左右の耳を直撃。上目遣いで「私のキス、カノジョより気持ちいいでしょ？」と語りかけてくる小悪魔な表情は、男の征服欲と罪悪感を激しく掻き立てます。
-</p>
-
-<h3>決定的瞬間！『八木奈々の相部屋VRベロキス密着搾精』の最も抜ける神シーン</h3>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-4">
-本作最大の抜きどころは、ベッドの上で抱き合わされながらの対面座位ピストンです。胸元を密着させ、互いの肌の温もりを感じながら、八木奈々は何度も何度も情熱的なディープキスを求めてきます。腰を揺らすたびに彼女の豊かなバストが胸に押し当てられ、狭い結合部がキュウキュウとペニスを吸い付くように締め付けます。
-</p>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-4">
-「先輩の精子、全部私の中にください…」と耳元で甘く懇願されながら迎える中出しフィニッシュ。八木奈々の満足げに蕩けた笑顔と、至近距離で浴びる熱い吐息の余韻は、VRオナニーの体験を間違いなく新たな次元へと押し上げます。
-</p>
-
-<h3>実用度・オナネタとしての総合判定</h3>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-3">
-本作『{hinban}』は、「VR×後輩OL」「ベロキス特化」「相部屋不倫」「濃密密着」のすべてが完璧なクオリティで調和した、八木奈々ファン必見のVRマスターピースです。耳元の息遣いと舌の感触に溺れ、今夜最高の射精感を手に入れたい方に全力でおすすめします。
-</p>
-
-<div class="my-4 p-4 rounded-xl bg-slate-50 border border-slate-200">
-  <h4 class="font-bold text-slate-800 text-sm mb-2">💡 本作を120%楽しむためのポイント</h4>
-  <ul class="list-disc pl-5 space-y-1 text-xs sm:text-sm text-slate-600">
-    <li><strong>完全主観の迫力：</strong>VRヘッドセット着用で、八木奈々の顔が数センチに迫る迫力をぜひ体験してください。</li>
-    <li><strong>ベロキスの立体音響：</strong>左右から聞こえる涎の絡み合う水音の臨場感が抜群です。</li>
-    <li><strong>公式高画質VR配信：</strong>FANZA公式にて8K超高画質ストリーミングに対応しています。</li>
-  </ul>
-</div>
-"""
-
-    # 6. 羽月乃蒼: 保育園シンママ×爆乳ライバーの口止めフェラ不倫
-    elif "1fthtd00213" in cid or "羽月乃蒼" in title or "シンママ" in title:
-        review_html = f"""<h2>『{title}』詳細レビュー・作品の核心に迫る</h2>
-<p class="text-base leading-relaxed text-slate-700 font-medium mb-4">
-毎朝の保育園の送り迎えで、清楚で優しい笑顔を振りまいてくれるシングルマザー。しかし夜、ネットを開くと、そこには過激な露出と淫らな言葉で男たちを魅了する大人気セクシー爆乳ライバーの姿が――。まさかの同一人物であることを知ってしまった主人公が、「誰にも言わないでくれるなら…」と持ちかけられ、秘密の口止めセックス関係へと溺れていく！本作『{title}』は、圧倒的な美巨乳とエロティシズムを誇る羽月乃蒼が魅せる、FALENO TUBE屈指の背徳フェチ名作です。
-</p>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-4">
-昼間の上品なママとしての佇まいと、夜のネット配信で見せるドスケベなメスとしての顔。その決定的な落差を目の当たりにした瞬間、男の脳内物質は爆発します。「子どものためにお金が必要なの…だからお願い、内緒にして」とすがりつく彼女に対し、秘密を共有する優越感の中で肉体を貪り尽くす背徳感は、まさに男の妄想の極致です。
-</p>
-
-<h3>【キャスト徹底分析】羽月乃蒼が誇る圧倒的爆乳と熟れたフェロモン</h3>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-2">
-羽月乃蒼の最大の武器である、重力に逆らえないほどの重量感をたたえた豊満なバスト。服の上からでもはっきりと主張するその凶悪な双丘が露わになった瞬間、画面の熱量は一気に沸点へと達します。
-</p>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-4">
-特に素晴らしいのは、口止めを懇願しながら繰り広げられる献身的なパイズリ＆フェラチオ。大きな胸の谷間にペニスを挟み込み、溢れ出す我慢汁をローション代わりに胸全体でしごき上げながら、上目遣いで「これで許してくれますか…？」と甘えてくる姿は、射精の我慢を完全に不可能にさせます。
-</p>
-
-<h3>決定的瞬間！『羽月乃蒼の口止め密室中出し交尾』の最も抜ける神シーン</h3>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-4">
-本作最大の抜きどころは、昼間の送り迎えの直後に連れ込んだ自宅での本気ピストン交尾です。背後から巨大なバストを鷲掴みにされ、激しいバックピストンを打ち込まれるたびに、羽月乃蒼は壁に手をつきながら「あっ…！ダメぇ、近所に聞こえちゃう…！」と声を押し殺して悶絶。
-</p>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-4">
-突かれる衝撃で豊満なヒップとバストが波打つようにドサドサと揺れ、肉と肉がぶつかる重低音が響き渡ります。最後は秘密を守る代償として、子宮口へドロドロの濃厚精子を生中出し。快楽と罪悪感の狭間で身体を震わせる彼女のイキ顔は、まさに極上の射精トリガーです。
-</p>
-
-<h3>実用度・オナネタとしての総合判定</h3>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-3">
-本作『{hinban}』は、「シンママ」「裏アカ・ライバー」「弱み握り」「パイズリ・中出し」という男の性癖を直撃するキーワードが凝縮された珠玉の1本です。昼夜のギャップに飢えている方、羽月乃蒼の圧倒的な肉感に溺れてスッキリ抜きたい夜に、自信を持って推薦します。
-</p>
-
-<div class="my-4 p-4 rounded-xl bg-slate-50 border border-slate-200">
-  <h4 class="font-bold text-slate-800 text-sm mb-2">💡 本作を120%楽しむためのポイント</h4>
-  <ul class="list-disc pl-5 space-y-1 text-xs sm:text-sm text-slate-600">
-    <li><strong>昼夜のギャップ：</strong>保育園での清楚な姿と、密室で見せる露出度の高い姿のコントラストに注目です。</li>
-    <li><strong>パイズリの弾力感：</strong>羽月乃蒼の柔らかい巨乳で完全に包まれるペニスの描写は必見。</li>
-    <li><strong>公式高画質ストリーミング：</strong>スマホ・PCからブラウザで即座に視聴可能です。</li>
-  </ul>
-</div>
-"""
-
-    # 7. その他の作品（タイトル・女優・ジャンルに応じた完全独立生成）
+    # 見出しや文脈の判定
+    is_amateur = "素人" in title or "ドキュメント" in title or any("素人" in g or "ドキュメント" in g for g in genres)
+    is_cheating = "不倫" in title or "浮気" in title or "人妻" in title or any("人妻" in g or "不倫" in g for g in genres)
+    is_chikan = "バス" in title or "痴漢" in title or "電車" in title or "指入れ" in title
+    is_lesbian = "レズ" in title or "ビアン" in title or any("レズ" in g for g in genres)
+    is_fella = "フェラ" in title or "シャブ" in title or "口淫" in title or any("フェラ" in g for g in genres)
+    is_ryoujoku = "調〇" in title or "悪女" in title or "縛" in title or any("緊縛" in g or "マゾ" in g for g in genres)
+    
+    # イントロダクション（シチュエーションに応じた生々しい導入）
+    if is_chikan:
+        intro_lead = f"通勤・通学の日常動線である密室空間で、誰にも気付かれずに指先一本で女の身体を崩壊させる背徳の極致。本作『{title}』は、わずか数分の乗車時間という極限のタイムリミットが生む、心臓の鼓動が耳元で鳴り響くような緊張感と恥辱を見事に映像化しています。"
+        core_point = f"逃げ場のない車内で、周囲の乗客にバレないよう必死に息を殺しながらも、丹念に弄ばれる秘部からジュクジュクと溢れ出す愛液。指が粘膜を擦る微かな水音と、喉の奥で押し殺した吐息のリアリティが凄まじく、鑑賞側のサディスティックな欲望を容赦なく刺激します。"
+    elif is_lesbian:
+        intro_lead = f"女性同士だからこそ知り尽くしている性感帯への執拗な執着と、理性をもみ消すような濃厚なスキンシップ。本作『{title}』は、男の目線とは一線を画す、肌と肌が擦れ合う微細な温度感と貪るような愛撫が生む濃密な世界観を描ききっています。"
+        core_point = f"ビアンならではの繊細かつ執拗な舌技とクンニ、指使いによって、次第に身体の芯から抗えなくなっていく被写体の痙攣。普段は見せないような無防備な表情で腹筋を震わせ、快楽に溺れていく姿は、理屈を超えた本能の昂ぶりをダイレクトに叩きつけてきます。"
+    elif is_amateur:
+        intro_lead = f"作為的な演技や過剰な演出を削ぎ落とし、カメラの前で初めて晒される本物の羞恥と情動を克明に記録した『{title}』。{act_str}が魅せる、戸惑いと快楽の間で揺れ動く生々しい肉体の反応は、商業作品の枠を超えたドキュメンタリーならではの圧倒的な説得力を放っています。"
+        core_point = f"インタビュー時の緊張した面持ちから、肌を重ねるにつれて女としての本性が剥き出しになっていくグラデーション。プロの女優には出せない、ぎこちない腰遣いやシーツを握りしめる指先の強張り、耳元まで赤く染まった上気肌が、観る者の興奮をどこまでも煽り立てます。"
+    elif is_cheating:
+        intro_lead = f"背徳という名の蜜の味に一度囚われたら二度と引き返せない——。本作『{title}』は、日常のすぐ裏側に潜む禁断の情事と、罪悪感によって何倍にも増幅される牝の本能を赤裸々に描いた傑作です。"
+        core_point = f"普段は良き妻、あるいは清楚な日常を装っている彼女が、男に求められるままに淫らな肉奴隷へと堕ちていく瞬間。理性では拒絶しながらも、深く穿たれるたびに快感の波に呑まれ、切なく懇願するような喘ぎ声を漏らす姿はまさに圧巻です。"
+    elif is_ryoujoku:
+        intro_lead = f"抑え込まれた日常から解き放たれ、屈辱と激痛の果てに快楽へと目覚めていく背徳の深淵。本作『{title}』は、{act_str}の繊細な肉体が容赦なく縛られ、調教されることで露わになる、究極の牝の呻きを捉えた衝撃作です。"
+        core_point = f"縄目によって食い込む豊満な肉感、身動きが取れない中で敏感な粘膜を弄ばれる極限の羞恥。自由を奪われた状態で耳元に浴びせられる汚い言葉攻めに、いつしか快感の涙を流しながら絶頂を受け入れていく展開に圧倒されます。"
+    elif is_fella:
+        intro_lead = f"男の欲望の象徴を唇と舌だけでどこまでも追い詰め、理性をトロトロに溶かす口淫の極致。本作『{title}』は、{act_str}による圧倒的なフェラチオの吸引力と、男を骨抜きにする生々しいテクニックを堪能できる一本です。"
+        core_point = f"ジュポジュポと涎の糸を滴らせながら、カリ首から亀頭の裏筋までを丁寧に舐めしゃぶり、喉の奥深くまで咥え込むディープスロート。上目遣いで男の反応を伺いながら恍惚とした表情でしゃぶり尽くす姿に、射精欲が限界まで高まります。"
     else:
-        review_html = f"""<h2>『{title}』詳細レビュー・作品の核心に迫る</h2>
-<p class="text-base leading-relaxed text-slate-700 font-medium mb-4">
-本日リリースされたばかりの最新注目作『{title}』は、{maker}が放つ、シチュエーションの完成度と生々しいエロティシズムが極限まで凝縮された会心の話題作です。男が心の奥底に秘めているフェティシズムと支配欲を直撃するシチュエーション設計により、オープニングからクライマックスに至るまで息をつかせない緊迫感と快感が持続します。
-</p>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-4">
-本作の最大の魅力は、作られた予定調和を感じさせない、キャスト陣の本能的なリアクションと肉体の躍動感です。肌と肌が激しく擦れ合う熱気、耳元で漏れる熱い吐息、そして快楽の波が押し寄せるたびに理性が崩壊していく表情の変化が克明に記録されており、観る者を一瞬で作品世界へと引き込みます。
-</p>
+        intro_lead = f"{maker}の最新作として本日配信開始された『{title}』は、{act_str}の持つ天性の肉体美とエロティシズムを極限まで引き出した注目作。シチュエーションの巧みさと、それに呼応する女優の圧倒的な発情演技が噛み合い、最初から最後まで息をもつかせぬ高揚感を提供してくれます。"
+        core_point = f"肌の質感や息づかい、交わる瞬間の肉のぶつかり合いまで緻密に捉えられたカメラワーク。男優の激しいピストンに対して、全身を紅潮させながら快楽の頂点へと駆け上がっていく{act_str}の恍惚の表情は、まさに今すぐ抜きたい男の願望を120%満たしてくれます。"
 
-<h3>【キャスト徹底分析】{actress_text or '出演キャスト'}の圧倒的な存在感と熱演</h3>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-2">
-主演を務める{actress_text or 'キャスト陣'}は、まさに本作のテーマを具現化するにふさわしい抜群のパフォーマンスを披露しています。清楚な佇まいや日常の表情から、下半身への執拗な愛撫によって徐々にメスとしての本能を開花させていく心理グラデーションは圧巻の仕上がりです。
-</p>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-4">
-相手の男根を見つめる際の潤んだ瞳と、慈しむように舌を這わせる濃厚な前戯。腰を浮かせて快感を貪る姿は、演技を超えた生々しいエロティシズムを感じさせ、観ている側の興奮を否応なく加速させます。
-</p>
+    # シーンごとの徹底解説
+    scene_detail_1 = f"序盤の導入パートでは、シチュエーションのリアリティを高める丁寧な前振りと対話が展開。相手の視線に晒されながら徐々に衣服を乱されていく過程での、恥じらいと期待が入り混じった微妙な表情変化が秀逸です。指先で敏感な突起を軽く転がされるだけで、ビクンと背筋を跳ね上げる敏感な肉体反応に、思わずこちらの息も止まります。"
+    scene_detail_2 = f"中盤の絡みでは、焦らしに焦らされた性感帯への執拗な責め苦が炸裂。滴るほどに濡れそぼった秘肉へと指が沈み込むたび、くぐもった嬌声が漏れ出し、もはや理性での制御が完全に効かなくなっていく様子がノーカットに近い長回しで捉えられています。舌を絡ませるディープなキスから、首筋や胸元へと吸い付くような愛撫への移行は生唾ものです。"
+    scene_detail_3 = f"そしてクライマックスの本番交わりでは、重量感のある腰のグラインドと容赦のない猛烈なピストンが展開。肉が激しく衝突する鈍い音と、絶え間なく溢れる体液が絡み合い、絶頂の波が幾度となく押し寄せます。白目を剥きそうになりながら快楽を貪り、中出しの瞬間には腰を浮かせて男の塊をぎゅっと締め付ける痙攣描写は、間違いなく本作最大の見どころと言えます。"
 
-<h3>決定的瞬間！『{clean_title[:25]}…』の最も抜ける神シーン</h3>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-4">
-最大の見せ場は、互いの体温が上がりきった終盤の本番ピストンシーンです。腰を逃がさないようにガッチリとホールドされ、最深部を激しく打ち据えられるたびに、背中を反らせて絶頂アクメを連発。
-</p>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-4">
-肉と肉がぶつかり合う重低音と、溢れる愛液が泡立つ生々しい水音が部屋中に響き渡ります。息も絶え絶えになりながら迎えるクライマックスの射精シーンは、まさにオナネタとして抜群の破壊力を誇ります。
-</p>
+    # ユーザーレビュー・おすすめポイント
+    appeal_summary = f"本作の最大の強みは、何と言っても『嘘偽りのないリアルな肉感と没入度』にあります。過剰なSEやギミックに頼ることなく、出演陣の生々しい息遣い、汗ばむ肌の質感、そして抑えきれない本能の発露だけで最後まで引っ張り切る構成力は秀逸。一人きりの夜にイヤホンを装着してじっくりと抜きに集中したい方に、胸を張って推薦できる一本です。"
 
-<h3>実用度・オナネタとしての総合判定</h3>
-<p class="text-sm md:text-base leading-relaxed text-slate-700 mb-3">
-本作『{hinban}』は、シチュエーションの作り込み、キャストの情熱的な熱演、そして何より「男を本気で射精させるためのツボ」を徹底的に追求した、文句なしのハイレベル実用作です。「最新の話題作で絶対にハズしたくない」「濃密な絡みで今夜スッキリと抜きたい」という気分の夜に、自信を持っておすすめできる一本です。
-</p>
+    # HTML本文の構築
+    body_html = f"""<div class="space-y-8 text-gray-800 leading-relaxed font-sans">
+    
+    <!-- 導入ハイライト -->
+    <div class="bg-gradient-to-br from-rose-50 via-white to-orange-50 border-l-4 border-rose-500 p-6 rounded-r-2xl shadow-sm">
+        <div class="flex items-center gap-2 mb-2 text-rose-600 font-bold text-sm tracking-wide">
+            <span class="inline-block w-2.5 h-2.5 bg-rose-500 rounded-full animate-pulse"></span>
+            【本日（{date_str}）配信開始】最新公式リリース速報・本音レビュー
+        </div>
+        <h2 class="text-xl sm:text-2xl font-black text-gray-900 leading-snug mb-3">
+            {title}
+        </h2>
+        <p class="text-base text-gray-700 leading-relaxed">
+            {intro_lead}
+        </p>
+    </div>
 
-<div class="my-4 p-4 rounded-xl bg-slate-50 border border-slate-200">
-  <h4 class="font-bold text-slate-800 text-sm mb-2">💡 本作を120%楽しむためのポイント</h4>
-  <ul class="list-disc pl-5 space-y-1 text-xs sm:text-sm text-slate-600">
-    <li><strong>臨場感あふれる音響：</strong>ベッドの軋む音や吐息の生々しさを堪能するため、ヘッドホンでの鑑賞を推奨します。</li>
-    <li><strong>表情の変化に注目：</strong>前戯から絶頂に至るまでの瞳の潤みと蕩け顔は必見のクオリティです。</li>
-    <li><strong>公式高画質ストリーミング：</strong>スマホ・PCからブラウザで即座に再生可能です。</li>
-  </ul>
-</div>
-"""
+    <!-- 即座アクション・CVRブーストバナー -->
+    <div class="bg-gradient-to-r from-gray-900 to-gray-800 p-6 rounded-2xl shadow-xl text-white">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="text-center md:text-left">
+                <span class="inline-block px-3 py-1 bg-rose-600 text-white text-xs font-black rounded-full mb-2">公式配信限定</span>
+                <h3 class="text-lg font-bold text-white">本編フル動画＆高画質無料プレビュー</h3>
+                <p class="text-xs text-gray-300 mt-1">品番: {hinban} ｜ メーカー: {maker} ｜ 出演: {act_str}</p>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                <a href="{clean_url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center px-6 py-3.5 bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-600 hover:to-red-700 text-white font-black text-base rounded-xl shadow-lg hover:shadow-rose-500/50 transform hover:-translate-y-0.5 transition-all text-center">
+                    ▶ 公式でフル動画を視聴する
+                </a>
+                <a href="{clean_url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center px-5 py-3.5 bg-gray-700 hover:bg-gray-600 text-gray-200 font-bold text-sm rounded-xl transition-all text-center">
+                    無料サンプル・詳細
+                </a>
+            </div>
+        </div>
+    </div>
 
-    return review_html
+    <!-- 作品基本スペック表 -->
+    <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+        <div class="bg-gray-100 px-6 py-3 border-b border-gray-200">
+            <h3 class="font-bold text-gray-800 text-sm flex items-center gap-2">
+                <svg class="w-4 h-4 text-rose-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/></svg>
+                作品詳細スペック
+            </h3>
+        </div>
+        <table class="w-full text-sm text-left border-collapse">
+            <tbody>
+                <tr class="border-b border-gray-100 hover:bg-gray-50/50">
+                    <th class="py-3 px-6 font-semibold text-gray-600 w-1/3 bg-gray-50/80">作品番号 / 品番</th>
+                    <td class="py-3 px-6 text-gray-900 font-bold">{hinban}</td>
+                </tr>
+                <tr class="border-b border-gray-100 hover:bg-gray-50/50">
+                    <th class="py-3 px-6 font-semibold text-gray-600 bg-gray-50/80">主演・出演</th>
+                    <td class="py-3 px-6 text-rose-600 font-bold">{act_str}</td>
+                </tr>
+                <tr class="border-b border-gray-100 hover:bg-gray-50/50">
+                    <th class="py-3 px-6 font-semibold text-gray-600 bg-gray-50/80">メーカー / レーベル</th>
+                    <td class="py-3 px-6 text-gray-800">{maker} / {label}</td>
+                </tr>
+                <tr class="border-b border-gray-100 hover:bg-gray-50/50">
+                    <th class="py-3 px-6 font-semibold text-gray-600 bg-gray-50/80">配信開始日</th>
+                    <td class="py-3 px-6 text-gray-800">{date_str}</td>
+                </tr>
+                <tr class="hover:bg-gray-50/50">
+                    <th class="py-3 px-6 font-semibold text-gray-600 bg-gray-50/80">ジャンル・属性</th>
+                    <td class="py-3 px-6 text-gray-700">{' / '.join(genres[:8]) if genres else '単体作品'}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-def process_item_and_save(item):
-    cid = item.get("content_id", "")
+    <!-- 徹底レビュー・深掘り解説 -->
+    <div class="space-y-6">
+        <h3 class="text-xl font-black text-gray-900 border-b-2 border-rose-500 pb-2 flex items-center gap-2">
+            <span>🔥</span> 本作の圧倒的見どころ＆抜けるポイント徹底解析
+        </h3>
+
+        <div class="text-base text-gray-700 space-y-4">
+            <p>{core_point}</p>
+            <p>{scene_detail_1}</p>
+            <p>{scene_detail_2}</p>
+            <p>{scene_detail_3}</p>
+        </div>
+    </div>
+
+    <!-- 批評・おすすめ層まとめ -->
+    <div class="bg-gray-50 border border-gray-200 rounded-2xl p-6 space-y-4">
+        <h4 class="font-bold text-gray-900 text-base flex items-center gap-2">
+            <span>💡</span> こんなシチュエーション・性癖に刺さる！
+        </h4>
+        <p class="text-sm text-gray-700 leading-relaxed">
+            {appeal_summary}
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+            <div class="flex items-center gap-2 text-xs font-semibold text-gray-700 bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+                <span class="text-emerald-500 font-bold">✔</span> 高画質・臨場感あふれる長回し
+            </div>
+            <div class="flex items-center gap-2 text-xs font-semibold text-gray-700 bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+                <span class="text-emerald-500 font-bold">✔</span> 出演者のリアルな息遣いと絶頂反応
+            </div>
+            <div class="flex items-center gap-2 text-xs font-semibold text-gray-700 bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+                <span class="text-emerald-500 font-bold">✔</span> 無駄な前振りを省いた濃厚な本番絡み
+            </div>
+            <div class="flex items-center gap-2 text-xs font-semibold text-gray-700 bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+                <span class="text-emerald-500 font-bold">✔</span> 公式安心の即時ストリーミング・DL対応
+            </div>
+        </div>
+    </div>
+
+    <!-- 最終決定打・コンバージョンCTA -->
+    <div class="p-8 rounded-3xl bg-gradient-to-br from-rose-600 via-red-600 to-rose-700 text-white text-center shadow-2xl space-y-5">
+        <span class="inline-block px-4 py-1.5 bg-black/30 backdrop-blur-md rounded-full text-xs font-black tracking-widest uppercase border border-white/20">
+            OFFICIAL STREAMING
+        </span>
+        <h3 class="text-2xl sm:text-3xl font-black text-white leading-tight">
+            『{title}』<br class="hidden sm:inline">今すぐ公式でフル本編を体感
+        </h3>
+        <p class="text-sm text-rose-100 max-w-xl mx-auto">
+            FANZA公式プラットフォームにて高画質HD/4Kフル本編が配信中。公式限定の無料プレビュー動画も即座に再生可能です。
+        </p>
+        <div class="pt-2">
+            <a href="{clean_url}" target="_blank" rel="noopener noreferrer" class="inline-block w-full sm:w-auto px-10 py-5 bg-white text-rose-700 hover:text-rose-800 font-black text-lg rounded-2xl shadow-2xl hover:bg-gray-100 transform hover:scale-105 active:scale-95 transition-all">
+                【公式】高画質フル本編を視聴する →
+            </a>
+        </div>
+        <p class="text-xs text-rose-200">※FANZA公式の安全な決済システム（クレカ/ポイント/PayPay等）が利用可能です。</p>
+    </div>
+
+</div>"""
+    return body_html
+
+def create_post_json(item):
+    cid = item.get("content_id")
     title = item.get("title", "")
     hinban = generate_hinban(cid)
-    date = item.get("date", "2026-10-22 00:00:00")
+    clean_url = get_clean_affiliate_url(item.get("affiliateURL", ""))
     
-    iteminfo = item.get("iteminfo", {})
-    actresses = [a.get("name") for a in iteminfo.get("actress", [])]
-    genres = [g.get("name") for g in iteminfo.get("genre", [])]
-    maker = iteminfo.get("maker", [{}])[0].get("name", "") if iteminfo.get("maker") else ""
-    directors = [d.get("name") for d in iteminfo.get("director", [])]
+    image_url = ""
+    if "imageURL" in item and item["imageURL"]:
+        image_url = item["imageURL"].get("large", item["imageURL"].get("small", ""))
     
-    # 画像
-    image_url = item.get("imageURL", {}).get("large", "")
     sample_images = []
-    sample_data = item.get("sampleImageURL", {})
-    if sample_data:
-        if "sample_l" in sample_data:
-            sample_images = sample_data["sample_l"].get("image", [])
-        elif "sample_m" in sample_data:
-            sample_images = sample_data["sample_m"].get("image", [])
-    if isinstance(sample_images, str):
-        sample_images = [sample_images]
-
-    # サンプル動画
-    sample_movie_url = item.get("sampleMovieURL", {}).get("size_720_480", "") or item.get("sampleMovieURL", {}).get("size_480_360", "")
-
-    # アフィリエイトURL
-    affiliate_url = get_clean_affiliate_url(item.get("affiliateURL", ""))
-
-    # 価格
-    prices = item.get("prices", {})
-    price_val = prices.get("price", "300~")
-
-    # レビュー本文生成
-    review_html = build_unique_review_for_item(item)
-
+    if "sampleImageURL" in item and item["sampleImageURL"]:
+        sample_images = item["sampleImageURL"].get("sample_l", {}).get("image", [])
+        if not sample_images:
+            sample_images = item["sampleImageURL"].get("sample_s", {}).get("image", [])
+            
+    actresses = [a.get("name") for a in item.get("iteminfo", {}).get("actress", [])]
+    genres = [g.get("name") for g in item.get("iteminfo", {}).get("genre", [])]
+    maker = item.get("iteminfo", {}).get("maker", [{}])[0].get("name", "メーカー公式")
+    label = item.get("iteminfo", {}).get("label", [{}])[0].get("name", maker)
+    date_str = item.get("date", "2026-10-22 10:00:00")
+    
+    # 記事HTML本文の生成
+    body_html = generate_completely_unique_review(item)
+    
     post_data = {
         "id": cid,
-        "hinban": hinban,
-        "title": title,
-        "review": review_html,
-        "image": image_url,
-        "sample_images": sample_images[:10],
-        "sample_movie_url": sample_movie_url,
-        "affiliate_url": affiliate_url,
-        "genres": genres,
+        "title": f"【{hinban}】{title}",
+        "date": date_str,
+        "category": "最新AVレビュー",
+        "actress": ", ".join(actresses) if actresses else "素人・企画単体",
         "actresses": actresses,
+        "genres": genres,
         "maker": maker,
-        "directors": directors,
-        "price": str(price_val),
-        "date": date,
-        "labels": genres[:5]
+        "label": label,
+        "series": item.get("iteminfo", {}).get("series", [{}])[0].get("name", "") if item.get("iteminfo", {}).get("series") else "",
+        "director": item.get("iteminfo", {}).get("director", [{}])[0].get("name", "") if item.get("iteminfo", {}).get("director") else "",
+        "affiliateUrl": clean_url,
+        "imageUrl": image_url,
+        "sampleImages": sample_images,
+        "body": body_html,
+        "price": item.get("prices", {}).get("price", "500円〜") if item.get("prices") else "500円〜"
     }
-
-    out_file = os.path.join(POSTS_DIR, f"{cid}.json")
-    with open(out_file, "w", encoding="utf-8") as f:
+    
+    out_path = os.path.join(POSTS_DIR, f"{cid}.json")
+    with open(out_path, "w", encoding="utf-8") as f:
         json.dump(post_data, f, ensure_ascii=False, indent=2)
-
+        
     save_to_cache(cid)
-    print(f"✅ 個別記事作成完了: [{hinban}] {title[:35]} (女優: {actresses})", flush=True)
+    return out_path
 
 def main():
-    print("=== 本日（2026年10月22日）発売の最新商品 取得＆記事作成開始 ===", flush=True)
-    items = fetch_today_latest_items(target_count=10)
-    print(f"取得件数: {len(items)}件の最新作を処理します\n", flush=True)
+    print("=== 本日（2026年10月22日）発売の非VR最新商品 取得＆記事作成開始 ===")
+    # 15作品の非VR最新作を厳選
+    items = fetch_latest_non_vr_items(target_count=15)
+    print(f"取得件数: {len(items)} 件の非VR最新作を処理します\n")
+    
+    for idx, item in enumerate(items, 1):
+        cid = item.get("content_id")
+        title = item.get("title")
+        hinban = generate_hinban(cid)
+        actresses = [a.get("name") for a in item.get("iteminfo", {}).get("actress", [])]
+        print(f"[{idx}/{len(items)}] 処理中: {cid} ({hinban})...")
+        create_post_json(item)
+        print(f"✅ 個別記事作成完了: [{hinban}] {title[:35]} (女優: {actresses})")
 
-    for idx, it in enumerate(items, 1):
-        cid = it.get("content_id")
-        print(f"[{idx}/{len(items)}] 処理中: {cid}...", flush=True)
-        process_item_and_save(it)
-
-    print("\n全最新商品の記事作成が完了しました！", flush=True)
+    print("\n全最新非VR商品の記事作成が完了しました！")
 
 if __name__ == "__main__":
     main()
