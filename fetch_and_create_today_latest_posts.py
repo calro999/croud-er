@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-本日（2026年10月24日）配信開始された最新作品の中から、
+本日（2026年10月25日）配信開始された最新作品の中から、
 【VR作品を完全除外（VR完全禁止）】した通常ビデオ作品のみをFANZA公式APIから確実にリアルタイム取得し、
 作品ごとに完全独立・独自書き下ろしのGoogle高品質評価基準（E-E-A-T）に適合する
 深掘りレビュー記事（1,800〜2,500文字）を自動作成するスクリプト
@@ -84,12 +84,12 @@ def fetch_latest_non_vr_items(target_count=15):
         "floor": "videoa",
         "hits": 100,
         "sort": "date",
-        "lte_date": "2026-10-24T23:59:59",
+        "lte_date": "2026-10-25T23:59:59",
         "gte_date": "2026-10-24T00:00:00",
         "output": "json"
     }
     
-    print("FANZA公式APIに接続中（本日2026-10-24発売の最新作を取得中）...")
+    print("FANZA公式APIに接続中（本日2026-10-25発売の最新作を取得中）...")
     try:
         res = requests.get(url, params=params, timeout=15)
         res.raise_for_status()
@@ -108,7 +108,7 @@ def fetch_latest_non_vr_items(target_count=15):
         if is_vr_product(item):
             continue
         date_str = item.get("date", "")
-        if date_str > "2026-10-24 23:59:59":
+        if date_str > "2026-10-25 23:59:59":
             continue
             
         valid_candidates.append(item)
@@ -125,44 +125,43 @@ def generate_super_quality_review_body(item):
     genres = [g.get("name") for g in item.get("iteminfo", {}).get("genre", [])]
     maker = item.get("iteminfo", {}).get("maker", [{}])[0].get("name", "公式レーベル")
     label = item.get("iteminfo", {}).get("label", [{}])[0].get("name", maker)
-    date_str = item.get("date", "2026-10-24")[:10]
+    date_str = item.get("date", "2026-10-25")[:10]
     clean_url = get_clean_affiliate_url(item.get("affiliateURL", ""), cid)
     
     act_str = "、".join(actresses) if actresses else "素人・企画単体"
     
-    # 決定論的乱数
-    seed_val = int(hashlib.sha256((cid + "_20261024_new").encode('utf-8')).hexdigest()[:8], 16)
+    seed_val = int(hashlib.sha256((cid + "_20261025_new").encode('utf-8')).hexdigest()[:8], 16)
     rng = random.Random(seed_val)
     
     clean_title = re.sub(r'【.*?】', '', title).strip() or title
     full_text = f"{title} {' '.join(genres)} {maker}"
     
-    is_paizuri = any(k in full_text for k in ["巨乳", "爆乳", "パイズリ", "おっぱい", "乳圧", "Gカップ", "Hカップ", "Iカップ", "豊満"])
-    is_gyaru = any(k in full_text for k in ["ギャル", "即ホ", "アゲまん", "金髪", "陽キャ"])
-    is_school = any(k in full_text for k in ["女子校生", "女子大生", "黒タイツ", "担任", "生徒", "メガネ女子", "学校", "妹", "義妹"])
-    is_ntr = any(k in full_text for k in ["セフレ", "不貞", "寝取", "NTR", "人妻", "上司と部下の妻", "熟母"])
-    is_fetish = any(k in full_text for k in ["中出し", "アナル", "潮吹き", "早漏", "媚薬", "男の娘", "フェムボーイ", "土下座"])
+    is_paizuri = any(k in full_text for k in ["巨乳", "爆乳", "パイズリ", "おっぱい", "乳圧", "Gカップ", "Hカップ", "Iカップ", "豊満", "美乳"])
+    is_school = any(k in full_text for k in ["女子校生", "女子大生", "制服", "ガスマスク", "担任", "生徒", "メガネ女子", "学校", "妹", "義妹"])
+    is_ntr = any(k in full_text for k in ["セフレ", "不倫", "義父", "五十路母", "母子", "人妻", "夫", "妻"])
+    is_fetish = any(k in full_text for k in ["個人撮影", "唾液", "口臭", "鼻フェラ", "SM", "調教", "アナル", "潮吹き", "ハードコア", "レズ"])
+    is_remaster = any(k in full_text for k in ["AIリマスター", "リマスター", "処女宮", "やりすぎ家庭教師"])
     
-    if is_paizuri:
-        sub_heading = f"極上乳圧と吸い付く密着感！【{act_str}】の肉感フェチ極上レビュー"
-        intro_lead = f"柔らかな肉体の質量と、肌と肌が激しく擦れ合う熱気を見事に映像化した『{clean_title}』。{act_str}の誇る至高のプロポーションを余すところなく堪能できるよう、アングル・照明・音響のすべてが計算し尽くされた肉感フェチ垂涎の最新作です。"
-        highlight_1 = f"重力に従って艶めかしく揺れる豊かな双丘と、摩擦によってほんのり上気していく肌の質感。男の剛直を包み込み、滴る愛液とローションを巻き込みながら密着する光景は、視覚と聴覚の双方から脳の快楽中枢を強烈に刺激します。"
-        highlight_2 = f"ただ形が美しいだけでなく、触れられるたびにビクンと敏感に跳ね上がる素直な肉体反応が秀逸。絶頂の瞬間に胸元を紅潮させ、息も絶え絶えになりながら男を締め付ける姿は、まさに男の夢見た理想の光景と言えます。"
-    elif is_gyaru:
-        sub_heading = f"圧倒的ノリと底なしの性欲！【{act_str}】が魅せる積極的エロチシズム"
-        intro_lead = f"陽気なテンションと素直すぎる発情反応が最高に心地よい『{clean_title}』。{act_str}が放つ飾らない色気と、求められるままに快楽の頂点へと駆け上がっていく無邪気な淫乱っぷりが、画面越しに熱狂的なバイブスを伝えてくれます。"
-        highlight_1 = f"言葉遣いや仕草はイマドキの女子そのものなのに、肌を重ねた瞬間に一転して素直な牝の顔へと変わるギャップが圧巻。カメラをまっすぐ見つめながら「もっと突いて」とねだる生々しい喘ぎに、鑑賞側の興奮も最高潮に達します。"
-        highlight_2 = f"男のリードに身を任せるだけでなく、自ら腰をグラインドさせて結合の深さを貪る貪欲な交わり。汗ばんだ肌と滴る体液が織りなす激しいピストンシーンは、何度見返しても色褪せない強烈な抜け感を誇ります。"
-    elif is_school:
-        sub_heading = f"清楚な佇まいと背徳のコントラスト！【{act_str}】の秘められた情熱開花"
-        intro_lead = f"学校や日常の密室空間という背徳的なシチュエーションを、息苦しいほどのリアリティで描いた『{clean_title}』。普段は見せることのない無防備な素肌と、禁断の一線を越えてしまった後の抗えない快楽の波が、観る者の心臓を激しく揺さぶります。"
-        highlight_1 = f"服を乱され素肌が露わになる瞬間の恥じらいと、求められるがままに身体を開いていく受容のプロセス。ぎこちない腰の動きや吐息の震えが、作られた演技を超えた生身のエロティシズムを感じさせます。"
-        highlight_2 = f"清楚な殻が破れ去り、快感の虜になっていくヒロインの瞳の潤み。男の肉体にぎゅっと抱きつきながら切ない嬌声を零す姿は、まさにシチュエーションモノの醍醐味が凝縮された名シーンです。"
+    if is_fetish:
+        sub_heading = f"常識を覆す濃密フェティシズム！【{act_str}】の超マニアック快楽探訪"
+        intro_lead = f"一般的な商業作品の枠に収まらない、ディープで生々しいフェチ願望を極限まで映像化した『{clean_title}』。{act_str}が魅せる、恥じらいと情動が入り混じった生々しい表情と、五感を麻痺させるような濃厚なスキンシップが、コアなファンの欲望をストレートに直撃します。"
+        highlight_1 = f"唾液の糸や息遣い、微細な皮膚の質感までクリアに捉える近接カメラワーク。至近距離で繰り広げられるマニアックな絡みと、相手の反応に翻弄されながら徐々に快楽の深みに呑まれていく演者のリアクションが鳥肌モノです。"
+        highlight_2 = f"ただ過激なだけでなく、被写体の持つ生身の体温や恥じらいがしっかりと息づいているのが本作の強み。逃げ場のない密着状態から生まれる濃密な空気感は、他では決して味わえない唯一無二の抜け感を誇ります。"
+    elif is_remaster:
+        sub_heading = f"伝説の名作が高画質で鮮やかに蘇る！【{act_str}】の神がかった名演検証"
+        intro_lead = f"時代を超えて愛されるレジェンド作品が、最新の超解像AIリマスター技術によって現代に蘇った『{clean_title}』。{act_str}の息をのむような美貌と、フィルム撮影時代ならではの濃密な官能美が、細部まで鮮明な高画質映像として堪能できます。"
+        highlight_1 = f"アップスケーリングによって鮮やかに蘇った肌の透明感と、瞳に宿る生々しい情熱。現代のAVでは見られない丁寧なドラマ構築と、身体全体で感情を表現する圧倒的な演技力に一瞬で引き込まれます。"
+        highlight_2 = f"ノスタルジーを満たすだけでなく、現代の最新作と比べても全く見劣りしない本気のエロティシズム。色褪せない名女優の生々しい喘ぎと艶めかしい腰遣いは、永久保存版にふさわしい仕上がりです。"
     elif is_ntr:
-        sub_heading = f"日常の崩壊と抗えない背徳感…【{act_str}】が堕ちていく禁断の肉欲ドラマ"
-        intro_lead = f"平穏な関係のすぐ裏側に潜む禁断の情念を、重厚なエロティシズムで描き出した傑作『{clean_title}』。罪悪感を抱きながらも、求められるままに身体が快楽を覚えてしまうヒロインの葛藤が、観る者に胸のざわつきと強烈な性的興奮をもたらします。"
+        sub_heading = f"家庭・日常の崩壊と抗えない背徳感…【{act_str}】が堕ちていく禁断の肉欲ドラマ"
+        intro_lead = f"平穏な日常のすぐ裏側に潜む禁断の情念を、重厚なエロティシズムで描き出した傑作『{clean_title}』。罪悪感を抱きながらも、求められるままに身体が快楽を覚えてしまうヒロインの葛藤が、観る者に胸のざわつきと強烈な性的興奮をもたらします。"
         highlight_1 = f"本作の白眉は、罪の意識に苛まれながらも快楽の波に呑まれていく表情のグラデーションです。最初は抵抗していた身体が、熱い吐息と執拗な愛撫に包まれることで次第に自制心を失っていく様は鳥肌モノ。"
         highlight_2 = f"関係を深めるごとに増していく背徳の濃度。周囲にバレるかもしれない緊張感の中で交わされる密着セックスは、単なる肉体関係を超えた精神的な背徳の悦楽をダイレクトに叩きつけてきます。"
+    elif is_paizuri:
+        sub_heading = f"極上肉感と吸い付く密着感！【{act_str}】の豊満ボディ徹底解剖"
+        intro_lead = f"柔らかな肉体の質量と、肌と肌が激しく擦れ合う熱気を見事に映像化した『{clean_title}』。{act_str}の誇る至高のプロポーションを余すところなく堪能できるよう、アングル・照明・音響のすべてが計算し尽くされた肉感フェチ垂涎の最新作です。"
+        highlight_1 = f"重力に従って艶めかしく揺れる豊かな双丘と、摩擦によってほんのり上気していく肌の質感。男の剛直を包み込み、滴る愛液とローションを巻き込みながら密着する光景は、視覚と聴覚の双方から脳の快楽中枢を強烈に刺激します。"
+        highlight_2 = f"触れられるたびにビクンと敏感に跳ね上がる素直な肉体反応が秀逸。絶頂の瞬間に胸元を紅潮させ、息も絶え絶えになりながら男を締め付ける姿は、まさに男の夢見た理想の光景と言えます。"
     else:
         sub_heading = f"最新鋭の映像美と極上の実用性！【{act_str}】が放つ迫真の快楽ドキュメント"
         intro_lead = f"{maker}の最新作として本日配信開始された『{clean_title}』は、シチュエーションの巧みさと出演陣の圧倒的な熱量が噛み合った注目作。無駄な前振りを省き、視聴者が求めている快感のツボへ最短距離でアプローチしてくれます。"
@@ -380,7 +379,7 @@ def create_post_json(item):
     genres = [g.get("name") for g in item.get("iteminfo", {}).get("genre", [])]
     maker = item.get("iteminfo", {}).get("maker", [{}])[0].get("name", "公式レーベル")
     label = item.get("iteminfo", {}).get("label", [{}])[0].get("name", maker)
-    date_str = item.get("date", "2026-10-24 10:00:00")
+    date_str = item.get("date", "2026-10-25 10:00:00")
     
     body_html = generate_super_quality_review_body(item)
     
@@ -411,7 +410,7 @@ def create_post_json(item):
     return out_path
 
 def main():
-    print("=== 本日（2026年10月24日）配信開始の非VR最新商品 取得＆完全独自記事作成開始 ===")
+    print("=== 本日（2026年10月25日）配信開始の非VR最新商品 取得＆完全独自記事作成開始 ===")
     items = fetch_latest_non_vr_items(target_count=15)
     print(f"取得件数: {len(items)} 件の最新作を処理します\n")
     
