@@ -62,33 +62,36 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const hinbanText = post.hinban || post.id;
     const actressText = (post.actresses || []).join("・");
     const genreText = (post.genres || []).slice(0, 3).join("・");
-    const shortTitle = post.title.length > 15 ? post.title.slice(0, 15) + '…' : post.title;
 
-    // タイトルとディスクリプションに自然なバリエーションを付与（重複ペナルティ・AI臭さ回避）
+    // タイトルから装飾や重複品番をクリーンアップ
+    const rawCleanTitle = post.title.replace(/【.*?】|\[.*?\]/g, "").trim() || post.title;
+    const cleanTitle = rawCleanTitle.length > 40 ? rawCleanTitle.slice(0, 40) + '…' : rawCleanTitle;
+
+    // タイトルとディスクリプションを検索クエリ（品番・女優・正式タイトル・感想・抜きどころ）に完全一致させるSEO設計
     const hash = (post.id || "").split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
     const titlePatterns = [
       actressText
-        ? `【見どころ徹底解剖】${actressText}『${shortTitle}』（${hinbanText}）の実用度と名シーンまとめ`
-        : `【名作検証】『${shortTitle}』（${hinbanText}）の濃厚シーン・見どころを徹底解説！`,
+        ? `【${hinbanText}】${actressText}『${cleanTitle}』の見どころと実用度を本音レビュー`
+        : `【${hinbanText}】『${cleanTitle}』の見どころ＆抜きどころ徹底解剖レビュー`,
       actressText
-        ? `【本音レビュー】${actressText}主演『${hinbanText}』は本当に買い？抜きどころと演出を検証`
-        : `【ガチ評価】『${hinbanText}』は本当に抜ける？濃厚シーン・実用度を独自視点でレビュー！`,
+        ? `${hinbanText} ${actressText}『${cleanTitle}』は本当に抜ける？濃厚シーン・実用度検証`
+        : `${hinbanText}『${cleanTitle}』ガチ評価！見どころ・抜けるポイント徹底解説`,
       actressText
-        ? `【傑作ピックアップ】${actressText}が魅せる極上シーン！『${hinbanText}』（${shortTitle}）の魅力`
-        : `【注目レビュー】『${hinbanText}』（${shortTitle}）のシチュエーションと魅力を徹底解説`,
+        ? `【${hinbanText} レビュー】${actressText}主演『${cleanTitle}』の見逃せない名シーンまとめ`
+        : `【${hinbanText} レビュー】『${cleanTitle}』のシチュエーションと魅力を徹底検証`,
     ];
     const titleText = titlePatterns[hash % titlePatterns.length];
 
-    const cleanReview = post.review ? post.review.replace(/<[^>]*>/g, "").replace(/\s+/g, " ") : "";
-    const reviewExcerpt = cleanReview.slice(0, 65) + "...";
+    const cleanReview = ((post as any).body || post.review || (post as any).content || "").replace(/<[^>]*>/g, "").replace(/\s+/g, " ");
+    const reviewExcerpt = cleanReview.slice(0, 75) + "...";
 
     const descPatterns = [
       actressText
-        ? `${actressText}が出演する話題作『${hinbanText}』の魅力と見逃せない注目ポイントを独自解説！【${reviewExcerpt}】購入検討や作品選びの参考にどうぞ。`
-        : `話題の注目作『${hinbanText}』の濃厚な世界観と見逃せない瞬間を徹底解説！【${reviewExcerpt}】作品選びの参考にどうぞ。`,
+        ? `【品番：${hinbanText}】${actressText}出演『${cleanTitle}』の配信速報＆本音レビュー！${reviewExcerpt} 無料サンプル動画や見どころ、実用度スコアを徹底解説。`
+        : `【品番：${hinbanText}】話題作『${cleanTitle}』の公式レビュー！${reviewExcerpt} 濃厚シーンの抜けるポイントや無料プレビュー情報を詳しく解説。`,
       actressText
-        ? `【実用度チェック】${actressText}の熱演が光る『${hinbanText}』を詳しく解説。気になる抜けるポイント・見どころシーンをまとめています。`
-        : `【実用度チェック】注目作『${hinbanText}』の見どころ・おすすめポイントを詳しくレビュー。購入前の参考にどうぞ。`,
+        ? `${actressText}の熱演が光る${hinbanText}『${cleanTitle}』の独自評価まとめ。${reviewExcerpt} 実際に抜ける重要シーンや購入前のポイントをチェック！`
+        : `注目作${hinbanText}『${cleanTitle}』の見どころと実用度を詳しくレビュー！${reviewExcerpt} 視聴前の参考にどうぞ。`,
     ];
     const descriptionText = descPatterns[hash % descPatterns.length];
 
