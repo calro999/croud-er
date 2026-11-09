@@ -161,7 +161,7 @@ export default function RootLayout({
             <div className="space-y-1.5 text-center md:text-left">
               <p className="font-bold text-slate-700">© 2026 背徳の深夜書斎. All Rights Reserved.</p>
               <p className="text-[10px] max-w-md leading-relaxed text-slate-400">
-                当サイトに記載されているアフィリエイトリンクは適正に管理されており、紹介する作品はマニアが厳選した大人の作品のみです。
+                【広告・PR表記】当サイトはFANZA（DMM）のアフィリエイトプログラムを利用しており、掲載リンク経由で作品を購入されると運営者に報酬が支払われます。紹介する作品は運営者が選んだ大人向けの作品のみです。
               </p>
             </div>
             <div className="flex flex-wrap gap-4 text-[10px] font-bold text-slate-500 justify-center md:justify-end">

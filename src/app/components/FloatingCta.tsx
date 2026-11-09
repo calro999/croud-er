@@ -65,7 +65,7 @@ export default function FloatingCta({
           <a
             href="https://al.fanza.co.jp/?lurl=https%3A%2F%2Fwww.dmm.co.jp%2Fmonthly%2Fpremium%2F&af_id=onchan555-003"
             target="_blank"
-            rel="noopener noreferrer"
+            rel="noopener noreferrer sponsored"
             className="flex-shrink-0 px-3 sm:px-4 py-2.5 sm:py-2.5 bg-slate-800 hover:bg-slate-700 border border-amber-400/50 hover:border-amber-400 text-amber-300 hover:text-amber-200 font-bold text-[11px] sm:text-xs rounded-xl shadow transition flex items-center justify-center gap-1 text-center"
             title="1本買うより圧倒的にお得！15万本見放題"
           >
@@ -77,7 +77,7 @@ export default function FloatingCta({
           <a
             href={affiliateUrl}
             target="_blank"
-            rel="noopener noreferrer"
+            rel="noopener noreferrer sponsored"
             className="flex-1 text-center px-4 py-2.5 sm:py-2.5 bg-gradient-to-r from-rose-600 via-rose-500 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white font-black text-xs sm:text-sm rounded-xl shadow-lg shadow-rose-600/30 flex items-center justify-center gap-1.5 transform active:scale-95 transition"
           >
             <span>🔥</span>
