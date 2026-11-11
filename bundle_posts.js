@@ -84,18 +84,18 @@ function main() {
         hinban: post.hinban || "",
         title: post.title || "",
         review: shortReview,
-        image: post.image || "",
+        image: post.image || post.imageUrl || "",
         featured_images: featuredImages,
-        affiliate_url: post.affiliate_url || "",
+        affiliate_url: post.affiliate_url || post.affiliateUrl || "",
         genres: post.genres || [],
-        actresses: post.actresses || [],
-        directors: post.directors || [],
+        actresses: post.actresses || (post.actress ? [post.actress] : []),
+        directors: post.directors || (post.director ? [post.director] : []),
         maker: post.maker || "",
         price: post.price || "300~",
         date: post.date || "",
-        labels: post.labels || [],
+        labels: post.labels || (post.label ? [post.label] : []),
         sample_movie_url: post.sample_movie_url || "",
-        sample_images: post.sample_images || []
+        sample_images: post.sample_images || post.sampleImages || []
       };
     });
 

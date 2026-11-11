@@ -123,6 +123,19 @@ export function getPostById(id: string): PostDetail | null {
 
   try {
     const post = JSON.parse(fs.readFileSync(filePath, "utf-8")) as PostDetail;
+    if (!post.affiliate_url && (post as any).affiliateUrl) {
+      post.affiliate_url = (post as any).affiliateUrl;
+    }
+    if (!post.affiliate_url || post.affiliate_url.trim() === "") {
+      const reviewText = post.review || (post as any).content || "";
+      const matched = reviewText.match(/https:\/\/al\.fanza\.co\.jp\/[^\s"'<>]+/);
+      if (matched) {
+        post.affiliate_url = matched[0];
+      } else if (post.hinban || post.id) {
+        const cid = post.hinban || post.id;
+        post.affiliate_url = `https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3D${cid}&af_id=onchan555-003&ch=api`;
+      }
+    }
     postDetailCache.set(id, post);
     return post;
   } catch (e) {

@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     "背徳の深夜書斎", "大人向けレビュー", "アダルトビデオ 評価",
     "AV女優 おすすめ 2026", "FANZA 人気ランキング", "アダルト動画 ランキング 2026"
   ],
-  referrer: "no-referrer",
+  referrer: "origin-when-cross-origin",
   alternates: {
     canonical: "https://haitoku.pages.dev",
   },
@@ -56,7 +56,7 @@ export default function RootLayout({
     <html lang="ja" className="h-full">
       <head>
         <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/feed.xml" />
-        <meta name="referrer" content="no-referrer" />
+        <meta name="referrer" content="origin-when-cross-origin" />
         <link rel="preconnect" href="https://p.dmm.co.jp" />
         <link rel="preconnect" href="https://pics.dmm.co.jp" />
         <link rel="preconnect" href="https://cc3001.dmm.co.jp" />
