@@ -180,7 +180,7 @@ def filter_items(items, posted_cache, existing_titles):
             valid.append(item)
     return valid
 
-from update_all_manga_articles import generate_custom_review
+from update_all_manga_articles import generate_deep_custom_review
 
 def generate_manga_article(item):
     title = item.get("title", "")
@@ -225,7 +225,7 @@ def generate_manga_article(item):
         "genres": [g.get("name", "") for g in item.get("iteminfo", {}).get("genre", [])],
         "publisher": (item.get("iteminfo", {}).get("label", [{}]) or [{}])[0].get("name", "")
     }
-    return generate_custom_review(item_adapter)
+    return generate_deep_custom_review(item_adapter)
 
 def main():
     print(f"--- Manga Generator ({SITE}) | Target: {TARGET_POST_COUNT} ---")
