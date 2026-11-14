@@ -18,7 +18,6 @@ CACHE_FILE = "posted_hub_cids.txt"
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 
-# Supported Latest Gemini Models Rotation (Compliant with user rules)
 GEMINI_MODELS = [
     "gemini-2.5-flash",
     "gemini-2.0-flash",
@@ -51,7 +50,7 @@ def save_cache(cids):
 def polish_review_with_llm(title, actress, maker, genres_str, raw_desc):
     prompt = f"""
 以下の新作作品の見どころを、アダルト動画マニアの男性ライターとして熱量高く人間味のある文章で清書してください。
-AI臭さ（〜をご紹介します、いかがでしょうか等の定型句）は完全に捨ててください。
+「AI」や「自動」などのメタ表現、定型句（〜をご紹介します、いかがでしょうか等）は一切使わないでください。
 
 【作品情報】
 ・タイトル: {title}
@@ -61,11 +60,10 @@ AI臭さ（〜をご紹介します、いかがでしょうか等の定型句）
 ・作品概要: {raw_desc}
 
 【出力フォーマット】
-以下の2項目のみを出力してください（Markdownや不要な挨拶は不要）：
+以下の2項目のみを出力してください：
 キャッチコピー: （読者が思わず息を呑むような25〜35文字の刺激的な一行）
 見どころレビュー: （女優の生々しい魅力、シチュエーションの良さ、抜けるポイントを語った150〜220文字程度の熱い文章）
 """
-    # 1. Try Gemini API
     if GEMINI_API_KEY:
         models_to_try = list(GEMINI_MODELS)
         random.shuffle(models_to_try)
@@ -82,10 +80,9 @@ AI臭さ（〜をご紹介します、いかがでしょうか等の定型句）
                     text = cand.get("content", {}).get("parts", [{}])[0].get("text", "").strip()
                     if len(text) > 50:
                         return text
-            except Exception as e:
+            except Exception:
                 pass
 
-    # 2. Try Groq API fallback
     if GROQ_API_KEY:
         for m in ["llama-3.3-70b-versatile", "llama3-70b-8192"]:
             try:
@@ -93,7 +90,7 @@ AI臭さ（〜をご紹介します、いかがでしょうか等の定型句）
                 p = {
                     "model": m,
                     "messages": [
-                        {"role": "system", "content": "あなたはアダルトレビューのプロライターです。"},
+                        {"role": "system", "content": "あなたは熱量あふれるアダルトレビューライターです。"},
                         {"role": "user", "content": prompt}
                     ],
                     "temperature": 0.7
@@ -106,7 +103,6 @@ AI臭さ（〜をご紹介します、いかがでしょうか等の定型句）
             except Exception:
                 pass
 
-    # Fallback template if no LLM responded
     return f"キャッチコピー: 【{actress}】が魅せる極上の濃密絡みと至福の快楽\n見どころレビュー: {maker}が放つ今月屈指の注目作。主演の{actress}が見せるリアルな息遣いとエロスが炸裂し、ジャンル特有のフェチズムを余すところなく堪能できます。"
 
 # ==============================================================================
@@ -169,8 +165,6 @@ def build_hub_card_html(item, idx, category_label, service):
         creator_label = "出演女優"
 
     genres_str = "、".join(genres[:4]) if genres else "新作"
-
-    # Polish with LLM
     raw_desc = (item.get("review") or item.get("description") or title)[:200]
     polished = polish_review_with_llm(title, creator_text, maker, genres_str, raw_desc)
     
@@ -217,7 +211,7 @@ def build_hub_card_html(item, idx, category_label, service):
           <span class="text-xs text-slate-400 font-medium">{date_str} 配信</span>
         </div>
         <div class="text-xs font-bold text-rose-400 flex items-center gap-1">
-          <span>🔥</span><span>{category_label} 最新作速報</span>
+          <span>🔥</span><span>{category_label} 注目作速報</span>
         </div>
       </div>
 
@@ -294,7 +288,6 @@ def update_hub(category_key, category_title, service, floor, keyword=None):
             new_items.append(item)
     
     if not new_items:
-        # If all in cache, pick top 3 fresh anyway
         new_items = items[:3]
 
     print(f"[{category_key}] Found {len(new_items)} items to add for {year_str}-{month_str}")
@@ -309,12 +302,15 @@ def update_hub(category_key, category_title, service, floor, keyword=None):
     
     if existing_data:
         review_html = existing_data.get("review", "")
-        # Append cards
+        # Count existing cards
+        import re
+        cur_cards_count = len(re.findall(r'<!-- (?:追加カード|第\d+位 作品カード):', review_html))
+        
         new_cards_html = []
         for idx, item in enumerate(new_items):
             cid = item.get("content_id")
             cached_cids.add(cid)
-            card = build_hub_card_html(item, idx + 1, category_title, service)
+            card = build_hub_card_html(item, cur_cards_count + idx + 1, category_title, service)
             new_cards_html.append(card)
             for a in item.get("iteminfo", {}).get("actress", []):
                 n = a.get("name")
@@ -325,7 +321,6 @@ def update_hub(category_key, category_title, service, floor, keyword=None):
         if insert_marker in review_html:
             review_html = review_html.replace(insert_marker, f"{insert_marker}\n{''.join(new_cards_html)}")
         else:
-            # Fallback
             review_html += "\n" + "".join(new_cards_html)
 
         existing_data["review"] = review_html
@@ -349,14 +344,14 @@ def update_hub(category_key, category_title, service, floor, keyword=None):
         main_img = new_items[0].get("imageURL", {}).get("large") if new_items else ""
         first_cid = new_items[0].get("content_id") if new_items else ""
         
-        full_title = f"【{year_str}年{int(month_str)}月最新】{category_title}まとめ！話題の新作・傑作選【毎日更新】"
-        lead_desc = f"{year_str}年{int(month_str)}月にリリースされた注目の{category_title}を徹底網羅！公式APIからリアルタイムに新着・高評価作品を毎日追加更新しています。"
+        full_title = f"【{year_str}年{int(month_str)}月最新{category_title}傑作選】FANZA話題の新作・神作タイトル完全速報まとめ"
+        lead_desc = f"{year_str}年{int(month_str)}月にリリースされた注目の{category_title}を徹底網羅！FANZAで配信されたばかりの話題作・高評価タイトルを厳選して随時お届けしています。"
 
         hub_content = f"""<!-- キラー特集コンテナ -->
 <div class="space-y-10 text-slate-200">
   <header class="bg-gradient-to-br from-slate-900 via-slate-900 to-rose-950/40 border border-slate-800 rounded-3xl p-6 md:p-10 shadow-2xl space-y-6">
     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-600/20 border border-rose-500/30 text-rose-400 text-xs font-black tracking-wide">
-      <span>🔥</span><span>FANZA公式API自動連携・{year_str}年{int(month_str)}月 最新作デイリー更新</span>
+      <span>🔥</span><span>FANZA厳選・{year_str}年{int(month_str)}月 話題の新作セレクション</span>
     </div>
     <div class="space-y-3">
       <h1 class="text-xl sm:text-2xl md:text-3xl font-black text-white leading-tight tracking-tight">
@@ -385,8 +380,8 @@ def update_hub(category_key, category_title, service, floor, keyword=None):
       </div>
       <div class="p-3 rounded-xl bg-slate-950/60 border border-slate-800 text-center space-y-1">
         <span class="text-base">⚡</span>
-        <p class="font-bold text-white">毎日自動追加</p>
-        <p class="text-[10px] text-slate-400">新作を最速レビュー</p>
+        <p class="font-bold text-white">最新作随時更新</p>
+        <p class="text-[10px] text-slate-400">注目作を速報レビュー</p>
       </div>
     </div>
   </header>
@@ -448,14 +443,27 @@ def update_hub(category_key, category_title, service, floor, keyword=None):
 
 def main():
     print("--- Starting Monthly Hub Auto-Update ---")
-    # 1. 総合最新作ハブ
-    update_hub("latest_av", "総合新作AV傑作選", "digital", "videoa")
     
-    # 2. レズ・百合専門ハブ
-    update_hub("lesbian_yuri", "レズ・百合専門新作", "digital", "videoa", keyword="レズ")
+    # 1. 総合最新作
+    update_hub("latest_av", "総合新作AV", "digital", "videoa")
     
-    # 3. 成人向けコミック・マンガ専門ハブ
-    update_hub("manga_comic", "成人向けコミック・新作漫画", "ebook", "comic")
+    # 2. 人妻・熟女専門
+    update_hub("mature_wife", "人妻・熟女", "digital", "videoa", keyword="人妻")
+    
+    # 3. 巨乳・爆乳専門
+    update_hub("busty_beauty", "巨乳・爆乳", "digital", "videoa", keyword="巨乳")
+    
+    # 4. 単体専属女優・美少女専門
+    update_hub("single_actress", "単体専属・美少女", "digital", "videoa", keyword="単体")
+    
+    # 5. 素人・ナンパ専門
+    update_hub("amateur_pickup", "素人・ハメ撮り", "digital", "videoa", keyword="素人")
+    
+    # 6. レズ・百合専門
+    update_hub("lesbian_yuri", "レズ・百合", "digital", "videoa", keyword="レズ")
+    
+    # 7. 成人コミック・漫画専門
+    update_hub("manga_comic", "成人コミック・新作漫画", "ebook", "comic")
     
     print("--- Monthly Hub Auto-Update Finished Successfully ---")
 
