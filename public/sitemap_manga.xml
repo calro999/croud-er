@@ -10507,6 +10507,12 @@
     <priority>0.85</priority>
   </url>
   <url>
+    <loc>https://haitoku.pages.dev/manga/b915awnmg02764</loc>
+    <lastmod>2024-09-02T00:00:05.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
     <loc>https://haitoku.pages.dev/manga/b915awnmg02765</loc>
     <lastmod>2024-09-13T00:00:05.000Z</lastmod>
     <changefreq>monthly</changefreq>
@@ -16429,8 +16435,20 @@
     <priority>0.85</priority>
   </url>
   <url>
+    <loc>https://haitoku.pages.dev/manga/k804annbn46687</loc>
+    <lastmod>2026-11-13T00:00:04.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
     <loc>https://haitoku.pages.dev/manga/k804annbn46695</loc>
     <lastmod>2026-11-13T00:00:04.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://haitoku.pages.dev/manga/k804annbn46705</loc>
+    <lastmod>2026-11-13T00:00:02.000Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
@@ -18295,6 +18313,12 @@
     <priority>0.85</priority>
   </url>
   <url>
+    <loc>https://haitoku.pages.dev/manga/s450asnph16777</loc>
+    <lastmod>2026-11-16T00:00:02.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
     <loc>https://haitoku.pages.dev/manga/s528ahuat00324</loc>
     <lastmod>2026-01-05T00:00:04.000Z</lastmod>
     <changefreq>monthly</changefreq>
@@ -18651,6 +18675,12 @@
   <url>
     <loc>https://haitoku.pages.dev/manga/s540awujz02975</loc>
     <lastmod>2026-12-05T00:00:00.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://haitoku.pages.dev/manga/s540awujz02996</loc>
+    <lastmod>2026-11-14T00:00:04.000Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
