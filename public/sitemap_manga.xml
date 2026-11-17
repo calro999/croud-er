@@ -4099,6 +4099,12 @@
     <priority>0.85</priority>
   </url>
   <url>
+    <loc>https://haitoku.pages.dev/manga/b137amdax01907</loc>
+    <lastmod>2026-11-10T00:00:01.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
     <loc>https://haitoku.pages.dev/manga/b139amagy00091</loc>
     <lastmod>2008-05-27T09:59:37.000Z</lastmod>
     <changefreq>monthly</changefreq>
@@ -5859,6 +5865,12 @@
   <url>
     <loc>https://haitoku.pages.dev/manga/b253atato04950</loc>
     <lastmod>2026-08-21T00:00:04.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://haitoku.pages.dev/manga/b253atato05148</loc>
+    <lastmod>2026-12-04T00:00:00.000Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
@@ -8289,6 +8301,12 @@
   <url>
     <loc>https://haitoku.pages.dev/manga/b469adgsk03810</loc>
     <lastmod>2026-08-25T00:00:04.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://haitoku.pages.dev/manga/b469adgsk04055</loc>
+    <lastmod>2026-11-07T00:00:02.000Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
@@ -11601,6 +11619,12 @@
   <url>
     <loc>https://haitoku.pages.dev/manga/b915awnmg04654</loc>
     <lastmod>2026-10-24T00:00:01.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://haitoku.pages.dev/manga/bd_245637</loc>
+    <lastmod>2026-11-17T00:00:28.000Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
@@ -15405,6 +15429,12 @@
   <url>
     <loc>https://haitoku.pages.dev/manga/k568agotp13696</loc>
     <lastmod>2026-10-20T00:00:01.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://haitoku.pages.dev/manga/k568agotp13722</loc>
+    <lastmod>2026-10-27T00:00:04.000Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
