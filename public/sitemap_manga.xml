@@ -565,6 +565,12 @@
     <priority>0.85</priority>
   </url>
   <url>
+    <loc>https://haitoku.pages.dev/manga/b061bangl03282</loc>
+    <lastmod>2026-10-15T00:00:01.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
     <loc>https://haitoku.pages.dev/manga/b064acmcm00309</loc>
     <lastmod>2012-10-12T09:59:59.000Z</lastmod>
     <changefreq>monthly</changefreq>
@@ -2209,6 +2215,12 @@
     <priority>0.85</priority>
   </url>
   <url>
+    <loc>https://haitoku.pages.dev/manga/b073bktcm08059</loc>
+    <lastmod>2026-11-14T00:00:02.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
     <loc>https://haitoku.pages.dev/manga/b073bktcm08064</loc>
     <lastmod>2026-10-31T00:00:01.000Z</lastmod>
     <changefreq>monthly</changefreq>
@@ -3523,6 +3535,12 @@
     <priority>0.85</priority>
   </url>
   <url>
+    <loc>https://haitoku.pages.dev/manga/b120ahit01889</loc>
+    <lastmod>2023-11-21T00:00:04.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
     <loc>https://haitoku.pages.dev/manga/b120ahit01952</loc>
     <lastmod>2024-03-19T00:00:04.000Z</lastmod>
     <changefreq>monthly</changefreq>
@@ -4239,6 +4257,12 @@
   <url>
     <loc>https://haitoku.pages.dev/manga/b164aisis01031</loc>
     <lastmod>2019-06-27T00:03:55.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://haitoku.pages.dev/manga/b164aisis01214</loc>
+    <lastmod>2019-11-27T00:03:55.000Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
@@ -9615,6 +9639,12 @@
   <url>
     <loc>https://haitoku.pages.dev/manga/b579abbl00248</loc>
     <lastmod>2016-04-22T00:03:55.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://haitoku.pages.dev/manga/b579abbl00641</loc>
+    <lastmod>2017-11-22T00:03:50.000Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
