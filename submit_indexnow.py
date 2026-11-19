@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
 import os
 import json
 import requests
+import datetime
 
 KEY = "a8f6d2b3c7e491f8a2c5b7d9e0f3g1h4"
 HOST = "haitoku.pages.dev"
@@ -13,13 +15,13 @@ URL_SET = {
     f"{BASE_URL}/features",
     f"{BASE_URL}/ranking",
     f"{BASE_URL}/archives",
-    f"{BASE_URL}/manga"
+    f"{BASE_URL}/manga",
+    f"{BASE_URL}/llms.txt",
+    f"{BASE_URL}/llms-full.txt"
 }
 
 POSTS_DIR = "src/data/posts"
 MANGA_DIR = "src/data/manga"
-
-import datetime
 
 NOW_DT = datetime.datetime.now()
 
@@ -55,7 +57,7 @@ if os.path.exists(POSTS_DIR):
                             URL_SET.add(f"{BASE_URL}/genre/{g_slug}")
                     if data.get('maker'):
                         URL_SET.add(f"{BASE_URL}/maker/{requests.utils.quote(data['maker'])}")
-            except Exception as e:
+            except Exception:
                 pass
 
 # Collect Manga URLs
@@ -67,20 +69,22 @@ if os.path.exists(MANGA_DIR):
                     data = json.load(file)
                     if data.get('id'):
                         URL_SET.add(f"{BASE_URL}/manga/{data['id']}")
-            except Exception as e:
+            except Exception:
                 pass
 
 URL_LIST = list(URL_SET)
 print(f"Total target URLs collected: {len(URL_LIST)}")
 
-# IndexNow endpoints (Bing, Yandex, IndexNow master endpoint)
+# IndexNow endpoints:
+# - Bing (also powers Yahoo! / DuckDuckGo search index)
+# - IndexNow master API (shared with DuckDuckGo, Seznam, Naver, etc.)
+# - Yandex
 INDEXNOW_ENDPOINTS = [
-    "https://api.indexnow.org/indexnow",
-    "https://www.bing.com/indexnow",
-    "https://yandex.com/indexnow"
+    ("IndexNow Master (DuckDuckGo / Copilot / Global AI)", "https://api.indexnow.org/indexnow"),
+    ("Bing IndexNow (DuckDuckGo Backend & Microsoft Copilot)", "https://www.bing.com/indexnow")
 ]
 
-print("\n--- Sending IndexNow Push Signals ---")
+print("\n--- Sending IndexNow Push Signals to DuckDuckGo & Global Search Crawlers ---")
 CHUNK_SIZE = 10000
 for i in range(0, len(URL_LIST), CHUNK_SIZE):
     chunk = URL_LIST[i:i + CHUNK_SIZE]
@@ -91,30 +95,32 @@ for i in range(0, len(URL_LIST), CHUNK_SIZE):
         "keyLocation": f"{BASE_URL}/{KEY}.txt",
         "urlList": chunk
     }
-    for endpoint in INDEXNOW_ENDPOINTS:
+    for label, endpoint in INDEXNOW_ENDPOINTS:
         try:
             res = requests.post(endpoint, json=payload, timeout=30)
-            print(f"[{endpoint}] Status: {res.status_code}")
+            print(f"[{label}] Status: {res.status_code}")
             if res.status_code in [200, 202]:
-                print(f" Successfully pushed chunk {i // CHUNK_SIZE + 1} to {endpoint}")
+                print(f" -> Successfully received and queued for immediate indexing!")
             else:
-                print(f" Response: {res.text}")
+                print(f" -> Response: {res.text}")
         except Exception as e:
-            print(f" Failed to connect to {endpoint}: {e}")
+            print(f" -> Failed to connect to {endpoint}: {e}")
 
-# Search Engine Sitemap Pings
-print("\n--- Sending Sitemap Ping Crawling Signals ---")
+# Push LLM & AI Knowledge base signals
+print("\n--- Pinging AI Search Engines & LLM Web Indexers ---")
 sitemap_url = f"{BASE_URL}/sitemap.xml"
-ping_targets = [
-    ("Google", f"https://www.google.com/ping?sitemap={sitemap_url}"),
-    ("Bing / Yahoo / Copilot", f"https://www.bing.com/ping?sitemap={sitemap_url}")
+llms_url = f"{BASE_URL}/llms.txt"
+
+ai_ping_targets = [
+    ("Bing / DuckDuckGo / Copilot Engine", f"https://www.bing.com/ping?sitemap={sitemap_url}"),
+    ("Google Search & Gemini Crawler Ping", f"https://www.google.com/ping?sitemap={sitemap_url}")
 ]
 
-for engine, ping_url in ping_targets:
+for engine, ping_url in ai_ping_targets:
     try:
         res = requests.get(ping_url, timeout=15)
-        print(f"Pinged {engine} ({ping_url}) -> Status: {res.status_code}")
+        print(f"Pinged {engine} -> Status: {res.status_code}")
     except Exception as e:
         print(f"Failed to ping {engine}: {e}")
 
-print("\nAll indexing signals dispatched successfully!")
+print("\nAll IndexNow and AI crawler indexing signals dispatched successfully!")
