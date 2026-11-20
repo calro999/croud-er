@@ -16795,6 +16795,12 @@
     <priority>0.65</priority>
   </url>
   <url>
+    <loc>https://haitoku.pages.dev/posts/jufe00565</loc>
+    <lastmod>2024-11-01T10:00:25.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
     <loc>https://haitoku.pages.dev/posts/jufe00578</loc>
     <lastmod>2025-02-14T00:00:48.000Z</lastmod>
     <changefreq>weekly</changefreq>
@@ -19395,6 +19401,12 @@
   <url>
     <loc>https://haitoku.pages.dev/posts/midv00757</loc>
     <lastmod>2024-06-28T10:00:55.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://haitoku.pages.dev/posts/midv00761</loc>
+    <lastmod>2024-06-14T10:00:47.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.65</priority>
   </url>
@@ -22361,6 +22373,12 @@
     <lastmod>2026-09-25T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://haitoku.pages.dev/posts/prvr00096</loc>
+    <lastmod>2026-11-20T00:00:04.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
   </url>
   <url>
     <loc>https://haitoku.pages.dev/posts/prwf00003</loc>
