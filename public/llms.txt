@@ -10,8 +10,8 @@
 - [サイトマップ](https://haitoku.pages.dev/sitemap.xml): 完全サイトマップ
 
 ## コンテンツ概要
-- 収録記事数: 4479 件
-- 収録マンガレビュー数: 3720 件
+- 収録記事数: 4491 件
+- 収録マンガレビュー数: 3724 件
 - 完全詳細データセット: [llms-full.txt](https://haitoku.pages.dev/llms-full.txt)
 
 ## 最新記事ピックアップ
