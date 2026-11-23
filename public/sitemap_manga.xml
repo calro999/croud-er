@@ -19045,6 +19045,18 @@
     <priority>0.85</priority>
   </url>
   <url>
+    <loc>https://haitoku.pages.dev/manga/s565ahuat00653</loc>
+    <lastmod>2026-11-24T00:00:02.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://haitoku.pages.dev/manga/s565ahuat00663</loc>
+    <lastmod>2026-11-24T00:00:02.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
     <loc>https://haitoku.pages.dev/manga/s587anmad00173</loc>
     <lastmod>2025-05-12T00:00:04.000Z</lastmod>
     <changefreq>monthly</changefreq>
@@ -22317,6 +22329,12 @@
   <url>
     <loc>https://haitoku.pages.dev/manga/s886atrlw04286</loc>
     <lastmod>2026-11-22T00:00:04.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://haitoku.pages.dev/manga/s886atrlw04766</loc>
+    <lastmod>2026-11-24T00:00:04.000Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
