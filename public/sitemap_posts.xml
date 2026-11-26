@@ -1135,6 +1135,24 @@
     <priority>0.75</priority>
   </url>
   <url>
+    <loc>https://haitoku.pages.dev/posts/1sace00013ai</loc>
+    <lastmod>2025-11-17T00:00:08.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://haitoku.pages.dev/posts/1sace00021ai</loc>
+    <lastmod>2025-11-25T00:00:32.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://haitoku.pages.dev/posts/1sace00090ai</loc>
+    <lastmod>2025-11-25T00:00:00.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
     <loc>https://haitoku.pages.dev/posts/1sbgvr00018</loc>
     <lastmod>2026-09-25T00:00:19.000Z</lastmod>
     <changefreq>weekly</changefreq>
